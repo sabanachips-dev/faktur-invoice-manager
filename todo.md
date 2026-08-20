@@ -28,13 +28,15 @@
 - [x] Menyimpan checkpoint pembaruan laporan, filter, dan cetak.
 - [x] Mendiagnosis penyebab aplikasi lambat dan penyimpanan klien yang memakan waktu lama.
 - [x] Mempercepat penyimpanan klien serta memberikan umpan balik proses yang jelas pada antarmuka.
-- [ ] Menambahkan pengujian dan menyimpan checkpoint perbaikan performa.
+- [x] Menambahkan pengujian dan menyimpan checkpoint perbaikan performa.
 - [x] Menyinkronkan klien baru dari respons server setelah pembaruan optimistis agar cache tidak menyimpan data sementara.
 - [x] Menampilkan durasi simpan klien dan memvalidasi respons alur simpan setelah optimasi.
 - [x] Menambahkan pengujian integrasi respons server untuk pembuatan klien dan rekonsiliasi data klien baru.
 - [x] Memverifikasi aksi simpan klien terautentikasi menampilkan durasi sukses tanpa memerlukan muat ulang halaman.
 - [ ] Memvalidasi procedure pembuatan klien terhadap respons server nyata tanpa menyimpan data uji permanen.
 - [ ] Meminta verifikasi pengguna pada sesi terautentikasi untuk memastikan toast durasi dan daftar klien langsung diperbarui.
+- [x] Memperbaiki elemen tombol bersarang pada daftar klien agar tidak memicu error React dan tetap dapat diakses dengan keyboard.
+- [ ] Menyimpan checkpoint perbaikan struktur interaksi halaman Klien.
 - [x] Menambahkan pilihan tipe diskon nominal atau persentase pada invoice, dengan validasi maksimum 100% dan kalkulasi pajak/total yang benar.
 - [x] Menyimpan tipe serta nilai diskon pada invoice, menampilkannya pada preview/PDF, dan menambahkan pengujian perhitungan diskon persentase.
 - [x] Memvalidasi dan menormalisasi diskon persentase maksimal 100% pada API, data tersimpan, dan tampilan invoice.
