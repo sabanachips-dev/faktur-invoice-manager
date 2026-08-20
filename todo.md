@@ -105,6 +105,7 @@
 - [ ] Memverifikasi impor invoice lengkap melalui sesi browser terautentik dengan unggah file nyata, pratinjau, dan konfirmasi hasil.
 - [x] Menjadikan input unggah Import Invoice dapat diakses agar pemilihan file bekerja melalui keyboard dan otomatisasi browser.
 - [ ] Menguji unggah file Import Invoice pada sesi browser terautentik setelah peningkatan aksesibilitas dan memastikan pratinjau muncul tanpa konfirmasi pembuatan.
+- [ ] Menampilkan kontrol input file secara langsung pada Import Invoice agar unggah file dapat diuji melalui browser dan mudah digunakan.
 - [x] Mencegah query invoice publik berjalan ketika parameter publicId masih placeholder rute atau tidak valid.
 - [x] Menampilkan kondisi URL invoice publik tidak valid tanpa memunculkan error query API.
 - [x] Menambahkan pengujian regresi untuk URL publik placeholder dan menyimpan checkpoint perbaikan.
