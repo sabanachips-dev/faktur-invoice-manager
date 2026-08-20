@@ -22,14 +22,15 @@ const catalogInput = z.object({
   description: nullableString,
   defaultPrice: z.number().int().min(0),
 });
-const invoiceInput = z.object({
+export const invoiceInput = z.object({
   clientId: z.number().int().positive(),
   invoiceNumber: z.string().trim().max(80).optional(),
   invoiceDate: z.date(),
   dueDate: z.date(),
   status: z.enum(INVOICE_STATUSES),
   currency: z.string().trim().length(3),
-  discount: z.number().int().min(0),
+  discountType: z.enum(["amount", "percentage"]),
+  discountValue: z.number().int().min(0),
   taxRate: z.number().int().min(0).max(100),
   notes: nullableString,
   items: z.array(z.object({
@@ -38,6 +39,10 @@ const invoiceInput = z.object({
     quantity: z.number().int().min(1).max(100000),
     unitPrice: z.number().int().min(0),
   })),
+}).superRefine((value, context) => {
+  if (value.discountType === "percentage" && value.discountValue > 100) {
+    context.addIssue({ code: "custom", path: ["discountValue"], message: "Diskon persentase maksimal 100%." });
+  }
 });
 
 export const appRouter = router({

@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
+import { reconcileCreatedClient } from "@/lib/clientCache";
 import { formatDate, formatMoney } from "@/lib/format";
 import type { Client } from "../../../drizzle/schema";
 import { Building2, FileText, Pencil, Plus, Search, Trash2 } from "lucide-react";
@@ -17,7 +18,36 @@ const emptyClient: ClientForm = { name: "", email: "", address: "", phone: "", t
 export default function Clients() {
   const [query, setQuery] = useState(""); const [editing, setEditing] = useState<Client | null | "new">(null); const [form, setForm] = useState<ClientForm>(emptyClient); const [selected, setSelected] = useState<number | null>(null);
   const utils = trpc.useUtils(); const clients = trpc.clients.list.useQuery({ query }); const detail = trpc.clients.get.useQuery({ id: selected || 1 }, { enabled: Boolean(selected) });
-  const create = trpc.clients.create.useMutation({ onSuccess: () => { utils.clients.list.invalidate(); toast.success("Klien disimpan."); close(); }, onError: error => toast.error(error.message) });
+  const create = trpc.clients.create.useMutation({
+    onMutate: async variables => {
+      await utils.clients.list.cancel({ query });
+      const previous = utils.clients.list.getData({ query });
+      const temporaryId = -Date.now();
+      const now = new Date();
+      utils.clients.list.setData({ query }, current => [{
+        id: temporaryId,
+        userId: 0,
+        name: variables.name,
+        email: variables.email || null,
+        address: variables.address || null,
+        phone: variables.phone || null,
+        taxId: variables.taxId || null,
+        createdAt: now,
+        updatedAt: now,
+      }, ...(current || [])]);
+      close();
+      return { previous, temporaryId, startedAt: performance.now() };
+    },
+    onSuccess: (client, _variables, context) => {
+      utils.clients.list.setData({ query }, current => reconcileCreatedClient(current, context?.temporaryId ?? client.id, client));
+      const elapsed = context?.startedAt ? Math.round(performance.now() - context.startedAt) : 0;
+      toast.success(elapsed ? `Klien tersimpan dalam ${elapsed} ms.` : "Klien disimpan.");
+    },
+    onError: (error, _variables, context) => {
+      utils.clients.list.setData({ query }, context?.previous);
+      toast.error(`Klien belum tersimpan: ${error.message}`);
+    },
+  });
   const update = trpc.clients.update.useMutation({ onSuccess: () => { utils.clients.list.invalidate(); toast.success("Data klien diperbarui."); close(); }, onError: error => toast.error(error.message) });
   const remove = trpc.clients.remove.useMutation({ onSuccess: () => { utils.clients.list.invalidate(); toast.success("Klien dihapus."); if (selected) setSelected(null); }, onError: error => toast.error(error.message) });
   const close = () => { setEditing(null); setForm(emptyClient); };

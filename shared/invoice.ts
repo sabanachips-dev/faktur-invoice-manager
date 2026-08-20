@@ -14,16 +14,27 @@ export type InvoiceLineCalculationInput = {
   unitPrice: number;
 };
 
+export type DiscountType = "amount" | "percentage";
+
+export function normalizeDiscountValue(value: number, type: DiscountType) {
+  const normalized = Math.max(0, Math.round(value));
+  return type === "percentage" ? Math.min(normalized, 100) : normalized;
+}
+
 export function calculateInvoiceAmounts(
   items: InvoiceLineCalculationInput[],
-  discount = 0,
+  discountValue = 0,
   taxRate = 0,
+  discountType: DiscountType = "amount",
 ) {
   const subtotal = items.reduce(
     (total, item) => total + Math.max(0, Math.round(item.quantity)) * Math.max(0, Math.round(item.unitPrice)),
     0,
   );
-  const safeDiscount = Math.min(Math.max(0, Math.round(discount)), subtotal);
+  const normalizedDiscountValue = normalizeDiscountValue(discountValue, discountType);
+  const safeDiscount = discountType === "percentage"
+    ? Math.min(Math.round((subtotal * normalizedDiscountValue) / 100), subtotal)
+    : Math.min(normalizedDiscountValue, subtotal);
   const taxableAmount = subtotal - safeDiscount;
   const taxAmount = Math.max(0, Math.round((taxableAmount * Math.max(0, taxRate)) / 100));
 

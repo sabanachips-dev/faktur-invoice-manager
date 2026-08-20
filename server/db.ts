@@ -9,7 +9,7 @@ import {
   invoices,
   users,
 } from "../drizzle/schema";
-import { calculateInvoiceAmounts, formatInvoiceNumber, type InvoiceStatus } from "../shared/invoice";
+import { calculateInvoiceAmounts, formatInvoiceNumber, normalizeDiscountValue, type DiscountType, type InvoiceStatus } from "../shared/invoice";
 import { getDashboardPeriodRange, isDateWithinRange, type DashboardPeriod } from "../shared/dashboard";
 import { ENV } from "./_core/env";
 
@@ -99,7 +99,10 @@ export async function createClient(userId: number, data: Omit<typeof clients.$in
   const db = await getDb();
   if (!db) throw new Error("Database is unavailable");
   const result = await db.insert(clients).values({ ...data, userId });
-  return Number(result[0].insertId);
+  const id = Number(result[0].insertId);
+  const created = await db.select().from(clients).where(and(eq(clients.userId, userId), eq(clients.id, id))).limit(1);
+  if (!created[0]) throw new Error("Klien tersimpan tetapi data tidak dapat dimuat ulang.");
+  return created[0];
 }
 
 export async function updateClient(userId: number, clientId: number, data: Partial<Omit<typeof clients.$inferInsert, "id" | "userId" | "createdAt" | "updatedAt">>) {
@@ -191,7 +194,8 @@ export type InvoiceWriteInput = {
   dueDate: Date;
   status: InvoiceStatus;
   currency: string;
-  discount: number;
+  discountType: DiscountType;
+  discountValue: number;
   taxRate: number;
   notes?: string | null;
   items: { catalogItemId?: number | null; description: string; quantity: number; unitPrice: number }[];
@@ -205,9 +209,12 @@ async function assertOwnedClient(userId: number, clientId: number) {
 }
 
 function invoiceValues(input: InvoiceWriteInput) {
-  const amounts = calculateInvoiceAmounts(input.items, input.discount, input.taxRate);
+  const discountValue = normalizeDiscountValue(input.discountValue, input.discountType);
+  const amounts = calculateInvoiceAmounts(input.items, discountValue, input.taxRate, input.discountType);
   return {
     ...amounts,
+    discountType: input.discountType,
+    discountValue,
     taxRate: Math.max(0, Math.round(input.taxRate)),
     currency: input.currency.toUpperCase().slice(0, 3),
     notes: input.notes || null,
@@ -338,7 +345,8 @@ export async function duplicateInvoice(userId: number, invoiceId: number) {
     dueDate: existing.invoice.dueDate,
     status: "draft",
     currency: existing.invoice.currency,
-    discount: existing.invoice.discount,
+    discountType: existing.invoice.discountType,
+    discountValue: existing.invoice.discountValue,
     taxRate: existing.invoice.taxRate,
     notes: existing.invoice.notes,
     items: existing.items.map(item => ({

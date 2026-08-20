@@ -25,7 +25,7 @@ describe("email sender configuration", () => {
     await sendInvoiceEmail({
       publicLink: "https://example.com/p/public123",
       invoice: {
-        invoice: { id: 1, invoiceNumber: "INV-2026-001", invoiceDate: new Date("2026-08-20"), dueDate: new Date("2026-09-03"), status: "sent", currency: "IDR", subtotal: 100000, discount: 0, taxRate: 11, taxAmount: 11000, total: 111000, notes: null, publicId: "public123" },
+        invoice: { id: 1, invoiceNumber: "INV-2026-001", invoiceDate: new Date("2026-08-20"), dueDate: new Date("2026-09-03"), status: "sent", currency: "IDR", subtotal: 100000, discount: 0, discountType: "amount", discountValue: 0, taxRate: 11, taxAmount: 11000, total: 111000, notes: null, publicId: "public123" },
         client: { name: "Klien Uji", email: "client@example.com", address: null, phone: null },
         business: { businessName: "Bisnis Anda", address: null, email: null, phone: null, bankName: null, bankAccountName: null, bankAccountNumber: null, logoUrl: null, accentColor: "#0C2B63", invoiceTemplate: "clean" },
         items: [],

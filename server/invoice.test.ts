@@ -22,6 +22,24 @@ describe("invoice calculation", () => {
       total: 0,
     });
   });
+
+  it("calculates a percentage discount before tax", () => {
+    expect(calculateInvoiceAmounts([{ quantity: 2, unitPrice: 500000 }], 10, 11, "percentage")).toEqual({
+      subtotal: 1000000,
+      discount: 100000,
+      taxAmount: 99000,
+      total: 999000,
+    });
+  });
+
+  it("caps a percentage discount at 100 percent", () => {
+    expect(calculateInvoiceAmounts([{ quantity: 1, unitPrice: 125000 }], 125, 11, "percentage")).toEqual({
+      subtotal: 125000,
+      discount: 125000,
+      taxAmount: 0,
+      total: 0,
+    });
+  });
 });
 
 describe("invoice number", () => {

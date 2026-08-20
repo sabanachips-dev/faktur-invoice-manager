@@ -1,4 +1,3 @@
-import * as XLSX from "xlsx";
 import { formatDate, labelStatus } from "@/lib/format";
 import type { InvoiceStatus } from "@shared/invoice";
 
@@ -55,7 +54,8 @@ export function exportInvoicesCsv(source: InvoiceExportSource[], filename: strin
   downloadBlob(new Blob(["\ufeff", csv], { type: "text/csv;charset=utf-8" }), `${filename}.csv`);
 }
 
-export function exportInvoicesExcel(source: InvoiceExportSource[], filename: string) {
+export async function exportInvoicesExcel(source: InvoiceExportSource[], filename: string) {
+  const XLSX = await import("xlsx");
   const rows = createInvoiceExportRows(source);
   const sheet = XLSX.utils.json_to_sheet(rows);
   sheet["!cols"] = [
@@ -66,4 +66,3 @@ export function exportInvoicesExcel(source: InvoiceExportSource[], filename: str
   XLSX.utils.book_append_sheet(workbook, sheet, "Invoice");
   XLSX.writeFile(workbook, `${filename}.xlsx`, { compression: true });
 }
-
