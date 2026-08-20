@@ -51,3 +51,14 @@ export function formatInvoiceNumber(year: number, sequence: number, format = "IN
     .replaceAll("{YYYY}", String(year))
     .replaceAll("{SEQ}", String(Math.max(1, sequence)).padStart(3, "0"));
 }
+
+export function getNextAvailableInvoiceNumber(usedNumbers: Iterable<string>, year: number, format = "INV-{YYYY}-{SEQ}") {
+  const used = new Set(usedNumbers);
+  let sequence = 1;
+  let candidate = formatInvoiceNumber(year, sequence, format);
+  while (used.has(candidate)) {
+    sequence += 1;
+    candidate = formatInvoiceNumber(year, sequence, format);
+  }
+  return candidate;
+}

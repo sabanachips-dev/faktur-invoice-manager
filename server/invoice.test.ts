@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calculateInvoiceAmounts, formatInvoiceNumber } from "../shared/invoice";
+import { calculateInvoiceAmounts, formatInvoiceNumber, getNextAvailableInvoiceNumber } from "../shared/invoice";
 
 describe("invoice calculation", () => {
   it("calculates subtotal, discount, tax, and total in rupiah", () => {
@@ -50,5 +50,9 @@ describe("invoice number", () => {
 
   it("applies the configured format while retaining a padded sequence", () => {
     expect(formatInvoiceNumber(2026, 7, "F-{YYYY}/{SEQ}")).toBe("F-2026/007");
+  });
+
+  it("uses an unused number even when a prior invoice deletion leaves a sequence gap", () => {
+    expect(getNextAvailableInvoiceNumber(["INV-2026-001", "INV-2026-003", "INV-2026-013"], 2026)).toBe("INV-2026-002");
   });
 });

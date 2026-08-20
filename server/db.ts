@@ -5,11 +5,13 @@ import {
   catalogItems,
   clients,
   InsertUser,
+  invoiceActivities,
   invoiceItems,
   invoices,
   users,
 } from "../drizzle/schema";
-import { calculateInvoiceAmounts, formatInvoiceNumber, normalizeDiscountValue, type DiscountType, type InvoiceStatus } from "../shared/invoice";
+import { calculateInvoiceAmounts, getNextAvailableInvoiceNumber, normalizeDiscountValue, type DiscountType, type InvoiceStatus } from "../shared/invoice";
+import type { ImportedInvoice } from "../shared/invoiceImport";
 import { getDashboardPeriodRange, isDateWithinRange, type DashboardPeriod } from "../shared/dashboard";
 import { ENV } from "./_core/env";
 
@@ -105,6 +107,47 @@ export async function createClient(userId: number, data: Omit<typeof clients.$in
   return created[0];
 }
 
+export async function findOrCreateClientForImport(userId: number, input: Pick<ImportedInvoice, "clientName" | "clientEmail" | "clientPhone" | "billingAddress">) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is unavailable");
+  if (input.clientEmail) {
+    const existing = await db.select().from(clients).where(and(eq(clients.userId, userId), eq(clients.email, input.clientEmail))).limit(1);
+    if (existing[0]) return existing[0];
+  }
+  if (input.clientPhone) {
+    const existing = await db.select().from(clients).where(and(eq(clients.userId, userId), eq(clients.name, input.clientName), eq(clients.phone, input.clientPhone))).limit(1);
+    if (existing[0]) return existing[0];
+  }
+  if (input.billingAddress) {
+    const existing = await db.select().from(clients).where(and(eq(clients.userId, userId), eq(clients.name, input.clientName), eq(clients.address, input.billingAddress))).limit(1);
+    if (existing[0]) return existing[0];
+  }
+  return createClient(userId, { name: input.clientName, email: input.clientEmail, phone: input.clientPhone, address: input.billingAddress, taxId: null });
+}
+
+export async function importInvoices(userId: number, importedInvoices: ImportedInvoice[]) {
+  const invoiceIds: number[] = [];
+  for (const source of importedInvoices) {
+    const client = await findOrCreateClientForImport(userId, source);
+    const invoiceId = await createInvoice(userId, {
+      clientId: client.id,
+      invoiceDate: source.invoiceDate,
+      dueDate: source.dueDate,
+      status: "draft",
+      currency: source.currency,
+      discountType: source.discountType,
+      discountValue: source.discountValue,
+      taxRate: source.taxRate,
+      notes: source.notes,
+      storeNumber: source.storeNumber,
+      shippingAddress: source.shippingAddress,
+      items: source.items,
+    });
+    invoiceIds.push(invoiceId);
+  }
+  return invoiceIds;
+}
+
 export async function updateClient(userId: number, clientId: number, data: Partial<Omit<typeof clients.$inferInsert, "id" | "userId" | "createdAt" | "updatedAt">>) {
   const db = await getDb();
   if (!db) throw new Error("Database is unavailable");
@@ -177,14 +220,7 @@ export async function getNextInvoiceNumber(userId: number) {
     .select({ invoiceNumber: invoices.invoiceNumber })
     .from(invoices)
     .where(eq(invoices.userId, userId));
-  const usedNumbers = new Set(existing.map(invoice => invoice.invoiceNumber));
-  let sequence = Math.max(1, existing.length + 1);
-  let nextNumber = formatInvoiceNumber(year, sequence, profile.invoiceNumberFormat);
-  while (usedNumbers.has(nextNumber)) {
-    sequence += 1;
-    nextNumber = formatInvoiceNumber(year, sequence, profile.invoiceNumberFormat);
-  }
-  return nextNumber;
+  return getNextAvailableInvoiceNumber(existing.map(invoice => invoice.invoiceNumber), year, profile.invoiceNumberFormat);
 }
 
 export type InvoiceWriteInput = {
@@ -198,6 +234,10 @@ export type InvoiceWriteInput = {
   discountValue: number;
   taxRate: number;
   notes?: string | null;
+  storeNumber?: string | null;
+  shippingAddress?: string | null;
+  bulkBatchId?: string | null;
+  isBatchSummary?: boolean;
   items: { catalogItemId?: number | null; description: string; quantity: number; unitPrice: number }[];
 };
 
@@ -218,6 +258,10 @@ function invoiceValues(input: InvoiceWriteInput) {
     taxRate: Math.max(0, Math.round(input.taxRate)),
     currency: input.currency.toUpperCase().slice(0, 3),
     notes: input.notes || null,
+    storeNumber: input.storeNumber?.trim() || null,
+    shippingAddress: input.shippingAddress?.trim() || null,
+    bulkBatchId: input.bulkBatchId || null,
+    isBatchSummary: input.isBatchSummary || false,
   };
 }
 
@@ -225,21 +269,34 @@ export async function createInvoice(userId: number, input: InvoiceWriteInput) {
   const db = await getDb();
   if (!db) throw new Error("Database is unavailable");
   await assertOwnedClient(userId, input.clientId);
-  const invoiceNumber = input.invoiceNumber?.trim() || (await getNextInvoiceNumber(userId));
   const values = invoiceValues(input);
   const publicId = crypto.randomUUID().replaceAll("-", "").slice(0, 16);
-  const result = await db.insert(invoices).values({
-    userId,
-    clientId: input.clientId,
-    invoiceNumber,
-    invoiceDate: input.invoiceDate,
-    dueDate: input.dueDate,
-    status: input.status,
-    publicId,
-    sentAt: input.status === "sent" ? new Date() : null,
-    ...values,
-  });
-  const invoiceId = Number(result[0].insertId);
+  const manualInvoiceNumber = input.invoiceNumber?.trim();
+  let invoiceId: number | undefined;
+  let createdInvoiceNumber = "";
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const invoiceNumber = manualInvoiceNumber || (await getNextInvoiceNumber(userId));
+    try {
+      const result = await db.insert(invoices).values({
+        userId,
+        clientId: input.clientId,
+        invoiceNumber,
+        invoiceDate: input.invoiceDate,
+        dueDate: input.dueDate,
+        status: input.status,
+        publicId,
+        sentAt: input.status === "sent" ? new Date() : null,
+        ...values,
+      });
+      invoiceId = Number(result[0].insertId);
+      createdInvoiceNumber = invoiceNumber;
+      break;
+    } catch (error) {
+      const code = (error as { cause?: { code?: string } }).cause?.code;
+      if (manualInvoiceNumber || code !== "ER_DUP_ENTRY" || attempt === 4) throw error;
+    }
+  }
+  if (!invoiceId) throw new Error("Nomor invoice tidak dapat dibuat. Silakan coba lagi.");
   if (input.items.length) {
     await db.insert(invoiceItems).values(
       input.items.map((item, position) => ({
@@ -253,7 +310,27 @@ export async function createInvoice(userId: number, input: InvoiceWriteInput) {
       })),
     );
   }
+  await recordInvoiceActivity(userId, invoiceId, "created", `Invoice ${createdInvoiceNumber} dibuat sebagai ${input.status === "draft" ? "Draft" : input.status}.`);
   return invoiceId;
+}
+
+export async function recordInvoiceActivity(userId: number, invoiceId: number, action: string, description: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is unavailable");
+  await db.insert(invoiceActivities).values({ userId, invoiceId, action, description });
+}
+
+export async function listInvoiceActivities(userId: number, invoiceId?: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is unavailable");
+  const condition = invoiceId ? and(eq(invoiceActivities.userId, userId), eq(invoiceActivities.invoiceId, invoiceId)) : eq(invoiceActivities.userId, userId);
+  return db
+    .select({ activity: invoiceActivities, invoiceNumber: invoices.invoiceNumber })
+    .from(invoiceActivities)
+    .leftJoin(invoices, and(eq(invoices.id, invoiceActivities.invoiceId), eq(invoices.userId, userId)))
+    .where(condition)
+    .orderBy(desc(invoiceActivities.createdAt))
+    .limit(100);
 }
 
 export async function getInvoice(userId: number, invoiceId: number) {
@@ -289,6 +366,8 @@ export async function getPublicInvoice(publicId: string) {
 export async function updateInvoice(userId: number, invoiceId: number, input: InvoiceWriteInput) {
   const db = await getDb();
   if (!db) throw new Error("Database is unavailable");
+  const previous = await db.select({ status: invoices.status }).from(invoices).where(and(eq(invoices.userId, userId), eq(invoices.id, invoiceId))).limit(1);
+  if (!previous[0]) throw new Error("Invoice tidak ditemukan.");
   await assertOwnedClient(userId, input.clientId);
   const values = invoiceValues(input);
   await db
@@ -318,6 +397,10 @@ export async function updateInvoice(userId: number, invoiceId: number, input: In
       })),
     );
   }
+  if (previous[0].status !== input.status) {
+    await recordInvoiceActivity(userId, invoiceId, "status_changed", `Status invoice diubah menjadi ${input.status}.`);
+  }
+  await recordInvoiceActivity(userId, invoiceId, "updated", "Invoice diperbarui.");
 }
 
 export async function updateInvoiceStatus(userId: number, invoiceId: number, status: InvoiceStatus) {
@@ -327,19 +410,24 @@ export async function updateInvoiceStatus(userId: number, invoiceId: number, sta
     .update(invoices)
     .set({ status, paidAt: status === "paid" ? new Date() : null, sentAt: status === "sent" ? new Date() : null })
     .where(and(eq(invoices.userId, userId), eq(invoices.id, invoiceId)));
+  await recordInvoiceActivity(userId, invoiceId, "status_changed", `Status invoice diubah menjadi ${status}.`);
 }
 
 export async function deleteInvoice(userId: number, invoiceId: number) {
   const db = await getDb();
   if (!db) throw new Error("Database is unavailable");
+  const existing = await db.select({ id: invoices.id, invoiceNumber: invoices.invoiceNumber }).from(invoices).where(and(eq(invoices.userId, userId), eq(invoices.id, invoiceId))).limit(1);
+  if (!existing[0]) throw new Error("Invoice tidak ditemukan atau sudah dihapus.");
   await db.delete(invoiceItems).where(eq(invoiceItems.invoiceId, invoiceId));
   await db.delete(invoices).where(and(eq(invoices.userId, userId), eq(invoices.id, invoiceId)));
+  await recordInvoiceActivity(userId, invoiceId, "deleted", `Invoice ${existing[0].invoiceNumber} dihapus.`);
+  return { deletedId: invoiceId };
 }
 
 export async function duplicateInvoice(userId: number, invoiceId: number) {
   const existing = await getInvoice(userId, invoiceId);
   if (!existing) throw new Error("Invoice tidak ditemukan.");
-  return createInvoice(userId, {
+  const duplicatedId = await createInvoice(userId, {
     clientId: existing.invoice.clientId,
     invoiceDate: new Date(),
     dueDate: existing.invoice.dueDate,
@@ -349,6 +437,8 @@ export async function duplicateInvoice(userId: number, invoiceId: number) {
     discountValue: existing.invoice.discountValue,
     taxRate: existing.invoice.taxRate,
     notes: existing.invoice.notes,
+    storeNumber: existing.invoice.storeNumber,
+    shippingAddress: existing.invoice.shippingAddress,
     items: existing.items.map(item => ({
       catalogItemId: item.catalogItemId,
       description: item.description,
@@ -356,6 +446,72 @@ export async function duplicateInvoice(userId: number, invoiceId: number) {
       unitPrice: item.unitPrice,
     })),
   });
+  await recordInvoiceActivity(userId, duplicatedId, "duplicated", `Invoice diduplikasi dari ${existing.invoice.invoiceNumber}.`);
+  return duplicatedId;
+}
+
+export async function createBulkInvoices(userId: number, input: {
+  sourceInvoiceId: number;
+  storeNumbers: string[];
+  shippingAddress: string;
+  invoiceDate: Date;
+  dueDate: Date;
+}) {
+  const source = await getInvoice(userId, input.sourceInvoiceId);
+  if (!source) throw new Error("Invoice sumber tidak ditemukan.");
+  const bulkBatchId = crypto.randomUUID().replaceAll("-", "").slice(0, 16);
+  const storeInvoiceIds: number[] = [];
+  for (const storeNumber of input.storeNumbers) {
+    const id = await createInvoice(userId, {
+      clientId: source.invoice.clientId,
+      invoiceDate: input.invoiceDate,
+      dueDate: input.dueDate,
+      status: "draft",
+      currency: source.invoice.currency,
+      discountType: source.invoice.discountType,
+      discountValue: source.invoice.discountValue,
+      taxRate: source.invoice.taxRate,
+      notes: source.invoice.notes,
+      storeNumber,
+      shippingAddress: input.shippingAddress,
+      bulkBatchId,
+      items: source.items.map(item => ({
+        catalogItemId: item.catalogItemId,
+        description: item.description,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+      })),
+    });
+    storeInvoiceIds.push(id);
+  }
+  const summaryInvoiceId = await createInvoice(userId, {
+    clientId: source.invoice.clientId,
+    invoiceDate: input.invoiceDate,
+    dueDate: input.dueDate,
+    status: "draft",
+    currency: source.invoice.currency,
+    discountType: source.invoice.discountType,
+    discountValue: source.invoice.discountType === "amount" ? source.invoice.discountValue * input.storeNumbers.length : source.invoice.discountValue,
+    taxRate: source.invoice.taxRate,
+    notes: [source.invoice.notes, `Rekap ${input.storeNumbers.length} toko dalam batch ${bulkBatchId.slice(0, 8).toUpperCase()}.`].filter(Boolean).join("\n"),
+    storeNumber: `REKAP ${input.storeNumbers.length} TOKO`,
+    shippingAddress: input.shippingAddress,
+    bulkBatchId,
+    isBatchSummary: true,
+    items: source.items.map(item => ({
+      catalogItemId: item.catalogItemId,
+      description: item.description,
+      quantity: item.quantity * input.storeNumbers.length,
+      unitPrice: item.unitPrice,
+    })),
+  });
+  return { batchId: bulkBatchId, storeInvoiceIds, summaryInvoiceId };
+}
+
+export async function getInvoicesByIds(userId: number, ids: number[]) {
+  const uniqueIds = Array.from(new Set(ids));
+  const rows = await Promise.all(uniqueIds.map(id => getInvoice(userId, id)));
+  return rows.filter((row): row is NonNullable<typeof row> => Boolean(row));
 }
 
 export async function getDashboard(userId: number, period: DashboardPeriod = "this_month") {
@@ -363,7 +519,7 @@ export async function getDashboard(userId: number, period: DashboardPeriod = "th
   if (!db) throw new Error("Database is unavailable");
   const all = await listInvoices(userId);
   const now = new Date();
-  const rows = all.map(row => row.invoice);
+  const rows = all.map(row => row.invoice).filter(invoice => !invoice.isBatchSummary);
   const range = getDashboardPeriodRange(period, now);
   const filteredRows = rows.filter(invoice => isDateWithinRange(invoice.invoiceDate, range.start, range.end));
   const sum = (items: typeof rows) => items.reduce((total, invoice) => total + invoice.total, 0);
@@ -379,6 +535,12 @@ export async function getDashboard(userId: number, period: DashboardPeriod = "th
       const value = filteredRows.filter(invoice => invoice.status === "paid" && isDateWithinRange(invoice.invoiceDate, date, nextDate)).reduce((total, invoice) => total + invoice.total, 0);
       return { label: String(date.getDate()), value };
     });
+  const summaryRows = all.filter(row => row.invoice.isBatchSummary && isDateWithinRange(row.invoice.invoiceDate, range.start, range.end)).slice(0, 3);
+  const batchRecaps = await Promise.all(summaryRows.map(async row => {
+    const items = await db.select().from(invoiceItems).where(eq(invoiceItems.invoiceId, row.invoice.id)).orderBy(invoiceItems.position);
+    const storeCount = all.filter(candidate => candidate.invoice.bulkBatchId === row.invoice.bulkBatchId && !candidate.invoice.isBatchSummary).length;
+    return { invoice: row.invoice, client: row.client, storeCount, items };
+  }));
   return {
     period,
     periodLabel: range.label,
@@ -393,6 +555,7 @@ export async function getDashboard(userId: number, period: DashboardPeriod = "th
       overdueCount: filteredRows.filter(invoice => invoice.status === "overdue").length,
     },
     income,
-    recent: all.filter(row => isDateWithinRange(row.invoice.invoiceDate, range.start, range.end)).slice(0, 5),
+    recent: all.filter(row => !row.invoice.isBatchSummary && isDateWithinRange(row.invoice.invoiceDate, range.start, range.end)).slice(0, 5),
+    batchRecaps,
   };
 }

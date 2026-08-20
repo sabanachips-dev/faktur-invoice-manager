@@ -5,6 +5,9 @@ import Catalog from "@/pages/Catalog";
 import Clients from "@/pages/Clients";
 import Dashboard from "@/pages/Dashboard";
 import InvoiceEditor from "@/pages/InvoiceEditor";
+import BulkInvoice from "@/pages/BulkInvoice";
+import ImportInvoices from "@/pages/ImportInvoices";
+import InvoiceHistory from "@/pages/InvoiceHistory";
 import InvoiceList from "@/pages/InvoiceList";
 import InvoicePreview from "@/pages/InvoicePreview";
 import NotFound from "@/pages/NotFound";
@@ -24,6 +27,9 @@ function Router() {
     <Route path="/" component={() => <ProtectedPage component={Dashboard} />} />
     <Route path="/invoice" component={() => <ProtectedPage component={InvoiceList} />} />
     <Route path="/invoice/new" component={() => <ProtectedPage component={InvoiceEditor} />} />
+    <Route path="/invoice/bulk" component={() => <ProtectedPage component={BulkInvoice} />} />
+    <Route path="/invoice/import" component={() => <ProtectedPage component={ImportInvoices} />} />
+    <Route path="/invoice/history" component={() => <ProtectedPage component={InvoiceHistory} />} />
     <Route path="/invoice/:id/preview" component={() => <ProtectedPage component={InvoicePreview} />} />
     <Route path="/invoice/:id" component={() => <ProtectedPage component={InvoiceEditor} />} />
     <Route path="/clients" component={() => <ProtectedPage component={Clients} />} />

@@ -1,4 +1,5 @@
 import {
+  boolean,
   int,
   index,
   mysqlEnum,
@@ -103,6 +104,10 @@ export const invoices = mysqlTable(
     taxAmount: int("taxAmount").notNull().default(0),
     total: int("total").notNull().default(0),
     notes: text("notes"),
+    storeNumber: varchar("storeNumber", { length: 100 }),
+    shippingAddress: text("shippingAddress"),
+    bulkBatchId: varchar("bulkBatchId", { length: 32 }),
+    isBatchSummary: boolean("isBatchSummary").notNull().default(false),
     publicId: varchar("publicId", { length: 32 }).notNull().unique(),
     sentAt: timestamp("sentAt"),
     paidAt: timestamp("paidAt"),
@@ -113,6 +118,7 @@ export const invoices = mysqlTable(
     uniqueIndex("invoice_user_number_unique").on(table.userId, table.invoiceNumber),
     index("invoice_user_date_idx").on(table.userId, table.invoiceDate),
     index("invoice_user_client_idx").on(table.userId, table.clientId),
+    index("invoice_user_batch_idx").on(table.userId, table.bulkBatchId),
   ],
 );
 
@@ -127,9 +133,23 @@ export const invoiceItems = mysqlTable("invoiceItems", {
   position: int("position").notNull().default(0),
 });
 
+export const invoiceActivities = mysqlTable(
+  "invoiceActivities",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    userId: int("userId").notNull(),
+    invoiceId: int("invoiceId").notNull(),
+    action: varchar("action", { length: 48 }).notNull(),
+    description: text("description").notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  table => [index("invoice_activity_user_created_idx").on(table.userId, table.createdAt), index("invoice_activity_invoice_created_idx").on(table.invoiceId, table.createdAt)],
+);
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 export type Client = typeof clients.$inferSelect;
 export type CatalogItem = typeof catalogItems.$inferSelect;
 export type Invoice = typeof invoices.$inferSelect;
 export type InvoiceItem = typeof invoiceItems.$inferSelect;
+export type InvoiceActivity = typeof invoiceActivities.$inferSelect;

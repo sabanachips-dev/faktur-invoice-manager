@@ -2,7 +2,8 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { startLogin } from "@/const";
-import { BookOpen, FileText, LayoutDashboard, LogOut, Menu, Settings, Users, X } from "lucide-react";
+import { navigateBack } from "@/lib/navigation";
+import { ArrowLeft, BookOpen, FileText, LayoutDashboard, LogOut, Menu, Settings, Users, X } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
 
@@ -36,6 +37,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   const navigate = (path: string) => { setLocation(path); setMobileOpen(false); };
+  const goBack = () => navigateBack({ historyLength: window.history.length, fallbackPath: "/", goToHistory: () => window.history.back(), goToFallback: navigate });
   const SidebarContent = () => (
     <>
       <div className="flex h-20 items-center gap-3 px-6">
@@ -70,6 +72,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <main className="min-h-screen lg:pl-64">
         <header className="sticky top-0 z-20 flex h-16 items-center border-b bg-white/90 px-4 backdrop-blur lg:px-8">
           <button className="rounded-md p-2 text-slate-600 hover:bg-slate-100 lg:hidden" onClick={() => setMobileOpen(true)} aria-label="Buka menu"><Menu className="size-5" /></button>
+          {location !== "/" && <button className="ml-1 inline-flex items-center gap-1.5 rounded-md px-2.5 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900" onClick={goBack}><ArrowLeft className="size-4" />Kembali</button>}
           <div className="ml-auto text-xs font-medium text-muted-foreground">Ruang kerja bisnis</div>
         </header>
         <div className="mx-auto w-full max-w-[1540px] p-4 sm:p-6 lg:p-8">{children}</div>
@@ -77,4 +80,3 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     </div>
   );
 }
-

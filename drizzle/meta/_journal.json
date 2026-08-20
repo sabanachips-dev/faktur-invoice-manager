@@ -29,6 +29,27 @@
       "when": 1787201082766,
       "tag": "0003_nostalgic_devos",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1787206590929,
+      "tag": "0004_jittery_molten_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1787208447048,
+      "tag": "0005_certain_scrambler",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1787220036999,
+      "tag": "0006_bright_hairball",
+      "breakpoints": true
     }
   ]
 }

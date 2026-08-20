@@ -6,6 +6,7 @@ import { createRoot } from "react-dom/client";
 import superjson from "superjson";
 import App from "./App";
 import { startLogin } from "./const";
+import { fetchTrpcWithHtmlRetry } from "./lib/trpcFetch";
 import "./index.css";
 
 const queryClient = new QueryClient();
@@ -63,7 +64,7 @@ const trpcClient = trpc.createClient({
         return {};
       },
       fetch(input, init) {
-        return globalThis.fetch(input, {
+        return fetchTrpcWithHtmlRetry(input, {
           ...(init ?? {}),
           credentials: "include",
         });

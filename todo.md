@@ -37,10 +37,66 @@
 - [x] Meminta verifikasi pengguna pada sesi terautentikasi untuk memastikan toast durasi dan daftar klien langsung diperbarui.
 - [x] Menjalankan validasi end-to-end procedure pembuatan klien dengan respons database nyata dan pembersihan data verifikasi.
 - [x] Mengonfirmasi secara eksplisit bahwa penyimpanan klien memunculkan notifikasi durasi dan memperbarui daftar tanpa refresh.
-- [ ] Menyimpan checkpoint final validasi performa dan pengujian end-to-end klien.
+- [x] Menyimpan checkpoint final validasi performa dan pengujian end-to-end klien.
 - [x] Memperbaiki elemen tombol bersarang pada daftar klien agar tidak memicu error React dan tetap dapat diakses dengan keyboard.
 - [x] Menyimpan checkpoint perbaikan struktur interaksi halaman Klien.
 - [x] Menambahkan pilihan tipe diskon nominal atau persentase pada invoice, dengan validasi maksimum 100% dan kalkulasi pajak/total yang benar.
 - [x] Menyimpan tipe serta nilai diskon pada invoice, menampilkannya pada preview/PDF, dan menambahkan pengujian perhitungan diskon persentase.
 - [x] Memvalidasi dan menormalisasi diskon persentase maksimal 100% pada API, data tersimpan, dan tampilan invoice.
 - [x] Menambahkan pengujian penolakan diskon persentase di atas 100% pada kontrak API invoice.
+- [x] Menambahkan informasi alamat pengiriman dan nomor toko pada invoice, terpisah dari alamat penagihan klien.
+- [x] Menambahkan fitur duplikasi invoice yang membuat nomor baru dan membuka hasilnya untuk diedit.
+- [x] Menambahkan pembuat invoice massal untuk banyak toko dengan item, kuantitas, diskon, tanggal invoice, dan alamat gudang bersama.
+- [x] Menambahkan daftar pemilihan banyak invoice serta cetak batch dalam satu pekerjaan cetak.
+- [x] Menambahkan pilihan jumlah salinan dengan label Faktur Asli, Copy 1, Copy 2, dan seterusnya pada dokumen cetak.
+- [x] Menambahkan tata letak cetak ringkas untuk beberapa invoice pada satu lembar dan menjaga tanggal invoice terlihat pada setiap dokumen.
+- [x] Menulis pengujian unit dan API untuk invoice massal, duplikasi, alamat pengiriman, dan label salinan.
+- [x] Memverifikasi alur pembuatan massal serta cetak batch.
+- [x] Menyimpan checkpoint pembaruan invoice massal, duplikasi, dan cetak batch.
+- [x] Mengizinkan jumlah salinan cetak di atas lima dengan batas operasional yang aman serta menguji label Copy untuk angka besar.
+- [x] Menambahkan pengujian end-to-end database untuk duplikasi dan pembuatan invoice massal dari invoice sumber.
+- [ ] Memvalidasi penggunaaan cetak batch pada sesi aplikasi dan mendokumentasikan label salinan serta tata letaknya.
+- [x] Mendiagnosis dan memperbaiki kegagalan aksi hapus invoice, termasuk umpan balik error yang jelas.
+- [x] Menambahkan identitas batch dan satu invoice rekap yang menjumlahkan kuantitas per item untuk setiap pembuatan invoice massal.
+- [x] Menambahkan ringkasan batch pada dashboard untuk total semua toko, total invoice toko, dan rekap kuantitas per item tanpa menghitung invoice rekap dua kali.
+- [x] Menambahkan impor Excel/CSV daftar toko untuk pembuatan invoice massal, dengan validasi nomor toko dan alamat pengiriman.
+- [x] Menulis pengujian untuk hapus invoice, invoice rekap batch, agregasi dashboard, dan parser impor spreadsheet.
+- [x] Memverifikasi perbaikan hapus serta alur rekap dan impor.
+- [x] Memperbaiki generator nomor invoice agar tetap unik ketika invoice sebelumnya telah dihapus dan terdapat celah urutan.
+- [x] Menyimpan checkpoint perbaikan hapus, rekap batch, dan impor spreadsheet.
+- [x] Memverifikasi dari UI terautentikasi bahwa dialog hapus menghapus invoice dan memperbarui daftar tanpa refresh.
+- [x] Memverifikasi impor Excel/CSV dari UI invoice massal dengan file nyata serta pengisian nomor toko dan alamat pengiriman.
+- [x] Memverifikasi dari UI terautentikasi bahwa invoice massal menghasilkan invoice rekap dan rekap tersebut tampil pada dashboard.
+- [ ] Mendokumentasikan konfirmasi detail pengguna atas hasil hapus invoice, impor spreadsheet, dan tampilnya invoice rekap batch pada dashboard.
+- [x] Menetapkan template Excel mandiri untuk impor invoice lengkap per item, mencakup nama toko/klien, kontak, alamat penagihan dan pengiriman, tanggal, item, kuantitas, harga, diskon, pajak, mata uang, dan catatan.
+- [x] Menambahkan parser dan validasi data Excel/CSV invoice lengkap, termasuk pengelompokan beberapa baris item menjadi satu invoice.
+- [x] Menambahkan API impor yang membuat atau memakai klien yang cocok dan membuat banyak invoice lengkap dengan nomor invoice otomatis.
+- [x] Membangun halaman Import Invoice mandiri dengan unduh template, unggah file, pratinjau data, daftar error per baris, serta konfirmasi pembuatan.
+- [x] Menulis pengujian parser dan API untuk impor invoice lengkap.
+- [ ] Memverifikasi impor Excel/CSV lengkap melalui sesi pengguna sebelum menyimpan checkpoint.
+- [x] Memvalidasi konsistensi seluruh field level-invoice untuk setiap Import_ID yang memiliki beberapa baris item.
+- [x] Memperluas pencocokan klien impor dengan fallback nama, telepon, dan alamat agar tidak membuat duplikasi saat email kosong.
+- [x] Menyimpan checkpoint fitur Import Invoice mandiri setelah validasi selesai.
+- [x] Mendiagnosis dan memperbaiki endpoint tRPC Invoice yang mengembalikan HTML alih-alih JSON.
+- [x] Menambahkan pengujian respons API Invoice.
+- [x] Menyimpan checkpoint perbaikan routing tRPC Invoice.
+- [x] Menambahkan tombol Kembali yang konsisten pada editor, preview, impor invoice, invoice massal, dan riwayat invoice.
+- [x] Menambahkan catatan aktivitas invoice untuk pembuatan, pembaruan, perubahan status, pengiriman email, duplikasi, dan penghapusan.
+- [x] Menambahkan halaman Riwayat Invoice untuk melihat aktivitas terbaru serta riwayat per invoice.
+- [x] Menulis pengujian aktivitas invoice dan memverifikasi navigasi kembali.
+- [x] Menyimpan checkpoint tombol kembali dan riwayat aktivitas invoice.
+- [x] Mencatat aktivitas perubahan status ketika invoice disimpan melalui editor dengan status berbeda.
+- [x] Memperluas pengujian riwayat untuk pembaruan, duplikasi, dan pengiriman email invoice.
+- [x] Memverifikasi interaksi tombol Kembali pada editor, preview, impor, invoice massal, dan riwayat.
+- [x] Menambahkan tombol Kembali konsisten pada seluruh halaman aplikasi yang memiliki halaman asal atau daftar induk.
+- [x] Membangun komponen stepper bersama yang mendukung langkah selesai, aktif, dan berikutnya secara aksesibel.
+- [x] Menambahkan stepper pada editor invoice, invoice massal, dan Import Invoice mandiri sesuai tahapan alur masing-masing.
+- [x] Memverifikasi responsivitas tombol Kembali dan stepper pada seluruh halaman lalu menyimpan checkpoint pembaruan.
+- [x] Menambahkan pengujian integrasi procedure invoices.list untuk memastikan respons tRPC sukses berformat JSON yang benar.
+- [x] Memverifikasi endpoint Invoice setelah restart layanan untuk memastikan routing API tidak jatuh ke fallback HTML.
+- [x] Memverifikasi halaman Invoice terautentikasi setelah refresh layanan dan mendokumentasikan hasil pemuatan data.
+- [x] Memverifikasi browser terautentikasi memuat daftar Invoice setelah restart layanan.
+- [x] Mendokumentasikan hasil verifikasi pemuatan data Invoice pascarestart di catatan proyek.
+- [x] Menguji klik tombol Kembali pada editor, preview, impor, invoice massal, dan riwayat lalu mencatat tujuan navigasi aktual per halaman.
+- [x] Meningkatkan WorkflowStepper dengan semantik aksesibilitas untuk langkah aktif, selesai, dan berikutnya serta menambah uji regresi.
+- [x] Memastikan VERIFICATION.md tersimpan sebagai catatan proyek untuk pemuatan daftar Invoice pascarestart.

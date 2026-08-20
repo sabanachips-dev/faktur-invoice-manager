@@ -1,0 +1,25 @@
+import InvoiceDocument, { type InvoiceDocumentData } from "@/components/InvoiceDocument";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { printInvoiceBatch, type BatchPrintLayout, type PrintPaperSize } from "@/lib/printInvoice";
+import { getInvoiceCopyLabel } from "@shared/print";
+import { Copy, Printer } from "lucide-react";
+import { useMemo, useState } from "react";
+
+const paperOptions: { value: PrintPaperSize; label: string }[] = [
+  { value: "a4", label: "A4" }, { value: "letter", label: "Letter" }, { value: "a5", label: "A5" }, { value: "receipt80", label: "Struk 80 mm" },
+];
+
+export default function BatchPrintDialog({ documents, disabled = false }: { documents: InvoiceDocumentData[]; disabled?: boolean }) {
+  const [open, setOpen] = useState(false);
+  const [paper, setPaper] = useState<PrintPaperSize>("a4");
+  const [layout, setLayout] = useState<BatchPrintLayout>("one");
+  const [copies, setCopies] = useState("1");
+  const copyCount = Math.min(99, Math.max(1, Math.round(Number(copies) || 1)));
+  const printDocuments = useMemo(() => documents.flatMap(data => Array.from({ length: copyCount }, (_, index) => ({ data, copyLabel: getInvoiceCopyLabel(index) }))), [documents, copyCount]);
+  const isTwoUpAvailable = paper === "a4" || paper === "letter";
+  const activeLayout = isTwoUpAvailable ? layout : "one";
+  return <><Dialog open={open} onOpenChange={setOpen}><DialogTrigger asChild><Button variant="outline" className="gap-2" disabled={disabled || !documents.length}><Printer className="size-4" />Cetak batch</Button></DialogTrigger><DialogContent className="sm:max-w-lg"><DialogHeader><DialogTitle>Cetak invoice terpilih</DialogTitle><DialogDescription>Setiap invoice akan memuat tanggal invoice serta label Faktur Asli atau salinan untuk kebutuhan cetak manual.</DialogDescription></DialogHeader><div className="grid gap-4 py-2"><div className="grid gap-3 sm:grid-cols-2"><div className="space-y-1.5"><label className="text-sm font-medium">Ukuran kertas</label><Select value={paper} onValueChange={value => setPaper(value as PrintPaperSize)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{paperOptions.map(option => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent></Select></div><div className="space-y-1.5"><label className="text-sm font-medium" htmlFor="copy-count">Jumlah salinan</label><Input id="copy-count" type="number" min="1" max="99" value={copies} onChange={event => setCopies(event.target.value)} /><p className="text-xs text-muted-foreground">Maksimum 99 salinan per pekerjaan cetak.</p></div></div><div className="space-y-1.5"><label className="text-sm font-medium">Tata letak</label><Select value={activeLayout} onValueChange={value => setLayout(value as BatchPrintLayout)} disabled={!isTwoUpAvailable}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="one">Satu invoice per lembar</SelectItem><SelectItem value="two">Dua invoice ringkas per lembar</SelectItem></SelectContent></Select>{!isTwoUpAvailable && <p className="text-xs text-muted-foreground">Dua invoice per lembar tersedia untuk ukuran A4 atau Letter.</p>}</div><div className="rounded-lg bg-slate-50 p-3 text-xs leading-5 text-slate-600"><strong className="text-slate-800">Ringkasan cetak:</strong> {documents.length} invoice × {copyCount} salinan = {printDocuments.length} dokumen. Salinan pertama berlabel <em>Faktur Asli</em>; berikutnya <em>Copy 1</em>, <em>Copy 2</em>, dan seterusnya.</div></div><div className="flex justify-end gap-2"><Button variant="ghost" onClick={() => setOpen(false)}>Batal</Button><Button className="gap-2" onClick={() => { printInvoiceBatch(paper, activeLayout); setOpen(false); }}><Printer className="size-4" />Cetak sekarang</Button></div></DialogContent></Dialog><div id="invoice-batch-print" className={`layout-${activeLayout} hidden`} aria-hidden="true">{printDocuments.map(({ data, copyLabel }, index) => <div key={`${data.invoice.id}-${copyLabel}-${index}`} className="batch-document"><InvoiceDocument data={data} copyLabel={copyLabel} documentId={`batch-invoice-${data.invoice.id}-${index}`} /></div>)}</div></>;
+}
