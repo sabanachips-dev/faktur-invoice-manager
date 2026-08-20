@@ -5,15 +5,18 @@ import { Button } from "@/components/ui/button";
 import { downloadInvoicePdf } from "@/lib/downloadInvoicePdf";
 import { navigateBack } from "@/lib/navigation";
 import { trpc } from "@/lib/trpc";
+import { isValidPublicInvoiceId } from "@shared/publicInvoice";
 import { ArrowLeft, Download, FileQuestion } from "lucide-react";
 import { useRef, useState } from "react";
 import { useLocation, useRoute } from "wouter";
 
 export default function PublicInvoice() {
-  const [, params] = useRoute("/p/:publicId"); const publicId = params?.publicId || "";
+  const [, params] = useRoute("/p/:publicId"); const publicId = params?.publicId?.trim() || "";
+  const hasValidPublicId = isValidPublicInvoiceId(publicId);
   const [, setLocation] = useLocation();
-  const invoice = trpc.publicInvoice.get.useQuery({ publicId });
+  const invoice = trpc.publicInvoice.get.useQuery({ publicId }, { enabled: hasValidPublicId });
   const documentRef = useRef<HTMLDivElement>(null); const [downloading, setDownloading] = useState(false);
+  if (!hasValidPublicId) return <main className="grid min-h-screen place-items-center bg-slate-50 px-5"><div className="max-w-sm text-center"><FileQuestion className="mx-auto size-10 text-slate-300" /><h1 className="mt-4 text-xl font-bold">Tautan invoice tidak valid</h1><p className="mt-2 text-sm leading-6 text-muted-foreground">Pastikan tautan invoice lengkap dan coba buka kembali dari pesan atau email pengirim.</p></div></main>;
   if (invoice.isLoading) return <main className="grid min-h-screen place-items-center bg-slate-50 text-sm text-muted-foreground">Memuat invoice…</main>;
   if (!invoice.data) return <main className="grid min-h-screen place-items-center bg-slate-50 px-5"><div className="max-w-sm text-center"><FileQuestion className="mx-auto size-10 text-slate-300" /><h1 className="mt-4 text-xl font-bold">Invoice tidak ditemukan</h1><p className="mt-2 text-sm leading-6 text-muted-foreground">Tautan yang Anda buka tidak tersedia atau sudah tidak dapat diakses.</p></div></main>;
   const data = invoice.data as InvoiceDocumentData;

@@ -100,3 +100,6 @@
 - [x] Menguji klik tombol Kembali pada editor, preview, impor, invoice massal, dan riwayat lalu mencatat tujuan navigasi aktual per halaman.
 - [x] Meningkatkan WorkflowStepper dengan semantik aksesibilitas untuk langkah aktif, selesai, dan berikutnya serta menambah uji regresi.
 - [x] Memastikan VERIFICATION.md tersimpan sebagai catatan proyek untuk pemuatan daftar Invoice pascarestart.
+- [x] Mencegah query invoice publik berjalan ketika parameter publicId masih placeholder rute atau tidak valid.
+- [x] Menampilkan kondisi URL invoice publik tidak valid tanpa memunculkan error query API.
+- [x] Menambahkan pengujian regresi untuk URL publik placeholder dan menyimpan checkpoint perbaikan.

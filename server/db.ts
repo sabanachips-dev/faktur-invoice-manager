@@ -356,9 +356,9 @@ export async function getPublicInvoice(publicId: string) {
     .from(invoices)
     .innerJoin(clients, eq(invoices.clientId, clients.id))
     .innerJoin(businessProfiles, eq(invoices.userId, businessProfiles.userId))
-    .where(eq(invoices.publicId, publicId))
+  .where(eq(invoices.publicId, publicId))
     .limit(1);
-  if (!result[0]) return undefined;
+  if (!result[0]) return null;
   const items = await db.select().from(invoiceItems).where(eq(invoiceItems.invoiceId, result[0].invoice.id)).orderBy(invoiceItems.position);
   return { ...result[0], items };
 }

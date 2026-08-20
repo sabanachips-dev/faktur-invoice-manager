@@ -10,6 +10,7 @@ import { DASHBOARD_PERIODS } from "../shared/dashboard";
 import { storagePut } from "./storage";
 import { sendInvoiceEmail } from "./email";
 import { parseInvoiceImportRows } from "../shared/invoiceImport";
+import { publicInvoiceIdPattern } from "../shared/publicInvoice";
 
 const nullableString = z.string().trim().max(1000).optional().nullable();
 const clientInput = z.object({
@@ -142,7 +143,7 @@ export const appRouter = router({
     remove: protectedProcedure.input(z.object({ id: z.number().int().positive() })).mutation(({ ctx, input }) => db.deleteInvoice(ctx.user.id, input.id)),
   }),
   publicInvoice: router({
-    get: publicProcedure.input(z.object({ publicId: z.string().min(1).max(32) })).query(({ input }) => db.getPublicInvoice(input.publicId)),
+    get: publicProcedure.input(z.object({ publicId: z.string().regex(publicInvoiceIdPattern, "Tautan invoice tidak valid.") })).query(({ input }) => db.getPublicInvoice(input.publicId)),
   }),
 });
 
