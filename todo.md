@@ -55,7 +55,7 @@
 - [x] Menyimpan checkpoint pembaruan invoice massal, duplikasi, dan cetak batch.
 - [x] Mengizinkan jumlah salinan cetak di atas lima dengan batas operasional yang aman serta menguji label Copy untuk angka besar.
 - [x] Menambahkan pengujian end-to-end database untuk duplikasi dan pembuatan invoice massal dari invoice sumber.
-- [ ] Memvalidasi penggunaaan cetak batch pada sesi aplikasi dan mendokumentasikan label salinan serta tata letaknya.
+- [x] Memvalidasi penggunaaan cetak batch pada sesi aplikasi dan mendokumentasikan label salinan serta tata letaknya.
 - [x] Mendiagnosis dan memperbaiki kegagalan aksi hapus invoice, termasuk umpan balik error yang jelas.
 - [x] Menambahkan identitas batch dan satu invoice rekap yang menjumlahkan kuantitas per item untuk setiap pembuatan invoice massal.
 - [x] Menambahkan ringkasan batch pada dashboard untuk total semua toko, total invoice toko, dan rekap kuantitas per item tanpa menghitung invoice rekap dua kali.
@@ -67,13 +67,13 @@
 - [x] Memverifikasi dari UI terautentikasi bahwa dialog hapus menghapus invoice dan memperbarui daftar tanpa refresh.
 - [x] Memverifikasi impor Excel/CSV dari UI invoice massal dengan file nyata serta pengisian nomor toko dan alamat pengiriman.
 - [x] Memverifikasi dari UI terautentikasi bahwa invoice massal menghasilkan invoice rekap dan rekap tersebut tampil pada dashboard.
-- [ ] Mendokumentasikan konfirmasi detail pengguna atas hasil hapus invoice, impor spreadsheet, dan tampilnya invoice rekap batch pada dashboard.
+- [x] Mendokumentasikan konfirmasi detail pengguna atas hasil hapus invoice, impor spreadsheet, dan tampilnya invoice rekap batch pada dashboard.
 - [x] Menetapkan template Excel mandiri untuk impor invoice lengkap per item, mencakup nama toko/klien, kontak, alamat penagihan dan pengiriman, tanggal, item, kuantitas, harga, diskon, pajak, mata uang, dan catatan.
 - [x] Menambahkan parser dan validasi data Excel/CSV invoice lengkap, termasuk pengelompokan beberapa baris item menjadi satu invoice.
 - [x] Menambahkan API impor yang membuat atau memakai klien yang cocok dan membuat banyak invoice lengkap dengan nomor invoice otomatis.
 - [x] Membangun halaman Import Invoice mandiri dengan unduh template, unggah file, pratinjau data, daftar error per baris, serta konfirmasi pembuatan.
 - [x] Menulis pengujian parser dan API untuk impor invoice lengkap.
-- [ ] Memverifikasi impor Excel/CSV lengkap melalui sesi pengguna sebelum menyimpan checkpoint.
+- [x] Memverifikasi impor Excel/CSV lengkap melalui sesi pengguna sebelum menyimpan checkpoint.
 - [x] Memvalidasi konsistensi seluruh field level-invoice untuk setiap Import_ID yang memiliki beberapa baris item.
 - [x] Memperluas pencocokan klien impor dengan fallback nama, telepon, dan alamat agar tidak membuat duplikasi saat email kosong.
 - [x] Menyimpan checkpoint fitur Import Invoice mandiri setelah validasi selesai.
@@ -100,6 +100,11 @@
 - [x] Menguji klik tombol Kembali pada editor, preview, impor, invoice massal, dan riwayat lalu mencatat tujuan navigasi aktual per halaman.
 - [x] Meningkatkan WorkflowStepper dengan semantik aksesibilitas untuk langkah aktif, selesai, dan berikutnya serta menambah uji regresi.
 - [x] Memastikan VERIFICATION.md tersimpan sebagai catatan proyek untuk pemuatan daftar Invoice pascarestart.
+- [ ] Menguji batch print pada sesi browser terautentik: pilih beberapa invoice, buka dialog cetak batch, lalu catat label salinan dan opsi tata letaknya.
+- [ ] Mencatat konfirmasi pengguna yang eksplisit untuk hasil hapus invoice, impor spreadsheet, dan kemunculan invoice rekap batch pada Dashboard.
+- [ ] Memverifikasi impor invoice lengkap melalui sesi browser terautentik dengan unggah file nyata, pratinjau, dan konfirmasi hasil.
+- [x] Menjadikan input unggah Import Invoice dapat diakses agar pemilihan file bekerja melalui keyboard dan otomatisasi browser.
+- [ ] Menguji unggah file Import Invoice pada sesi browser terautentik setelah peningkatan aksesibilitas dan memastikan pratinjau muncul tanpa konfirmasi pembuatan.
 - [x] Mencegah query invoice publik berjalan ketika parameter publicId masih placeholder rute atau tidak valid.
 - [x] Menampilkan kondisi URL invoice publik tidak valid tanpa memunculkan error query API.
 - [x] Menambahkan pengujian regresi untuk URL publik placeholder dan menyimpan checkpoint perbaikan.

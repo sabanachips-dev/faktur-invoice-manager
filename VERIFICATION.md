@@ -20,3 +20,11 @@ Pengujian otomatis terakhir selesai dengan **20 berkas pengujian dan 41 kasus lu
 Verifikasi layar seluler pada editor invoice, invoice massal, Import Invoice, dan preview `INV-2026-003` menunjukkan tombol Kembali tetap terlihat pada header, sementara stepper tetap terbaca dan dapat digeser secara horizontal pada ruang yang sempit.
 
 Helper navigasi kembali juga diuji untuk dua skenario: kembali melalui riwayat browser ketika tersedia dan kembali ke Dashboard ketika halaman dibuka langsung. Seluruh halaman ruang kerja memakai helper yang sama, sedangkan halaman invoice publik memakai fallback yang sama menuju halaman awal.
+
+## Validasi Alur Batch dan Impor
+
+| Alur | Bukti validasi | Hasil |
+|---|---|---|
+| Cetak batch | Pengujian label dokumen cetak memvalidasi urutan **Faktur Asli**, **Copy 1**, dan salinan berikutnya. Daftar Invoice menampilkan seleksi invoice dan entry point cetak batch. | Lulus tanpa mengirim pekerjaan ke printer pengguna. |
+| Invoice massal dan rekap | Pengujian end-to-end memvalidasi invoice toko, alamat pengiriman bersama, diskon, serta invoice rekap. Halaman invoice massal dan Dashboard memuat data invoice terbaru setelah restart. | Lulus tanpa membuat batch tambahan saat verifikasi. |
+| Import invoice lengkap | Pengujian end-to-end memvalidasi pengelompokan baris spreadsheet, penciptaan atau penggunaan klien yang cocok, serta invoice draft lengkap. Halaman Import Invoice menyediakan template, unggah file, pratinjau, dan konfirmasi. | Lulus tanpa mengimpor file baru pada data pengguna. |
