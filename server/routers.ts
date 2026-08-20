@@ -5,6 +5,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import * as db from "./db";
 import { INVOICE_STATUSES } from "../shared/invoice";
+import { DASHBOARD_PERIODS } from "../shared/dashboard";
 import { storagePut } from "./storage";
 import { sendInvoiceEmail } from "./email";
 
@@ -50,7 +51,7 @@ export const appRouter = router({
     }),
   }),
   dashboard: router({
-    get: protectedProcedure.query(({ ctx }) => db.getDashboard(ctx.user.id)),
+    get: protectedProcedure.input(z.object({ period: z.enum(DASHBOARD_PERIODS).default("this_month") })).query(({ ctx, input }) => db.getDashboard(ctx.user.id, input.period)),
   }),
   business: router({
     get: protectedProcedure.query(({ ctx }) => db.getBusinessProfile(ctx.user.id)),

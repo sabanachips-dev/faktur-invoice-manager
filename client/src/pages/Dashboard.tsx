@@ -3,14 +3,17 @@ import PageHeader from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { formatDate, formatMoney } from "@/lib/format";
 import { AlertCircle, ArrowUpRight, CheckCircle2, Clock3, FileText, Plus, WalletCards } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useLocation } from "wouter";
+import { useState } from "react";
+import type { DashboardPeriod } from "@shared/dashboard";
 
-const cardConfig = [
-  { key: "monthTotal", count: "monthCount", label: "Invoice bulan ini", icon: FileText, tint: "bg-blue-50 text-blue-700" },
+const cardConfig = (periodLabel: string) => [
+  { key: "monthTotal", count: "monthCount", label: `Invoice ${periodLabel}`, icon: FileText, tint: "bg-blue-50 text-blue-700" },
   { key: "unpaidTotal", count: "unpaidCount", label: "Belum dibayar", icon: Clock3, tint: "bg-amber-50 text-amber-700" },
   { key: "paidTotal", count: "paidCount", label: "Lunas", icon: CheckCircle2, tint: "bg-emerald-50 text-emerald-700" },
   { key: "overdueTotal", count: "overdueCount", label: "Jatuh tempo", icon: AlertCircle, tint: "bg-rose-50 text-rose-700" },
@@ -18,14 +21,15 @@ const cardConfig = [
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
-  const dashboard = trpc.dashboard.get.useQuery();
+  const [period, setPeriod] = useState<DashboardPeriod>("this_month");
+  const dashboard = trpc.dashboard.get.useQuery({ period });
   const data = dashboard.data;
 
   return <>
-    <PageHeader eyebrow="Ringkasan" title="Dashboard" description="Pantau kesehatan arus kas dan invoice bisnis Anda." action={<Button onClick={() => setLocation("/invoice/new")} className="gap-2"><Plus className="size-4" />Buat invoice baru</Button>} />
+    <PageHeader eyebrow="Ringkasan" title="Dashboard" description="Pantau kesehatan arus kas dan invoice bisnis Anda." action={<div className="flex flex-wrap gap-2"><Select value={period} onValueChange={value => setPeriod(value as DashboardPeriod)}><SelectTrigger className="w-[152px] bg-white"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="this_month">Bulan ini</SelectItem><SelectItem value="last_month">Bulan lalu</SelectItem><SelectItem value="this_year">Tahun ini</SelectItem></SelectContent></Select><Button onClick={() => setLocation("/invoice/new")} className="gap-2"><Plus className="size-4" />Buat invoice baru</Button></div>} />
     {dashboard.isLoading || !data ? <DashboardSkeleton /> : <>
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {cardConfig.map(card => {
+        {cardConfig(data.periodLabel).map(card => {
           const Icon = card.icon;
           const total = data.metrics[card.key];
           const count = data.metrics[card.count];
@@ -39,9 +43,9 @@ export default function Dashboard() {
 
       <section className="mt-6 grid gap-6 xl:grid-cols-[1.55fr_1fr]">
         <Card className="border-slate-200/80 bg-white"><CardContent className="p-5 sm:p-6">
-          <div className="flex items-start justify-between"><div><h2 className="font-bold tracking-tight">Pendapatan masuk</h2><p className="mt-1 text-sm text-muted-foreground">Invoice yang telah dilunasi, enam bulan terakhir.</p></div><div className="flex items-center gap-1 text-xs font-semibold text-emerald-700"><ArrowUpRight className="size-4" />Terkini</div></div>
+          <div className="flex items-start justify-between"><div><h2 className="font-bold tracking-tight">Pendapatan masuk</h2><p className="mt-1 text-sm text-muted-foreground">Invoice yang telah dilunasi untuk {data.periodLabel}.</p></div><div className="flex items-center gap-1 text-xs font-semibold text-emerald-700"><ArrowUpRight className="size-4" />{data.periodLabel}</div></div>
           <div className="mt-7 h-[250px] w-full">
-            <ResponsiveContainer width="100%" height="100%"><AreaChart data={data.income} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}><defs><linearGradient id="income" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="#0C2B63" stopOpacity={0.2} /><stop offset="100%" stopColor="#0C2B63" stopOpacity={0} /></linearGradient></defs><CartesianGrid vertical={false} stroke="#e9edf4" /><XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: "#7b879b", fontSize: 12 }} dy={10} /><YAxis axisLine={false} tickLine={false} tick={{ fill: "#7b879b", fontSize: 11 }} tickFormatter={value => value ? `${Math.round(value / 1_000_000)} jt` : "0"} /><Tooltip formatter={(value: number) => [formatMoney(value), "Pendapatan"]} contentStyle={{ borderRadius: 10, border: "1px solid #e5eaf2", boxShadow: "0 8px 24px rgba(12,43,99,.08)" }} /><Area type="monotone" dataKey="value" stroke="#0C2B63" strokeWidth={2.5} fill="url(#income)" /></AreaChart></ResponsiveContainer>
+            <ResponsiveContainer width="100%" height="100%"><AreaChart data={data.income} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}><defs><linearGradient id="income" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="#0C2B63" stopOpacity={0.2} /><stop offset="100%" stopColor="#0C2B63" stopOpacity={0} /></linearGradient></defs><CartesianGrid vertical={false} stroke="#e9edf4" /><XAxis dataKey="label" axisLine={false} tickLine={false} interval={period === "this_year" ? 0 : 4} tick={{ fill: "#7b879b", fontSize: 12 }} dy={10} /><YAxis axisLine={false} tickLine={false} tick={{ fill: "#7b879b", fontSize: 11 }} tickFormatter={value => value ? `${Math.round(value / 1_000_000)} jt` : "0"} /><Tooltip formatter={(value: number) => [formatMoney(value), "Pendapatan"]} contentStyle={{ borderRadius: 10, border: "1px solid #e5eaf2", boxShadow: "0 8px 24px rgba(12,43,99,.08)" }} /><Area type="monotone" dataKey="value" stroke="#0C2B63" strokeWidth={2.5} fill="url(#income)" /></AreaChart></ResponsiveContainer>
           </div>
         </CardContent></Card>
         <Card className="border-slate-200/80 bg-[#0c2b63] text-white"><CardContent className="flex h-full min-h-[320px] flex-col p-6"><div className="grid size-10 place-items-center rounded-xl bg-white/10"><WalletCards className="size-5" /></div><p className="mt-6 text-sm text-blue-100">Cepat mulai</p><h2 className="mt-2 text-2xl font-bold tracking-tight">Kirim invoice berikutnya dalam beberapa langkah.</h2><p className="mt-3 text-sm leading-6 text-blue-100">Pilih klien, tambahkan item dari katalog, lalu kirim melalui tautan publik.</p><Button onClick={() => setLocation("/invoice/new")} variant="secondary" className="mt-auto w-full bg-white text-primary hover:bg-blue-50">Buat invoice</Button></CardContent></Card>

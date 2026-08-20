@@ -6,8 +6,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { trpc } from "@/lib/trpc";
 import { formatDate, formatMoney } from "@/lib/format";
+import { exportInvoicesCsv, exportInvoicesExcel } from "@/lib/invoiceExport";
 import type { InvoiceStatus } from "@shared/invoice";
-import { Copy, Ellipsis, FileText, Plus, Search, Trash2, CheckCircle2, Eye } from "lucide-react";
+import { Copy, Download, FileText, Plus, Search, Trash2, CheckCircle2, Eye, FileSpreadsheet } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
@@ -31,8 +32,10 @@ export default function InvoiceList() {
   const updateStatus = trpc.invoices.updateStatus.useMutation({ onSuccess: () => { toast.success("Status invoice diperbarui."); utils.invoices.list.invalidate(); utils.dashboard.get.invalidate(); }, onError: error => toast.error(error.message) });
   const remove = trpc.invoices.remove.useMutation({ onSuccess: () => { toast.success("Invoice dihapus."); utils.invoices.list.invalidate(); utils.dashboard.get.invalidate(); }, onError: error => toast.error(error.message) });
 
+  const reportFilename = `laporan-invoice-${new Date().toISOString().slice(0, 10)}`;
+  const exportSource = invoices.data || [];
   return <>
-    <PageHeader eyebrow="Penagihan" title="Invoice" description="Kelola seluruh tagihan, status pembayaran, dan tautan publik Anda." action={<Button onClick={() => setLocation("/invoice/new")} className="gap-2"><Plus className="size-4" />Buat invoice baru</Button>} />
+    <PageHeader eyebrow="Penagihan" title="Invoice" description="Kelola seluruh tagihan, status pembayaran, dan tautan publik Anda." action={<div className="flex flex-wrap gap-2"><Button variant="outline" disabled={!exportSource.length} onClick={() => exportInvoicesCsv(exportSource, reportFilename)} className="gap-2"><Download className="size-4" />CSV</Button><Button variant="outline" disabled={!exportSource.length} onClick={() => exportInvoicesExcel(exportSource, reportFilename)} className="gap-2"><FileSpreadsheet className="size-4" />Excel</Button><Button onClick={() => setLocation("/invoice/new")} className="gap-2"><Plus className="size-4" />Buat invoice baru</Button></div>} />
     <section className="rounded-xl border border-slate-200/80 bg-white p-4 sm:p-5"><div className="grid gap-3 lg:grid-cols-[minmax(220px,1fr)_180px_200px_160px_160px]"><div className="relative"><Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" /><Input value={search} onChange={event => setSearch(event.target.value)} placeholder="Cari nomor invoice atau klien…" className="pl-9" /></div><Select value={status} onValueChange={value => setStatus(value as "all" | InvoiceStatus)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{statusOptions.map(option => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent></Select><Select value={clientId} onValueChange={setClientId}><SelectTrigger><SelectValue placeholder="Semua klien" /></SelectTrigger><SelectContent><SelectItem value="all">Semua klien</SelectItem>{clients.data?.map(client => <SelectItem key={client.id} value={String(client.id)}>{client.name}</SelectItem>)}</SelectContent></Select><Input aria-label="Tanggal mulai" title="Tanggal mulai" type="date" value={from} onChange={event => setFrom(event.target.value)} /><Input aria-label="Tanggal akhir" title="Tanggal akhir" type="date" value={to} onChange={event => setTo(event.target.value)} /></div></section>
     <section className="mt-5 overflow-hidden rounded-xl border border-slate-200/80 bg-white">
       {invoices.isLoading ? <div className="space-y-3 p-6">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-14" />)}</div> : !invoices.data?.length ? <EmptyInvoiceState onCreate={() => setLocation("/invoice/new")} /> : <div className="overflow-x-auto"><table className="w-full min-w-[910px] text-left text-sm"><thead className="bg-slate-50 text-[11px] font-semibold uppercase tracking-[.09em] text-muted-foreground"><tr><th className="px-6 py-4">Nomor</th><th className="px-4 py-4">Klien</th><th className="px-4 py-4">Tanggal</th><th className="px-4 py-4">Jatuh tempo</th><th className="px-4 py-4 text-right">Jumlah</th><th className="px-4 py-4">Status</th><th className="px-6 py-4 text-right">Aksi</th></tr></thead><tbody>

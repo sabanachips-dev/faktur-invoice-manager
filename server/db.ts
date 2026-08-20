@@ -10,6 +10,7 @@ import {
   users,
 } from "../drizzle/schema";
 import { calculateInvoiceAmounts, formatInvoiceNumber, type InvoiceStatus } from "../shared/invoice";
+import { getDashboardPeriodRange, isDateWithinRange, type DashboardPeriod } from "../shared/dashboard";
 import { ENV } from "./_core/env";
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -349,34 +350,41 @@ export async function duplicateInvoice(userId: number, invoiceId: number) {
   });
 }
 
-export async function getDashboard(userId: number) {
+export async function getDashboard(userId: number, period: DashboardPeriod = "this_month") {
   const db = await getDb();
   if (!db) throw new Error("Database is unavailable");
   const all = await listInvoices(userId);
   const now = new Date();
-  const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const rows = all.map(row => row.invoice);
-  const currentMonth = rows.filter(invoice => invoice.invoiceDate >= firstOfMonth);
+  const range = getDashboardPeriodRange(period, now);
+  const filteredRows = rows.filter(invoice => isDateWithinRange(invoice.invoiceDate, range.start, range.end));
   const sum = (items: typeof rows) => items.reduce((total, invoice) => total + invoice.total, 0);
-  const months = Array.from({ length: 6 }, (_, index) => {
-    const date = new Date(now.getFullYear(), now.getMonth() - (5 - index), 1);
-    const value = rows
-      .filter(invoice => invoice.status === "paid" && invoice.invoiceDate.getFullYear() === date.getFullYear() && invoice.invoiceDate.getMonth() === date.getMonth())
-      .reduce((total, invoice) => total + invoice.total, 0);
-    return { label: date.toLocaleString("id-ID", { month: "short" }), value };
-  });
+  const income = period === "this_year"
+    ? Array.from({ length: 12 }, (_, index) => {
+      const date = new Date(range.start.getFullYear(), index, 1);
+      const value = filteredRows.filter(invoice => invoice.status === "paid" && invoice.invoiceDate.getMonth() === index).reduce((total, invoice) => total + invoice.total, 0);
+      return { label: date.toLocaleString("id-ID", { month: "short" }), value };
+    })
+    : Array.from({ length: Math.ceil((range.end.getTime() - range.start.getTime()) / 86_400_000) }, (_, index) => {
+      const date = new Date(range.start.getFullYear(), range.start.getMonth(), range.start.getDate() + index);
+      const nextDate = new Date(range.start.getFullYear(), range.start.getMonth(), range.start.getDate() + index + 1);
+      const value = filteredRows.filter(invoice => invoice.status === "paid" && isDateWithinRange(invoice.invoiceDate, date, nextDate)).reduce((total, invoice) => total + invoice.total, 0);
+      return { label: String(date.getDate()), value };
+    });
   return {
+    period,
+    periodLabel: range.label,
     metrics: {
-      monthTotal: sum(currentMonth),
-      monthCount: currentMonth.length,
-      unpaidTotal: sum(rows.filter(invoice => invoice.status === "unpaid" || invoice.status === "sent")),
-      unpaidCount: rows.filter(invoice => invoice.status === "unpaid" || invoice.status === "sent").length,
-      paidTotal: sum(rows.filter(invoice => invoice.status === "paid")),
-      paidCount: rows.filter(invoice => invoice.status === "paid").length,
-      overdueTotal: sum(rows.filter(invoice => invoice.status === "overdue")),
-      overdueCount: rows.filter(invoice => invoice.status === "overdue").length,
+      monthTotal: sum(filteredRows),
+      monthCount: filteredRows.length,
+      unpaidTotal: sum(filteredRows.filter(invoice => invoice.status === "unpaid" || invoice.status === "sent")),
+      unpaidCount: filteredRows.filter(invoice => invoice.status === "unpaid" || invoice.status === "sent").length,
+      paidTotal: sum(filteredRows.filter(invoice => invoice.status === "paid")),
+      paidCount: filteredRows.filter(invoice => invoice.status === "paid").length,
+      overdueTotal: sum(filteredRows.filter(invoice => invoice.status === "overdue")),
+      overdueCount: filteredRows.filter(invoice => invoice.status === "overdue").length,
     },
-    income: months,
-    recent: all.slice(0, 5),
+    income,
+    recent: all.filter(row => isDateWithinRange(row.invoice.invoiceDate, range.start, range.end)).slice(0, 5),
   };
 }

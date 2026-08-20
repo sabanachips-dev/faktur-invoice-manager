@@ -15,8 +15,14 @@
 - [x] Membangun pengaturan profil bisnis mencakup nama, alamat, email, telepon, detail rekening bank, branding warna, logo, format nomor, pajak, mata uang, serta tiga template invoice Clean, Modern, dan Classic.
 - [x] Menulis dan menjalankan pengujian unit untuk kalkulasi invoice dan aturan nomor invoice.
 - [x] Memverifikasi responsivitas serta tampilan desktop dan mobile menggunakan tangkapan layar.
-- [ ] Menyimpan checkpoint aplikasi setelah semua kebutuhan selesai dan tervalidasi.
+- [x] Menyimpan checkpoint aplikasi setelah semua kebutuhan selesai dan tervalidasi.
 - [x] Menerapkan ekspor PDF asli pada preview dan halaman invoice publik agar dokumen PDF benar-benar diunduh.
 - [x] Menghubungkan format nomor invoice dari pengaturan bisnis ke generator nomor otomatis dengan default INV-{YYYY}-{SEQ}.
 - [x] Menyiapkan layanan pengiriman email produksi untuk invoice, termasuk konfigurasi kredensial penyedia email.
 - [x] Memvalidasi domain email pengirim dan kontrak pengiriman invoice tanpa mengirim email pengujian eksternal.
+- [x] Menambahkan ekspor daftar invoice terfilter ke format CSV dan Excel untuk kebutuhan laporan keuangan bulanan.
+- [x] Menambahkan filter rentang waktu Dashboard: bulan ini, bulan lalu, dan tahun ini untuk grafik pendapatan serta statistik.
+- [x] Menambahkan dialog cetak invoice dengan pilihan ukuran kertas A4, Letter, A5, dan 80 mm serta instruksi pemilihan printer sistem termasuk printer portabel.
+- [x] Menulis pengujian unit untuk rentang waktu dashboard dan data ekspor invoice.
+- [x] Memverifikasi fitur laporan, dashboard, dan cetak pada tampilan aplikasi.
+- [ ] Menyimpan checkpoint pembaruan laporan, filter, dan cetak.
