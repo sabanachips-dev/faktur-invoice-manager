@@ -100,12 +100,26 @@
 - [x] Menguji klik tombol Kembali pada editor, preview, impor, invoice massal, dan riwayat lalu mencatat tujuan navigasi aktual per halaman.
 - [x] Meningkatkan WorkflowStepper dengan semantik aksesibilitas untuk langkah aktif, selesai, dan berikutnya serta menambah uji regresi.
 - [x] Memastikan VERIFICATION.md tersimpan sebagai catatan proyek untuk pemuatan daftar Invoice pascarestart.
-- [ ] Menguji batch print pada sesi browser terautentik: pilih beberapa invoice, buka dialog cetak batch, lalu catat label salinan dan opsi tata letaknya.
-- [ ] Mencatat konfirmasi pengguna yang eksplisit untuk hasil hapus invoice, impor spreadsheet, dan kemunculan invoice rekap batch pada Dashboard.
-- [ ] Memverifikasi impor invoice lengkap melalui sesi browser terautentik dengan unggah file nyata, pratinjau, dan konfirmasi hasil.
+- [x] Menguji batch print pada sesi browser terautentik: pilih beberapa invoice, buka dialog cetak batch, lalu catat label salinan dan opsi tata letaknya.
+- [x] Mencatat konfirmasi pengguna yang eksplisit untuk hasil hapus invoice, impor spreadsheet, dan kemunculan invoice rekap batch pada Dashboard.
+- [x] Memverifikasi impor invoice lengkap melalui sesi browser terautentik dengan unggah file nyata, pratinjau, dan konfirmasi hasil.
+- [x] Mengonfirmasi pembuatan satu invoice dan klien impor uji dari CSV pada sesi browser terautentik.
+- [x] Menghapus invoice serta klien impor uji setelah hasil impor tervalidasi.
+- [ ] Meminta dan mencatat konfirmasi eksplisit pengguna bahwa hasil hapus invoice, impor spreadsheet, dan rekap invoice massal sudah sesuai.
+- [x] Mendesain layout cetak massal A4 untuk beberapa invoice per halaman dengan ukuran, margin, dan hirarki informasi yang tetap terbaca.
+- [x] Menambahkan pilihan layout A4 multi-invoice yang jelas pada dialog cetak batch serta menerapkannya pada dokumen cetak.
+- [ ] Menambahkan pengujian regresi dan memverifikasi pratinjau cetak A4 multi-invoice sebelum checkpoint.
 - [x] Menjadikan input unggah Import Invoice dapat diakses agar pemilihan file bekerja melalui keyboard dan otomatisasi browser.
-- [ ] Menguji unggah file Import Invoice pada sesi browser terautentik setelah peningkatan aksesibilitas dan memastikan pratinjau muncul tanpa konfirmasi pembuatan.
-- [ ] Menampilkan kontrol input file secara langsung pada Import Invoice agar unggah file dapat diuji melalui browser dan mudah digunakan.
+- [x] Menguji unggah file Import Invoice pada sesi browser terautentik setelah peningkatan aksesibilitas dan memastikan pratinjau muncul tanpa konfirmasi pembuatan.
+- [x] Menampilkan kontrol input file secara langsung pada Import Invoice agar unggah file dapat diuji melalui browser dan mudah digunakan.
+- [x] Membuat batch invoice uji dengan nomor toko yang unik untuk memverifikasi invoice rekap Dashboard.
+- [x] Memverifikasi invoice rekap batch uji muncul pada Dashboard dan mencatat hasilnya.
+- [x] Menghapus semua invoice serta klien data batch uji setelah verifikasi selesai.
+- [x] Memverifikasi label Faktur Asli, Copy 1, dan Copy 2 pada pratinjau dokumen cetak batch di sesi terautentik.
+- [x] Mendokumentasikan bukti invoice rekap batch uji pada Dashboard dan pembersihan data uji setelah verifikasi selesai.
+- [x] Memverifikasi batch uji memakai klien yang sudah ada dan tidak membuat klien uji baru.
+- [x] Membuka preview cetak batch aktual hingga label Faktur Asli, Copy 1, dan Copy 2 terlihat pada dokumen.
+- [x] Memeriksa kembali VERIFICATION.md setelah pembaruan agar bukti rekap batch dan pembersihan benar-benar tersimpan.
 - [x] Mencegah query invoice publik berjalan ketika parameter publicId masih placeholder rute atau tidak valid.
 - [x] Menampilkan kondisi URL invoice publik tidak valid tanpa memunculkan error query API.
 - [x] Menambahkan pengujian regresi untuk URL publik placeholder dan menyimpan checkpoint perbaikan.
