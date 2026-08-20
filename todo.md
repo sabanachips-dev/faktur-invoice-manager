@@ -1,0 +1,22 @@
+# Project TODO
+
+- [x] Menetapkan sistem visual minimalis dengan dasar putih/abu-abu muda, aksen biru tua, dan tipografi sans-serif modern.
+- [x] Menyusun model data dan API untuk profil bisnis, klien, katalog, invoice, item invoice, serta status invoice.
+- [x] Menerapkan DashboardLayout dengan tepat lima menu: Dashboard, Invoice, Klien, Katalog, dan Pengaturan.
+- [x] Membangun dashboard dengan empat kartu statistik, grafik pendapatan bulanan, serta tabel invoice terbaru berstatus warna.
+- [x] Membangun daftar invoice lengkap dengan pencarian, filter status/klien/tanggal, serta aksi duplikasi, tandai lunas, dan hapus.
+- [x] Membangun formulir pembuatan dan pengeditan invoice dengan nomor otomatis format INV-2026-001, klien, item dinamis, diskon, pajak, subtotal, serta total otomatis.
+- [x] Menyediakan autocomplete item invoice dari katalog produk/jasa dan tombol tambah item manual.
+- [x] Menyediakan aksi simpan sebagai draft dan kirim invoice pada alur pembuatan invoice.
+- [x] Membangun preview invoice dokumen A4 dengan toolbar Download PDF, Kirim via Email, Bagikan Link Publik, dan Edit.
+- [x] Membangun manajemen klien dengan tambah, edit, hapus, pencarian, field NPWP opsional, dan riwayat invoice klien.
+- [x] Membangun katalog produk/jasa dengan harga default dan aksi tambah, edit, serta hapus item.
+- [x] Membangun halaman invoice publik tanpa login melalui tautan berbagi unik, menampilkan detail, badge status, dan aksi Download PDF.
+- [x] Membangun pengaturan profil bisnis mencakup nama, alamat, email, telepon, detail rekening bank, branding warna, logo, format nomor, pajak, mata uang, serta tiga template invoice Clean, Modern, dan Classic.
+- [x] Menulis dan menjalankan pengujian unit untuk kalkulasi invoice dan aturan nomor invoice.
+- [x] Memverifikasi responsivitas serta tampilan desktop dan mobile menggunakan tangkapan layar.
+- [ ] Menyimpan checkpoint aplikasi setelah semua kebutuhan selesai dan tervalidasi.
+- [x] Menerapkan ekspor PDF asli pada preview dan halaman invoice publik agar dokumen PDF benar-benar diunduh.
+- [x] Menghubungkan format nomor invoice dari pengaturan bisnis ke generator nomor otomatis dengan default INV-{YYYY}-{SEQ}.
+- [x] Menyiapkan layanan pengiriman email produksi untuk invoice, termasuk konfigurasi kredensial penyedia email.
+- [x] Memvalidasi domain email pengirim dan kontrak pengiriman invoice tanpa mengirim email pengujian eksternal.

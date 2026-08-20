@@ -1,42 +1,38 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import DashboardLayout from "@/components/DashboardLayout";
+import Catalog from "@/pages/Catalog";
+import Clients from "@/pages/Clients";
+import Dashboard from "@/pages/Dashboard";
+import InvoiceEditor from "@/pages/InvoiceEditor";
+import InvoiceList from "@/pages/InvoiceList";
+import InvoicePreview from "@/pages/InvoicePreview";
 import NotFound from "@/pages/NotFound";
+import PublicInvoice from "@/pages/PublicInvoice";
+import Settings from "@/pages/Settings";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import Home from "./pages/Home";
+
+function ProtectedPage({ component: Component }: { component: React.ComponentType }) {
+  return <DashboardLayout><Component /></DashboardLayout>;
+}
 
 function Router() {
-  // make sure to consider if you need authentication for certain routes
-  return (
-    <Switch>
-      <Route path={"/"} component={Home} />
-      <Route path={"/404"} component={NotFound} />
-      {/* Final fallback route */}
-      <Route component={NotFound} />
-    </Switch>
-  );
+  return <Switch>
+    <Route path="/p/:publicId" component={PublicInvoice} />
+    <Route path="/" component={() => <ProtectedPage component={Dashboard} />} />
+    <Route path="/invoice" component={() => <ProtectedPage component={InvoiceList} />} />
+    <Route path="/invoice/new" component={() => <ProtectedPage component={InvoiceEditor} />} />
+    <Route path="/invoice/:id/preview" component={() => <ProtectedPage component={InvoicePreview} />} />
+    <Route path="/invoice/:id" component={() => <ProtectedPage component={InvoiceEditor} />} />
+    <Route path="/clients" component={() => <ProtectedPage component={Clients} />} />
+    <Route path="/catalog" component={() => <ProtectedPage component={Catalog} />} />
+    <Route path="/settings" component={() => <ProtectedPage component={Settings} />} />
+    <Route component={NotFound} />
+  </Switch>;
 }
 
-// NOTE: About Theme
-// - First choose a default theme according to your design style (dark or light bg), than change color palette in index.css
-//   to keep consistent foreground/background color across components
-// - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
-
-function App() {
-  return (
-    <ErrorBoundary>
-      <ThemeProvider
-        defaultTheme="light"
-        // switchable
-      >
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
-      </ThemeProvider>
-    </ErrorBoundary>
-  );
+export default function App() {
+  return <ErrorBoundary><ThemeProvider defaultTheme="light"><TooltipProvider><Toaster richColors position="top-right" /><Router /></TooltipProvider></ThemeProvider></ErrorBoundary>;
 }
-
-export default App;
