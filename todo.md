@@ -108,7 +108,12 @@
 - [ ] Meminta dan mencatat konfirmasi eksplisit pengguna bahwa hasil hapus invoice, impor spreadsheet, dan rekap invoice massal sudah sesuai.
 - [x] Mendesain layout cetak massal A4 untuk beberapa invoice per halaman dengan ukuran, margin, dan hirarki informasi yang tetap terbaca.
 - [x] Menambahkan pilihan layout A4 multi-invoice yang jelas pada dialog cetak batch serta menerapkannya pada dokumen cetak.
-- [ ] Menambahkan pengujian regresi dan memverifikasi pratinjau cetak A4 multi-invoice sebelum checkpoint.
+- [x] Menambahkan pengujian regresi dan memverifikasi pratinjau cetak A4 multi-invoice sebelum checkpoint.
+- [ ] Membuka pratinjau cetak aktual setelah memilih dua invoice dan layout A4 dua invoice per halaman.
+- [ ] Menyimpan bukti terperiksa atau konfirmasi pengguna bahwa dua invoice tersusun pada satu halaman A4 tanpa terpotong.
+- [x] Merancang ulang kartu invoice ringkas A4 dengan hierarki merek, metadata, tabel item, total, dan label salinan yang lebih profesional.
+- [x] Menyempurnakan proporsi, ruang putih, garis pembatas, dan tipografi layout dua invoice per halaman A4.
+- [ ] Memverifikasi ulang preview cetak A4 profesional bersama pengguna sebelum checkpoint.
 - [x] Menjadikan input unggah Import Invoice dapat diakses agar pemilihan file bekerja melalui keyboard dan otomatisasi browser.
 - [x] Menguji unggah file Import Invoice pada sesi browser terautentik setelah peningkatan aksesibilitas dan memastikan pratinjau muncul tanpa konfirmasi pembuatan.
 - [x] Menampilkan kontrol input file secara langsung pada Import Invoice agar unggah file dapat diuji melalui browser dan mudah digunakan.

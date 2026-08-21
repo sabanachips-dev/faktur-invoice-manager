@@ -20,17 +20,25 @@ export default function InvoiceDocument({ data, publicView = false, copyLabel, d
   const { invoice, client, business, items } = data;
   const tone = business.accentColor || "#0C2B63";
   if (compact) {
-    return <article id={documentId} className="invoice-paper invoice-paper--compact mx-auto w-full bg-white p-4" style={{ borderTop: `4px solid ${tone}` }}>
-      <header className="flex items-start justify-between gap-4 border-b border-slate-200 pb-3">
-        <div className="min-w-0"><p className="text-xs font-bold text-slate-900">{business.businessName}</p><p className="mt-0.5 text-[9px] text-slate-500">{business.phone || business.email || business.address}</p></div>
-        <div className="shrink-0 text-right"><p className="text-lg font-bold" style={{ color: tone }}>INVOICE</p><p className="text-[9px] font-bold uppercase tracking-[.12em] text-slate-500">{copyLabel || "Faktur Asli"}</p></div>
+    return <article id={documentId} className="invoice-paper invoice-paper--compact mx-auto w-full overflow-hidden rounded-[3mm] border border-slate-300 bg-white shadow-none">
+      <header className="flex items-center justify-between gap-3 px-4 py-3 text-white" style={{ background: `linear-gradient(118deg, ${tone} 0%, ${tone} 68%, #173f7c 100%)` }}>
+        <div className="flex min-w-0 items-center gap-2.5">
+          <div className="grid size-7 shrink-0 place-items-center overflow-hidden rounded-md bg-white/15 text-[11px] font-bold ring-1 ring-white/25">{business.logoUrl ? <img src={business.logoUrl} alt={`Logo ${business.businessName}`} className="size-full object-cover" /> : business.businessName.slice(0, 1).toUpperCase()}</div>
+          <div className="min-w-0"><p className="truncate text-[11px] font-bold tracking-[.01em]">{business.businessName}</p><p className="mt-0.5 truncate text-[8px] text-white/75">{business.phone || business.email || business.address}</p></div>
+        </div>
+        <div className="shrink-0 text-right"><p className="text-[8px] font-semibold uppercase tracking-[.18em] text-white/70">Invoice</p><p className="mt-0.5 text-[11px] font-bold tracking-[.04em]">{invoice.invoiceNumber}</p></div>
       </header>
-      <section className="grid grid-cols-2 gap-3 py-3 text-[10px] leading-4">
-        <div><p className="font-bold uppercase tracking-[.1em] text-slate-400">Tagihan kepada</p><p className="mt-1 font-semibold text-slate-900">{client.name}</p><p className="text-slate-600">{invoice.storeNumber ? `Toko ${invoice.storeNumber}` : client.phone || client.email}</p></div>
-        <div className="text-right"><p className="font-semibold text-slate-800">{invoice.invoiceNumber}</p><p className="text-slate-600">{formatDate(invoice.invoiceDate)}</p><p className="text-slate-600">Jatuh tempo {formatDate(invoice.dueDate)}</p></div>
+      <section className="grid grid-cols-[1.15fr_.85fr] gap-3 border-b border-slate-200 bg-slate-50/70 px-4 py-2.5 text-[9px] leading-3.5">
+        <div><p className="font-bold uppercase tracking-[.12em] text-slate-400">Ditagihkan kepada</p><p className="mt-1 font-bold text-slate-900">{client.name}</p><p className="mt-0.5 truncate text-slate-600">{invoice.storeNumber ? `Toko ${invoice.storeNumber}` : client.address || client.phone || client.email || "—"}</p></div>
+        <div className="border-l border-slate-200 pl-3 text-right"><p className="font-bold uppercase tracking-[.12em] text-slate-400">Rincian</p><p className="mt-1 font-semibold text-slate-800">{formatDate(invoice.invoiceDate)}</p><p className="mt-0.5 text-slate-600">Jatuh tempo {formatDate(invoice.dueDate)}</p></div>
       </section>
-      <table className="w-full overflow-hidden rounded border border-slate-200 text-[10px]"><thead className="bg-slate-50 text-[8px] font-bold uppercase tracking-[.1em] text-slate-500"><tr><th className="px-2 py-1.5 text-left">Deskripsi</th><th className="px-2 py-1.5 text-center">Qty</th><th className="px-2 py-1.5 text-right">Jumlah</th></tr></thead><tbody>{items.map((item, index) => <tr key={`${item.description}-${index}`} className="border-t border-slate-100"><td className="px-2 py-1.5 font-medium text-slate-800">{item.description}</td><td className="px-2 py-1.5 text-center text-slate-600">{item.quantity}</td><td className="px-2 py-1.5 text-right font-semibold text-slate-800">{formatMoney(item.subtotal, invoice.currency)}</td></tr>)}</tbody></table>
-      <footer className="mt-3 flex items-end justify-between gap-3"><div className="max-w-[58%] text-[9px] leading-3 text-slate-500">{invoice.notes || invoice.shippingAddress || "Terima kasih atas kepercayaan Anda."}</div><div className="text-right"><p className="text-[9px] text-slate-500">Total</p><p className="text-base font-bold" style={{ color: tone }}>{formatMoney(invoice.total, invoice.currency)}</p></div></footer>
+      <section className="px-4 py-3">
+        <table className="w-full overflow-hidden rounded-[2mm] border border-slate-200 text-[9px]"><thead className="text-[7px] font-bold uppercase tracking-[.13em] text-white" style={{ backgroundColor: tone }}><tr><th className="px-2.5 py-1.5 text-left">Item / Layanan</th><th className="w-10 px-1.5 py-1.5 text-center">Qty</th><th className="w-24 px-2.5 py-1.5 text-right">Jumlah</th></tr></thead><tbody>{items.map((item, index) => <tr key={`${item.description}-${index}`} className="border-t border-slate-100"><td className="px-2.5 py-1.5 font-semibold text-slate-800">{item.description}</td><td className="px-1.5 py-1.5 text-center text-slate-600">{item.quantity}</td><td className="px-2.5 py-1.5 text-right font-bold text-slate-800">{formatMoney(item.subtotal, invoice.currency)}</td></tr>)}</tbody></table>
+      </section>
+      <footer className="mx-4 mb-4 grid grid-cols-[1fr_auto] items-end gap-3 rounded-[2mm] border border-slate-200 bg-slate-50 px-3 py-2.5">
+        <div className="min-w-0"><p className="text-[7px] font-bold uppercase tracking-[.13em] text-slate-400">Catatan</p><p className="mt-1 line-clamp-2 text-[8px] leading-3 text-slate-600">{invoice.notes || invoice.shippingAddress || "Terima kasih atas kepercayaan Anda."}</p><p className="mt-1.5 text-[8px] font-bold uppercase tracking-[.12em]" style={{ color: tone }}>{copyLabel || "Faktur Asli"}</p></div>
+        <div className="border-l border-slate-200 pl-3 text-right"><p className="text-[7px] font-bold uppercase tracking-[.13em] text-slate-400">Total tagihan</p><p className="mt-1 text-[15px] font-extrabold tracking-tight" style={{ color: tone }}>{formatMoney(invoice.total, invoice.currency)}</p></div>
+      </footer>
     </article>;
   }
   return <article id={documentId} className={`invoice-paper mx-auto w-full max-w-[820px] bg-white p-7 sm:p-10 md:p-14 ${compact ? "invoice-paper--compact" : ""}`} style={{ borderTop: business.invoiceTemplate === "modern" ? `8px solid ${tone}` : undefined }}>
