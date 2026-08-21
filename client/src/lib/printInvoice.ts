@@ -61,25 +61,29 @@ export function printInvoiceBatch(paperSize: PrintPaperSize, layout: BatchPrintL
       }
       #invoice-batch-print .invoice-paper { box-shadow: none !important; border: none !important; max-width: none !important; }
       #invoice-batch-print.layout-two .batch-page-compact {
-        display: block !important;
+        display: grid !important;
+        grid-template-rows: minmax(0, 1fr) minmax(0, 1fr) !important;
+        gap: 3mm !important;
         height: 277mm !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
         break-inside: avoid !important;
         page-break-inside: avoid !important;
       }
       #invoice-batch-print.layout-two .batch-page-compact .batch-document {
-        position: relative !important;
-        height: 136.5mm !important;
+        height: auto !important;
+        min-height: 0 !important;
+        box-sizing: border-box !important;
         overflow: hidden !important;
-        margin-bottom: 4mm !important;
         border-bottom: 0.25mm dashed #cbd5e1 !important;
       }
-      #invoice-batch-print.layout-two .batch-page-compact .batch-document:last-child { margin-bottom: 0 !important; border-bottom: none !important; }
-      #invoice-batch-print.layout-two .batch-page-compact .invoice-paper {
-        width: 200% !important;
-        max-width: 200% !important;
+      #invoice-batch-print.layout-two .batch-page-compact .batch-document:last-child { border-bottom: none !important; }
+      #invoice-batch-print.layout-two .batch-page-compact .invoice-paper--compact {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: none !important;
         margin: 0 !important;
-        transform: scale(.5) !important;
-        transform-origin: top left !important;
+        box-sizing: border-box !important;
       }
     }
   `;

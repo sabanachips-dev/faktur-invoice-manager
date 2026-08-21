@@ -5,24 +5,19 @@ import { describe, expect, it } from "vitest";
 const printStyles = readFileSync(resolve(process.cwd(), "client/src/lib/printInvoice.ts"), "utf8");
 const dialog = readFileSync(resolve(process.cwd(), "client/src/components/BatchPrintDialog.tsx"), "utf8");
 
-describe("stable A4 two-up print scale", () => {
-  it("scales the full invoice document uniformly into two fixed-height A4 regions", () => {
-    expect(printStyles).toContain("height: 136.5mm");
-    expect(printStyles).toContain("width: 200%");
-    expect(printStyles).toContain("transform: scale(.5)");
-    expect(printStyles).toContain("transform-origin: top left");
+describe("stable A4 two-up print layout", () => {
+  it("uses two native-width compact invoice regions instead of horizontally expanding a scaled document", () => {
+    expect(printStyles).toContain("grid-template-rows: minmax(0, 1fr) minmax(0, 1fr)");
+    expect(printStyles).toContain("height: 277mm");
+    expect(printStyles).toContain("width: 100%");
+    expect(printStyles).not.toContain("width: 200%");
+    expect(printStyles).not.toContain("transform: scale(.5)");
     expect(printStyles).toContain("break-inside: avoid");
   });
 
-  it("isolates the print portal from the application shell so hidden UI cannot create blank pages", () => {
-    expect(printStyles).toContain("body > :not(#invoice-batch-print) { display: none !important; }");
-    expect(printStyles).not.toContain("body > * { visibility: hidden !important; }");
-    expect(dialog).toContain("createPortal(batchPrintMarkup, document.body)");
+  it("renders a native compact invoice document for each two-up region", () => {
+    expect(dialog).toContain("<InvoiceDocument data={data} copyLabel={copyLabel} compact={page.mode === \"compact\"}");
+    expect(dialog).toContain("dua invoice ringkas native pada A4");
   });
 
-  it("renders the normal invoice document for two-up pages instead of a separate dense template", () => {
-    expect(dialog).toContain("<InvoiceDocument data={data} copyLabel={copyLabel}");
-    expect(dialog).not.toContain("compact={page.mode === \"compact\"}");
-    expect(dialog).toContain("dua invoice utuh berskala 50%");
-  });
 });
