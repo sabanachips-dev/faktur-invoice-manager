@@ -133,6 +133,9 @@
 - [x] Menempatkan dua dokumen pada koordinat fisik tetap dalam satu kontainer A4 tanpa aliran layout yang dapat membuat halaman tambahan.
 - [x] Meningkatkan ukuran dan proporsi tipografi dokumen ringkas agar terbaca pada cetak A4.
 - [ ] Memverifikasi bersama pengguna bahwa preview akhir menampilkan dua invoice terbaca pada tepat satu lembar A4.
+- [x] Mengganti kontainer dua-up yang masih terfragmentasi menjadi lembar cetak A4 statis dengan tinggi ruang aman.
+- [x] Menghapus pemisah halaman atau aturan elemen yang dapat mendorong dokumen kedua ke halaman berikutnya.
+- [ ] Memverifikasi bersama pengguna bahwa cetak dua-up statis menghasilkan tepat satu sheet of paper.
 - [ ] Memverifikasi pengguna melihat layout dua-up yang rapi dan tidak berantakan sebelum checkpoint perbaikan.
 - [x] Menjadikan input unggah Import Invoice dapat diakses agar pemilihan file bekerja melalui keyboard dan otomatisasi browser.
 - [x] Menguji unggah file Import Invoice pada sesi browser terautentik setelah peningkatan aksesibilitas dan memastikan pratinjau muncul tanpa konfirmasi pembuatan.

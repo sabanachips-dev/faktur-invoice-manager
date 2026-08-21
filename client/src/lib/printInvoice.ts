@@ -63,7 +63,8 @@ export function printInvoiceBatch(paperSize: PrintPaperSize, layout: BatchPrintL
       #invoice-batch-print.layout-two .batch-page-compact {
         display: block !important;
         position: relative !important;
-        height: 277mm !important;
+        height: 270mm !important;
+        max-height: 270mm !important;
         box-sizing: border-box !important;
         overflow: hidden !important;
         break-inside: avoid !important;
@@ -72,13 +73,16 @@ export function printInvoiceBatch(paperSize: PrintPaperSize, layout: BatchPrintL
       #invoice-batch-print.layout-two .batch-page-compact .batch-document {
         position: absolute !important;
         inset-inline: 0 !important;
-        height: 136.5mm !important;
+        height: 132mm !important;
+        max-height: 132mm !important;
         box-sizing: border-box !important;
         overflow: hidden !important;
+        break-inside: auto !important;
+        page-break-inside: auto !important;
         border-bottom: 0.25mm dashed #cbd5e1 !important;
       }
       #invoice-batch-print.layout-two .batch-page-compact .batch-document:first-child { top: 0 !important; }
-      #invoice-batch-print.layout-two .batch-page-compact .batch-document:nth-child(2) { top: 140.5mm !important; }
+      #invoice-batch-print.layout-two .batch-page-compact .batch-document:nth-child(2) { top: 137mm !important; }
       #invoice-batch-print.layout-two .batch-page-compact .batch-document:last-child { border-bottom: none !important; }
       #invoice-batch-print.layout-two .batch-page-compact .invoice-paper--compact {
         width: 100% !important;
