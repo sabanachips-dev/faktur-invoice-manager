@@ -40,12 +40,10 @@ export function printInvoiceBatch(paperSize: PrintPaperSize, layout: BatchPrintL
   style.textContent = `
     @media print {
       @page { size: ${rule.page}; margin: ${rule.margin}; }
-      body > * { visibility: hidden !important; }
-      #invoice-batch-print, #invoice-batch-print * { visibility: visible !important; }
+      body > :not(#invoice-batch-print) { display: none !important; }
       #invoice-batch-print {
         display: block !important;
-        position: absolute !important;
-        inset: 0 auto auto 0 !important;
+        position: static !important;
         width: 100% !important;
       }
       #invoice-batch-print .batch-page {
@@ -65,6 +63,8 @@ export function printInvoiceBatch(paperSize: PrintPaperSize, layout: BatchPrintL
       #invoice-batch-print.layout-two .batch-page-compact {
         display: block !important;
         height: 277mm !important;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
       }
       #invoice-batch-print.layout-two .batch-page-compact .batch-document {
         position: relative !important;

@@ -121,6 +121,9 @@
 - [x] Mengganti template mini yang terlalu padat dengan template ringkas berukuran tetap dan batas konten aman untuk dua invoice per A4.
 - [ ] Membuka preview cetak aktual setelah skala 50 persen dan memverifikasi dua invoice tidak bertabrakan atau terpotong.
 - [ ] Mencatat konfirmasi pengguna bahwa preview dua-up terbaru sudah rapi dan stabil sebelum checkpoint perbaikan.
+- [x] Menghapus page break yang memisahkan dua invoice A4 menjadi halaman terpisah atau menghasilkan halaman kosong.
+- [x] Memastikan page break dua-up hanya terjadi setelah pasangan invoice lengkap pada satu halaman A4.
+- [ ] Memverifikasi preview pengguna menampilkan tepat satu halaman untuk dua invoice tanpa halaman kosong.
 - [ ] Memverifikasi pengguna melihat layout dua-up yang rapi dan tidak berantakan sebelum checkpoint perbaikan.
 - [x] Menjadikan input unggah Import Invoice dapat diakses agar pemilihan file bekerja melalui keyboard dan otomatisasi browser.
 - [x] Menguji unggah file Import Invoice pada sesi browser terautentik setelah peningkatan aksesibilitas dan memastikan pratinjau muncul tanpa konfirmasi pembuatan.
