@@ -32,7 +32,43 @@ export function printInvoice(paperSize: PrintPaperSize) {
   window.setTimeout(() => style.remove(), 1_000);
 }
 
+function printTwoUpInDedicatedWindow() {
+  const sourcePages = Array.from(document.querySelectorAll<HTMLElement>("#invoice-batch-print .batch-page"));
+  const printWindow = window.open("", "_blank", "popup=yes,width=980,height=900");
+  if (!printWindow || !sourcePages.length) return false;
+
+  const stylesheetLinks = Array.from(document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]'))
+    .map(link => `<link rel="stylesheet" href="${link.href}">`)
+    .join("");
+  const pagesMarkup = sourcePages.map((page, pageIndex) => {
+    const documents = Array.from(page.querySelectorAll<HTMLElement>(".batch-document"));
+    const isCompact = page.classList.contains("batch-page-compact");
+    return `<section class="dedicated-print-sheet ${isCompact ? "dedicated-print-sheet--two" : "dedicated-print-sheet--full"}" data-page="${pageIndex}">${documents.map(document => `<div class="dedicated-print-document">${document.innerHTML}</div>`).join("")}</section>`;
+  }).join("");
+
+  printWindow.document.open();
+  printWindow.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Cetak invoice</title>${stylesheetLinks}<style>
+    @page { size: A4 portrait; margin: 10mm; }
+    * { box-sizing: border-box; }
+    html, body { width: 210mm; min-height: 297mm; margin: 0; padding: 0; background: #fff; }
+    body { color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .dedicated-print-sheet { width: 190mm; height: 277mm; overflow: hidden; break-after: page; page-break-after: always; }
+    .dedicated-print-sheet:last-child { break-after: auto; page-break-after: auto; }
+    .dedicated-print-sheet--two { display: grid; grid-template-rows: 132mm 132mm; gap: 5mm; }
+    .dedicated-print-document { min-height: 0; height: 132mm; overflow: hidden; }
+    .dedicated-print-document .invoice-paper { width: 100% !important; height: 132mm !important; max-width: none !important; margin: 0 !important; overflow: hidden !important; box-shadow: none !important; border-inline: none !important; }
+    .dedicated-print-sheet--full .dedicated-print-document { height: auto; min-height: 277mm; overflow: visible; }
+    .dedicated-print-sheet--full .dedicated-print-document .invoice-paper { height: auto !important; min-height: 277mm; }
+    @media print { html, body { overflow: hidden !important; } .dedicated-print-sheet { break-inside: avoid; page-break-inside: avoid; } }
+  </style></head><body>${pagesMarkup}</body></html>`);
+  printWindow.document.close();
+  printWindow.focus();
+  window.setTimeout(() => printWindow.print(), 250);
+  return true;
+}
+
 export function printInvoiceBatch(paperSize: PrintPaperSize, layout: BatchPrintLayout) {
+  if (paperSize === "a4" && layout === "two" && printTwoUpInDedicatedWindow()) return;
   const rule = printRules[paperSize];
   document.getElementById("invoice-batch-print-rules")?.remove();
   const style = document.createElement("style");

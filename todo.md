@@ -136,6 +136,9 @@
 - [x] Mengganti kontainer dua-up yang masih terfragmentasi menjadi lembar cetak A4 statis dengan tinggi ruang aman.
 - [x] Menghapus pemisah halaman atau aturan elemen yang dapat mendorong dokumen kedua ke halaman berikutnya.
 - [ ] Memverifikasi bersama pengguna bahwa cetak dua-up statis menghasilkan tepat satu sheet of paper.
+- [x] Mengganti pencetakan dua-up berbasis DOM aplikasi dengan jendela cetak mandiri berisi satu halaman A4.
+- [x] Menyusun dua invoice pada HTML cetak mandiri tanpa elemen antarmuka aplikasi atau page break warisan.
+- [ ] Memverifikasi bersama pengguna bahwa jendela cetak mandiri menghasilkan tepat satu sheet of paper.
 - [ ] Memverifikasi pengguna melihat layout dua-up yang rapi dan tidak berantakan sebelum checkpoint perbaikan.
 - [x] Menjadikan input unggah Import Invoice dapat diakses agar pemilihan file bekerja melalui keyboard dan otomatisasi browser.
 - [x] Menguji unggah file Import Invoice pada sesi browser terautentik setelah peningkatan aksesibilitas dan memastikan pratinjau muncul tanpa konfirmasi pembuatan.

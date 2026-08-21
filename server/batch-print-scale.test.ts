@@ -24,4 +24,12 @@ describe("stable A4 two-up print layout", () => {
     expect(dialog).toContain("dua invoice ringkas native pada A4");
   });
 
+  it("opens two-up A4 in a dedicated print window with one static A4 sheet per batch page", () => {
+    expect(printStyles).toContain("function printTwoUpInDedicatedWindow()");
+    expect(printStyles).toContain("window.open(\"\", \"_blank\"");
+    expect(printStyles).toContain(".dedicated-print-sheet--two");
+    expect(printStyles).toContain("grid-template-rows: 132mm 132mm");
+    expect(printStyles).toContain('paperSize === "a4" && layout === "two" && printTwoUpInDedicatedWindow()');
+  });
+
 });
