@@ -63,21 +63,23 @@ export function printInvoiceBatch(paperSize: PrintPaperSize, layout: BatchPrintL
       }
       #invoice-batch-print .invoice-paper { box-shadow: none !important; border: none !important; max-width: none !important; }
       #invoice-batch-print.layout-two .batch-page-compact {
-        display: grid !important;
-        grid-template-rows: repeat(2, minmax(0, 1fr)) !important;
-        gap: 4mm !important;
+        display: block !important;
         height: 277mm !important;
       }
       #invoice-batch-print.layout-two .batch-page-compact .batch-document {
-        min-height: 0 !important;
+        position: relative !important;
+        height: 136.5mm !important;
+        overflow: hidden !important;
+        margin-bottom: 4mm !important;
         border-bottom: 0.25mm dashed #cbd5e1 !important;
       }
-      #invoice-batch-print.layout-two .batch-page-compact .batch-document:last-child { border-bottom: none !important; }
-      #invoice-batch-print.layout-two .invoice-paper--compact {
-        width: 100% !important;
-        max-width: none !important;
+      #invoice-batch-print.layout-two .batch-page-compact .batch-document:last-child { margin-bottom: 0 !important; border-bottom: none !important; }
+      #invoice-batch-print.layout-two .batch-page-compact .invoice-paper {
+        width: 200% !important;
+        max-width: 200% !important;
         margin: 0 !important;
-        padding: 4mm !important;
+        transform: scale(.5) !important;
+        transform-origin: top left !important;
       }
     }
   `;

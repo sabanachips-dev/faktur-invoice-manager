@@ -117,6 +117,11 @@
 - [x] Menyusun ulang template ringkas A4 agar menjadi miniatur layout invoice satu halaman, bukan kartu visual yang berbeda.
 - [x] Menjaga header, blok pihak penagihan, tabel item, ringkasan total, informasi pembayaran, dan label salinan dari layout penuh pada versi mini.
 - [ ] Memverifikasi versi mini tetap memuat dua invoice per A4 tanpa memotong konten utama.
+- [x] Mendiagnosis dan menghilangkan penyebab konten dua invoice A4 saling bertabrakan atau terpotong pada preview cetak.
+- [x] Mengganti template mini yang terlalu padat dengan template ringkas berukuran tetap dan batas konten aman untuk dua invoice per A4.
+- [ ] Membuka preview cetak aktual setelah skala 50 persen dan memverifikasi dua invoice tidak bertabrakan atau terpotong.
+- [ ] Mencatat konfirmasi pengguna bahwa preview dua-up terbaru sudah rapi dan stabil sebelum checkpoint perbaikan.
+- [ ] Memverifikasi pengguna melihat layout dua-up yang rapi dan tidak berantakan sebelum checkpoint perbaikan.
 - [x] Menjadikan input unggah Import Invoice dapat diakses agar pemilihan file bekerja melalui keyboard dan otomatisasi browser.
 - [x] Menguji unggah file Import Invoice pada sesi browser terautentik setelah peningkatan aksesibilitas dan memastikan pratinjau muncul tanpa konfirmasi pembuatan.
 - [x] Menampilkan kontrol input file secara langsung pada Import Invoice agar unggah file dapat diuji melalui browser dan mudah digunakan.
