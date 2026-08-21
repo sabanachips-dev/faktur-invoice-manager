@@ -47,12 +47,12 @@ export function printInvoiceBatch(paperSize: PrintPaperSize, layout: BatchPrintL
         width: 100% !important;
       }
       #invoice-batch-print .batch-page {
-        break-after: page !important;
-        page-break-after: always !important;
-      }
-      #invoice-batch-print .batch-page:last-child {
         break-after: auto !important;
         page-break-after: auto !important;
+      }
+      #invoice-batch-print .batch-page:not(:last-child) {
+        break-after: page !important;
+        page-break-after: always !important;
       }
       #invoice-batch-print .batch-document {
         break-inside: avoid !important;
@@ -61,9 +61,8 @@ export function printInvoiceBatch(paperSize: PrintPaperSize, layout: BatchPrintL
       }
       #invoice-batch-print .invoice-paper { box-shadow: none !important; border: none !important; max-width: none !important; }
       #invoice-batch-print.layout-two .batch-page-compact {
-        display: grid !important;
-        grid-template-rows: minmax(0, 1fr) minmax(0, 1fr) !important;
-        gap: 3mm !important;
+        display: block !important;
+        position: relative !important;
         height: 277mm !important;
         box-sizing: border-box !important;
         overflow: hidden !important;
@@ -71,12 +70,15 @@ export function printInvoiceBatch(paperSize: PrintPaperSize, layout: BatchPrintL
         page-break-inside: avoid !important;
       }
       #invoice-batch-print.layout-two .batch-page-compact .batch-document {
-        height: auto !important;
-        min-height: 0 !important;
+        position: absolute !important;
+        inset-inline: 0 !important;
+        height: 136.5mm !important;
         box-sizing: border-box !important;
         overflow: hidden !important;
         border-bottom: 0.25mm dashed #cbd5e1 !important;
       }
+      #invoice-batch-print.layout-two .batch-page-compact .batch-document:first-child { top: 0 !important; }
+      #invoice-batch-print.layout-two .batch-page-compact .batch-document:nth-child(2) { top: 140.5mm !important; }
       #invoice-batch-print.layout-two .batch-page-compact .batch-document:last-child { border-bottom: none !important; }
       #invoice-batch-print.layout-two .batch-page-compact .invoice-paper--compact {
         width: 100% !important;

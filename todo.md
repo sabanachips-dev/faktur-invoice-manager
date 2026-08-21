@@ -125,10 +125,14 @@
 - [x] Memastikan page break dua-up hanya terjadi setelah pasangan invoice lengkap pada satu halaman A4.
 - [ ] Memverifikasi preview pengguna menampilkan tepat satu halaman untuk dua invoice tanpa halaman kosong.
 - [x] Mengganti transform skala horizontal dua-up yang membuat invoice melebar dan terpotong pada preview browser.
-- [x] Membuat dua dokumen ringkas berukuran nyata yang pas dalam satu halaman A4 tanpa penggandaan lebar CSS.
+- [x] Membuat dua dokumen ringkas berukuran nyata dengan dimensi tetap tanpa penggandaan lebar CSS.
 - [ ] Memverifikasi bersama pengguna bahwa preview baru menunjukkan satu lembar A4 dengan dua invoice utuh.
 - [x] Memperbarui teks dialog dua-up agar menjelaskan dokumen ringkas native, bukan skala 50 persen.
 - [ ] Membuka preview cetak versi dokumen ringkas native dan memperoleh konfirmasi pengguna bahwa dua invoice utuh berada pada tepat satu halaman A4.
+- [ ] Menghapus fragmentasi dokumen yang membuat cetak dua-up tetap menjadi dua lembar pada preview browser.
+- [x] Menempatkan dua dokumen pada koordinat fisik tetap dalam satu kontainer A4 tanpa aliran layout yang dapat membuat halaman tambahan.
+- [x] Meningkatkan ukuran dan proporsi tipografi dokumen ringkas agar terbaca pada cetak A4.
+- [ ] Memverifikasi bersama pengguna bahwa preview akhir menampilkan dua invoice terbaca pada tepat satu lembar A4.
 - [ ] Memverifikasi pengguna melihat layout dua-up yang rapi dan tidak berantakan sebelum checkpoint perbaikan.
 - [x] Menjadikan input unggah Import Invoice dapat diakses agar pemilihan file bekerja melalui keyboard dan otomatisasi browser.
 - [x] Menguji unggah file Import Invoice pada sesi browser terautentik setelah peningkatan aksesibilitas dan memastikan pratinjau muncul tanpa konfirmasi pembuatan.
