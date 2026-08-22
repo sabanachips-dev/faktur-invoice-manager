@@ -57,7 +57,7 @@ function printTwoUpInDedicatedWindow() {
     .dedicated-print-sheet--two { display: grid; grid-template-rows: 139mm 139mm; align-content: space-between; gap: 5mm; background: #fff; }
     .dedicated-print-document { position: relative; min-height: 0; height: 139mm; overflow: hidden; }
     .dedicated-print-sheet--two .dedicated-print-document:first-child::after { content: ""; position: absolute; right: 0; bottom: 1.5mm; left: 0; border-bottom: 0.4mm solid #cbd5e1; }
-    .dedicated-print-sheet--two .dedicated-print-document .invoice-paper { width: 147.06% !important; height: auto !important; min-height: 0 !important; max-width: none !important; margin: 0 !important; overflow: visible !important; transform: scale(.68); transform-origin: top left; box-shadow: none !important; border-inline: none !important; }
+    .dedicated-print-sheet--two .dedicated-print-document .invoice-paper { width: 178.58% !important; height: auto !important; min-height: 0 !important; max-width: none !important; margin: 0 !important; overflow: visible !important; transform: scale(.56); transform-origin: top left; box-shadow: none !important; border-inline: none !important; }
     .dedicated-print-sheet--full .dedicated-print-document { height: auto; min-height: 289mm; overflow: visible; }
     .dedicated-print-sheet--full .dedicated-print-document .invoice-paper { height: auto !important; min-height: 289mm; }
     @media print { html, body { overflow: hidden !important; } .dedicated-print-sheet { break-inside: avoid; page-break-inside: avoid; } }

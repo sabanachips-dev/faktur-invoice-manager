@@ -148,6 +148,8 @@
 - [ ] Memverifikasi bersama pengguna bahwa desain invoice penuh dua-up sesuai dan tidak lagi tampak seperti kartu ringkas.
 - [x] Menghapus batas lebar invoice dua-up yang menyisakan ruang kosong di sisi kanan area cetak A4.
 - [ ] Memverifikasi pengguna melihat lebar invoice memenuhi area cetak A4 secara proporsional.
+- [x] Menurunkan skala vertikal invoice penuh dua-up agar dokumen kedua tidak terpotong atau berpindah ke lembar kedua.
+- [ ] Memverifikasi bersama pengguna bahwa dua invoice penuh kembali tepat satu lembar A4 tanpa potongan.
 - [ ] Memverifikasi pengguna melihat layout dua-up yang rapi dan tidak berantakan sebelum checkpoint perbaikan.
 - [x] Menjadikan input unggah Import Invoice dapat diakses agar pemilihan file bekerja melalui keyboard dan otomatisasi browser.
 - [x] Menguji unggah file Import Invoice pada sesi browser terautentik setelah peningkatan aksesibilitas dan memastikan pratinjau muncul tanpa konfirmasi pembuatan.
