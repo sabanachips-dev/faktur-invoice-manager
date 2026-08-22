@@ -146,6 +146,8 @@
 - [x] Mengganti kartu invoice ringkas dua-up dengan komponen invoice satu halaman penuh dalam jendela cetak mandiri.
 - [x] Menerapkan skala proporsional invoice penuh agar dua dokumen mengisi satu lembar A4 tanpa terpotong.
 - [ ] Memverifikasi bersama pengguna bahwa desain invoice penuh dua-up sesuai dan tidak lagi tampak seperti kartu ringkas.
+- [x] Menghapus batas lebar invoice dua-up yang menyisakan ruang kosong di sisi kanan area cetak A4.
+- [ ] Memverifikasi pengguna melihat lebar invoice memenuhi area cetak A4 secara proporsional.
 - [ ] Memverifikasi pengguna melihat layout dua-up yang rapi dan tidak berantakan sebelum checkpoint perbaikan.
 - [x] Menjadikan input unggah Import Invoice dapat diakses agar pemilihan file bekerja melalui keyboard dan otomatisasi browser.
 - [x] Menguji unggah file Import Invoice pada sesi browser terautentik setelah peningkatan aksesibilitas dan memastikan pratinjau muncul tanpa konfirmasi pembuatan.

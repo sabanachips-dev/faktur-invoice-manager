@@ -28,10 +28,12 @@ describe("stable A4 two-up print layout", () => {
     expect(printStyles).toContain("function printTwoUpInDedicatedWindow()");
     expect(printStyles).toContain("window.open(\"\", \"_blank\"");
     expect(printStyles).toContain(".dedicated-print-sheet--two");
-    expect(printStyles).toContain("grid-template-rows: 132mm 132mm");
+    expect(printStyles).toContain("grid-template-rows: 139mm 139mm");
     expect(printStyles).toContain("dedicated-print-document:first-child::after");
     expect(printStyles).toContain("width: 147.06%");
     expect(printStyles).toContain("transform: scale(.68)");
+    expect(printStyles).toContain("margin: 4mm");
+    expect(printStyles).toContain("width: 202mm");
     expect(printStyles).toContain('paperSize === "a4" && layout === "two" && printTwoUpInDedicatedWindow()');
   });
 
