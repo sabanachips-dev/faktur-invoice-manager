@@ -19,9 +19,9 @@ describe("stable A4 two-up print layout", () => {
     expect(printStyles).toContain(".batch-page:not(:last-child)");
   });
 
-  it("renders a native compact invoice document for each two-up region", () => {
-    expect(dialog).toContain("<InvoiceDocument data={data} copyLabel={copyLabel} compact={page.mode === \"compact\"}");
-    expect(dialog).toContain("dua invoice ringkas native pada A4");
+  it("renders a full invoice document for each scaled two-up region", () => {
+    expect(dialog).toContain("<InvoiceDocument data={data} copyLabel={copyLabel} compact={false}");
+    expect(dialog).toContain("dua invoice penuh berskala proporsional pada A4");
   });
 
   it("opens two-up A4 in a dedicated print window with one static A4 sheet per batch page", () => {
@@ -30,7 +30,8 @@ describe("stable A4 two-up print layout", () => {
     expect(printStyles).toContain(".dedicated-print-sheet--two");
     expect(printStyles).toContain("grid-template-rows: 132mm 132mm");
     expect(printStyles).toContain("dedicated-print-document:first-child::after");
-    expect(printStyles).toContain("invoice-paper--compact > section:last-child");
+    expect(printStyles).toContain("width: 147.06%");
+    expect(printStyles).toContain("transform: scale(.68)");
     expect(printStyles).toContain('paperSize === "a4" && layout === "two" && printTwoUpInDedicatedWindow()');
   });
 

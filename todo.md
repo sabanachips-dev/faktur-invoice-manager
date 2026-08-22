@@ -143,6 +143,9 @@
 - [ ] Memverifikasi pengguna menilai cetak dua-up mandiri sudah rapi dan profesional pada satu lembar A4.
 - [x] Memperbesar proporsi dokumen dua-up mandiri agar lebar dan tinggi A4 terisi lebih penuh tanpa membuat halaman kedua.
 - [ ] Memverifikasi pengguna menilai dua invoice memanfaatkan area kertas A4 secara tepat.
+- [x] Mengganti kartu invoice ringkas dua-up dengan komponen invoice satu halaman penuh dalam jendela cetak mandiri.
+- [x] Menerapkan skala proporsional invoice penuh agar dua dokumen mengisi satu lembar A4 tanpa terpotong.
+- [ ] Memverifikasi bersama pengguna bahwa desain invoice penuh dua-up sesuai dan tidak lagi tampak seperti kartu ringkas.
 - [ ] Memverifikasi pengguna melihat layout dua-up yang rapi dan tidak berantakan sebelum checkpoint perbaikan.
 - [x] Menjadikan input unggah Import Invoice dapat diakses agar pemilihan file bekerja melalui keyboard dan otomatisasi browser.
 - [x] Menguji unggah file Import Invoice pada sesi browser terautentik setelah peningkatan aksesibilitas dan memastikan pratinjau muncul tanpa konfirmasi pembuatan.
