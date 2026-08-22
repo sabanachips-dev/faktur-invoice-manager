@@ -150,6 +150,9 @@
 - [ ] Memverifikasi pengguna melihat lebar invoice memenuhi area cetak A4 secara proporsional.
 - [x] Menurunkan skala vertikal invoice penuh dua-up agar dokumen kedua tidak terpotong atau berpindah ke lembar kedua.
 - [ ] Memverifikasi bersama pengguna bahwa dua invoice penuh kembali tepat satu lembar A4 tanpa potongan.
+- [x] Menerapkan fallback satu invoice per lembar untuk konten yang tidak aman dicetak dua-up.
+- [x] Mengunci panel dua-up agar tidak pernah memotong konten invoice.
+- [ ] Memverifikasi pengguna menerima preview akhir tanpa invoice terpotong.
 - [ ] Memverifikasi pengguna melihat layout dua-up yang rapi dan tidak berantakan sebelum checkpoint perbaikan.
 - [x] Menjadikan input unggah Import Invoice dapat diakses agar pemilihan file bekerja melalui keyboard dan otomatisasi browser.
 - [x] Menguji unggah file Import Invoice pada sesi browser terautentik setelah peningkatan aksesibilitas dan memastikan pratinjau muncul tanpa konfirmasi pembuatan.

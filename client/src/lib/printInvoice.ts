@@ -48,18 +48,18 @@ function printTwoUpInDedicatedWindow() {
 
   printWindow.document.open();
   printWindow.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Cetak invoice</title>${stylesheetLinks}<style>
-    @page { size: A4 portrait; margin: 4mm; }
+    @page { size: A4 portrait; margin: 10mm; }
     * { box-sizing: border-box; }
-    html, body { width: 202mm; min-height: 289mm; margin: 0; padding: 0; background: #fff; }
+    html, body { width: 190mm; min-height: 277mm; margin: 0; padding: 0; background: #fff; }
     body { color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .dedicated-print-sheet { width: 202mm; height: 289mm; overflow: hidden; break-after: page; page-break-after: always; }
+    .dedicated-print-sheet { width: 190mm; height: 277mm; overflow: hidden; break-after: page; page-break-after: always; }
     .dedicated-print-sheet:last-child { break-after: auto; page-break-after: auto; }
-    .dedicated-print-sheet--two { display: grid; grid-template-rows: 139mm 139mm; align-content: space-between; gap: 5mm; background: #fff; }
-    .dedicated-print-document { position: relative; min-height: 0; height: 139mm; overflow: hidden; }
+    .dedicated-print-sheet--two { display: grid; grid-template-rows: 132mm 132mm; gap: 5mm; background: #fff; }
+    .dedicated-print-document { position: relative; min-height: 0; height: 132mm; overflow: hidden; }
     .dedicated-print-sheet--two .dedicated-print-document:first-child::after { content: ""; position: absolute; right: 0; bottom: 1.5mm; left: 0; border-bottom: 0.4mm solid #cbd5e1; }
-    .dedicated-print-sheet--two .dedicated-print-document .invoice-paper { width: 178.58% !important; height: auto !important; min-height: 0 !important; max-width: none !important; margin: 0 !important; overflow: visible !important; transform: scale(.56); transform-origin: top left; box-shadow: none !important; border-inline: none !important; }
-    .dedicated-print-sheet--full .dedicated-print-document { height: auto; min-height: 289mm; overflow: visible; }
-    .dedicated-print-sheet--full .dedicated-print-document .invoice-paper { height: auto !important; min-height: 289mm; }
+    .dedicated-print-sheet--two .dedicated-print-document .invoice-paper--compact { width: 100% !important; height: 132mm !important; max-width: none !important; margin: 0 !important; overflow: hidden !important; box-shadow: none !important; border-inline: none !important; }
+    .dedicated-print-sheet--full .dedicated-print-document { height: auto; min-height: 277mm; overflow: visible; }
+    .dedicated-print-sheet--full .dedicated-print-document .invoice-paper { height: auto !important; min-height: 277mm; }
     @media print { html, body { overflow: hidden !important; } .dedicated-print-sheet { break-inside: avoid; page-break-inside: avoid; } }
   </style></head><body>${pagesMarkup}</body></html>`);
   printWindow.document.close();
