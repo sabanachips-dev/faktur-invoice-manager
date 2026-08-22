@@ -157,6 +157,8 @@
 - [ ] Memverifikasi preview akhir menampilkan tepat satu sheet of paper untuk dua panel invoice ringkas.
 - [x] Menaikkan panel kedua dan menyisakan ruang bawah aman agar total serta catatan tidak terpotong.
 - [ ] Memverifikasi pengguna melihat seluruh bagian bawah kedua invoice dalam satu lembar A4.
+- [x] Mengubah ambang dua-up agar invoice tiga item atau lebih otomatis memakai satu invoice per halaman.
+- [ ] Memverifikasi invoice tiga item tidak lagi dipotong pada preview cetak.
 - [ ] Memverifikasi pengguna melihat layout dua-up yang rapi dan tidak berantakan sebelum checkpoint perbaikan.
 - [x] Menjadikan input unggah Import Invoice dapat diakses agar pemilihan file bekerja melalui keyboard dan otomatisasi browser.
 - [x] Menguji unggah file Import Invoice pada sesi browser terautentik setelah peningkatan aksesibilitas dan memastikan pratinjau muncul tanpa konfirmasi pembuatan.
