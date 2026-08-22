@@ -159,6 +159,9 @@
 - [ ] Memverifikasi pengguna melihat seluruh bagian bawah kedua invoice dalam satu lembar A4.
 - [x] Mengubah ambang dua-up agar invoice tiga item atau lebih otomatis memakai satu invoice per halaman.
 - [ ] Memverifikasi invoice tiga item tidak lagi dipotong pada preview cetak.
+- [x] Menelusuri dan memperbaiki alur data agar invoice tiga item deterministik memakai halaman penuh.
+- [x] Menampilkan ringkasan dialog yang menyatakan jumlah halaman penuh untuk invoice tiga item sebelum cetak dibuka.
+- [ ] Memverifikasi bersama pengguna bahwa preview invoice tiga item tidak lagi menggunakan dua-up.
 - [ ] Memverifikasi pengguna melihat layout dua-up yang rapi dan tidak berantakan sebelum checkpoint perbaikan.
 - [x] Menjadikan input unggah Import Invoice dapat diakses agar pemilihan file bekerja melalui keyboard dan otomatisasi browser.
 - [x] Menguji unggah file Import Invoice pada sesi browser terautentik setelah peningkatan aksesibilitas dan memastikan pratinjau muncul tanpa konfirmasi pembuatan.

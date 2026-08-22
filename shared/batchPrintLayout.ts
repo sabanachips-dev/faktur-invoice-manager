@@ -12,7 +12,7 @@ export type BatchPrintPage<T> = {
 
 type DocumentWithItems = { items: unknown[] };
 
-export function groupBatchPrintPages<T extends DocumentWithItems>(documents: BatchPrintDocument<T>[], layout: BatchPrintLayout, compactItemLimit = 2): BatchPrintPage<T>[] {
+export function groupBatchPrintPages<T extends DocumentWithItems>(documents: BatchPrintDocument<T>[], layout: BatchPrintLayout): BatchPrintPage<T>[] {
   if (layout === "one") return documents.map(document => ({ mode: "full", documents: [document] }));
 
   const pages: BatchPrintPage<T>[] = [];
@@ -23,7 +23,7 @@ export function groupBatchPrintPages<T extends DocumentWithItems>(documents: Bat
   };
 
   for (const document of documents) {
-    if (document.data.items.length > compactItemLimit) {
+    if (document.data.items.length >= 3) {
       flushCompactPage();
       pages.push({ mode: "full", documents: [document] });
       continue;

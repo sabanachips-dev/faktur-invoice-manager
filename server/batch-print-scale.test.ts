@@ -22,7 +22,8 @@ describe("stable A4 two-up print layout", () => {
   it("renders a compact invoice only for two-up regions and preserves full pages as the fallback", () => {
     expect(dialog).toContain("<InvoiceDocument data={data} copyLabel={copyLabel} compact={page.mode === \"compact\"}");
     expect(dialog).toContain("dua panel ringkas aman pada A4");
-    expect(dialog).toContain("otomatis dicetak satu per halaman agar tidak terpotong");
+    expect(dialog).toContain("Tiga item atau lebih memakai halaman penuh");
+    expect(dialog).toContain("halaman penuh dipakai untuk invoice tiga item atau lebih");
   });
 
   it("opens two-up A4 in a dedicated print window with one static A4 sheet per batch page", () => {

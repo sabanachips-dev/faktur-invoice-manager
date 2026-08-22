@@ -22,6 +22,14 @@ describe("batch print A4 layout", () => {
     ]);
   });
 
+  it("keeps the two-up safety limit deterministic for invoice three items", () => {
+    const pages = groupBatchPrintPages([document("1", 3), document("2", 1)], "two");
+    expect(pages.map(page => ({ mode: page.mode, count: page.documents.length }))).toEqual([
+      { mode: "full", count: 1 },
+      { mode: "compact", count: 1 },
+    ]);
+  });
+
   it("keeps one-invoice layout as one complete document per page", () => {
     const pages = groupBatchPrintPages([document("1", 1), document("2", 5)], "one");
     expect(pages.map(page => ({ mode: page.mode, count: page.documents.length }))).toEqual([
