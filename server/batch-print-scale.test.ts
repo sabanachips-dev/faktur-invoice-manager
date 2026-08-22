@@ -8,7 +8,7 @@ const dialog = readFileSync(resolve(process.cwd(), "client/src/components/BatchP
 describe("stable A4 two-up print layout", () => {
   it("locks two native-width compact invoices inside a safe static A4 print area without horizontal scaling", () => {
     expect(printStyles).toContain("position: absolute");
-    expect(printStyles).toContain("height: 132mm");
+    expect(printStyles).toContain("height: 130mm");
     expect(printStyles).toContain("top: 137mm");
     expect(printStyles).toContain("height: 270mm");
     expect(printStyles).toContain("max-height: 270mm");
@@ -29,10 +29,10 @@ describe("stable A4 two-up print layout", () => {
     expect(printStyles).toContain("function printTwoUpInDedicatedWindow()");
     expect(printStyles).toContain("window.open(\"\", \"_blank\"");
     expect(printStyles).toContain(".dedicated-print-sheet--two");
-    expect(printStyles).toContain("grid-template-rows: 132mm 132mm");
+    expect(printStyles).toContain("grid-template-rows: 130mm 130mm");
     expect(printStyles).toContain("dedicated-print-document:first-child::after");
     expect(printStyles).toContain("invoice-paper--compact");
-    expect(printStyles).toContain("height: 132mm");
+    expect(printStyles).toContain("height: 130mm");
     expect(printStyles).toContain("margin: 10mm");
     expect(printStyles).toContain("width: 190mm");
     expect(printStyles).toContain('paperSize === "a4" && layout === "two" && printTwoUpInDedicatedWindow()');
