@@ -139,6 +139,8 @@
 - [x] Mengganti pencetakan dua-up berbasis DOM aplikasi dengan jendela cetak mandiri berisi satu halaman A4.
 - [x] Menyusun dua invoice pada HTML cetak mandiri tanpa elemen antarmuka aplikasi atau page break warisan.
 - [ ] Memverifikasi bersama pengguna bahwa jendela cetak mandiri menghasilkan tepat satu sheet of paper.
+- [x] Merapikan komposisi akhir cetak dua-up mandiri melalui jarak, garis pemisah, dan hirarki visual yang lebih seimbang.
+- [ ] Memverifikasi pengguna menilai cetak dua-up mandiri sudah rapi dan profesional pada satu lembar A4.
 - [ ] Memverifikasi pengguna melihat layout dua-up yang rapi dan tidak berantakan sebelum checkpoint perbaikan.
 - [x] Menjadikan input unggah Import Invoice dapat diakses agar pemilihan file bekerja melalui keyboard dan otomatisasi browser.
 - [x] Menguji unggah file Import Invoice pada sesi browser terautentik setelah peningkatan aksesibilitas dan memastikan pratinjau muncul tanpa konfirmasi pembuatan.
