@@ -30,6 +30,7 @@ describe("stable A4 two-up print layout", () => {
     expect(printStyles).toContain(".dedicated-print-sheet--two");
     expect(printStyles).toContain("grid-template-rows: 132mm 132mm");
     expect(printStyles).toContain("dedicated-print-document:first-child::after");
+    expect(printStyles).toContain("invoice-paper--compact > section:last-child");
     expect(printStyles).toContain('paperSize === "a4" && layout === "two" && printTwoUpInDedicatedWindow()');
   });
 
