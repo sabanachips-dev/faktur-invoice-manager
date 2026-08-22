@@ -54,6 +54,43 @@ Render dapat menjalankan web service Node secara gratis, tetapi service Free tid
 
 > **Rekomendasi sekarang:** pertahankan deployment aktif untuk operasional, lalu ekspor kode ke **GitHub privat** sebagai cadangan dan fondasi CI. Jangan memindahkan database produksi ke paket gratis sebelum ada backup, staging, dan pengujian migrasi lengkap.
 
+## Arsitektur target setelah pilihan pengguna
+
+Pengguna memilih GitHub, Supabase, Vercel, Cloudflare, dan subdomain dari domain `biz.id`. Arsitektur aman adalah GitHub privat sebagai sumber kode, Supabase sebagai PostgreSQL dan object storage, Vercel sebagai runtime aplikasi **hanya pada paket yang mengizinkan penggunaan bisnis**, serta Cloudflare sebagai pengelola DNS. Vercel Hobby tidak boleh dipakai untuk produksi aplikasi Faktur karena batas penggunaan personal non-komersialnya.[2]
+
+| Lapisan | Target | Ketentuan implementasi |
+|---|---|---|
+| Kode dan CI | GitHub private repository | Rahasia hanya di GitHub, Vercel, dan Supabase environment variables; tidak boleh masuk commit |
+| Database dan file | Supabase staging lalu production | PostgreSQL dan Supabase Storage menggantikan MySQL serta helper storage sebelumnya |
+| Aplikasi | Vercel | Gunakan paket yang mengizinkan penggunaan bisnis dan sesuaikan auth/runtime aplikasi |
+| DNS | Cloudflare DNS | Pakai record CNAME pada subdomain menuju nilai unik yang ditampilkan Vercel; Vercel mendokumentasikan CNAME untuk subdomain.[8] |
+
+Untuk kombinasi Vercel dan Cloudflare, Cloudflare sebaiknya dipakai **hanya sebagai DNS authoritative** bagi record aplikasi, bukan reverse proxy. Vercel memperingatkan bahwa reverse proxy Cloudflare dapat mengurangi visibilitas trafik, menambah latensi, dan menimbulkan masalah cache.[9] Saat record CNAME dibuat di Cloudflare, status proxied perlu dinonaktifkan (awan abu-abu/DNS only) untuk record subdomain tersebut.
+
+Subdomain belum boleh dibuat sampai pengguna menyebut **nama domain lengkap** dan label yang diinginkan—misalnya `faktur.contoh.biz.id`—serta target Vercel telah tersedia. Ini menghindari konflik DNS dan perubahan layanan aktif yang tidak disengaja.
+
+## Arsitektur gratis yang disetujui
+
+Pengguna memilih jalur gratis dan domain **`sabanachips.biz.id`**. Karena Vercel Hobby tidak sesuai untuk penggunaan bisnis, Vercel tidak digunakan sebagai target produksi. Arsitektur gratis yang akan disiapkan adalah Cloudflare Pages untuk antarmuka statis, Cloudflare Worker untuk API, Supabase Free untuk PostgreSQL, autentikasi, dan file, serta GitHub private repository untuk kode dan riwayat perubahan.
+
+| Komponen | Layanan gratis | Tanggung jawab |
+|---|---|---|
+| Repositori | GitHub Free private repository | Kode, pull request, dan riwayat rilis tanpa rahasia |
+| Frontend | Cloudflare Pages | Menyajikan React/Vite secara statis; request aset statis tidak dibatasi oleh kuota Functions.[10] |
+| API | Cloudflare Worker | Menggantikan Express/tRPC runtime saat ini dan memanggil Supabase melalui API yang sesuai |
+| Database, auth, file | Supabase Free | PostgreSQL, Supabase Auth, dan Storage; gunakan satu project staging dan satu production |
+| DNS | Cloudflare DNS | `staging.sabanachips.biz.id` dan `faktur.sabanachips.biz.id` menuju deployment Cloudflare |
+
+Cloudflare Workers Free membatasi eksekusi CPU hingga **10 ms per request** dan total **100.000 request per hari**.[10] Oleh sebab itu proses berat tidak boleh dijalankan di Worker. Fungsi PDF dan parsing Excel yang sudah terjadi di browser harus tetap di sisi klien; API Worker hanya menangani autentikasi, validasi ringkas, dan operasi data. Server Express saat ini tidak dapat dipasang apa adanya; endpoint dan middleware perlu diadaptasi ke runtime Workers.
+
+Supabase Free menyediakan maksimal dua project aktif, sehingga satu project **staging** dan satu project **produksi** menghabiskan seluruh kuota. Masing-masing dibatasi 500 MB database dan 1 GB storage, tidak memiliki automatic backup, serta akan dipause setelah satu minggu tidak aktif.[1] [11] Backup logical manual terjadwal harus menjadi kewajiban operasional; Supabase secara eksplisit menyarankan project Free rutin diekspor dengan `supabase db dump` dan disimpan di lokasi terpisah.[11]
+
+Rencana nama host adalah `staging.sabanachips.biz.id` untuk pengujian dan `faktur.sabanachips.biz.id` untuk produksi. Perubahan DNS dan deployment produksi tidak akan dilakukan sebelum autentikasi, database, storage, impor, email, PDF, dan alur cetak lulus uji pada staging.
+
+## Status akses awal
+
+Sesi GitHub pengguna terverifikasi aktif pada organisasi/akun `sabanachips-dev`, dan dashboard Cloudflare juga dapat diakses. Belum ada repositori baru, project Supabase, Worker, Pages deployment, atau record DNS yang dibuat maupun diubah. Pembuatan sumber daya eksternal dan perubahan DNS akan meminta persetujuan eksplisit sebelum dijalankan.
+
 Jika tujuan utama Anda adalah **memiliki kode dan tidak bergantung pada satu platform**, GitHub privat adalah langkah pertama yang tepat dan rendah risiko. Bila nanti ingin memindahkan seluruh sistem secara eksternal, gunakan jalur bertahap:
 
 1. Buat repositori GitHub privat dan pindahkan kode tanpa rahasia.
@@ -81,3 +118,7 @@ Jika tujuan utama Anda adalah **memiliki kode dan tidak bergantung pada satu pla
 [5]: https://vercel.com/docs/frameworks/backend/express "Express on Vercel"
 [6]: https://developers.cloudflare.com/workers/platform/pricing/ "Cloudflare Workers Pricing"
 [7]: https://render.com/docs/free "Render Free Services"
+[8]: https://vercel.com/docs/domains/working-with-domains/add-a-domain "Adding & Configuring a Custom Domain"
+[9]: https://vercel.com/kb/guide/cloudflare-with-vercel "Using Cloudflare with Vercel"
+[10]: https://developers.cloudflare.com/workers/platform/limits/ "Cloudflare Workers Limits"
+[11]: https://supabase.com/docs/guides/platform/backups "Supabase Database Backups"

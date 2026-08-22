@@ -179,3 +179,11 @@
 - [x] Mencegah query invoice publik berjalan ketika parameter publicId masih placeholder rute atau tidak valid.
 - [x] Menampilkan kondisi URL invoice publik tidak valid tanpa memunculkan error query API.
 - [x] Menambahkan pengujian regresi untuk URL publik placeholder dan menyimpan checkpoint perbaikan.
+- [x] Menetapkan arsitektur target GitHub, Supabase, Cloudflare, dan hosting yang sesuai untuk penggunaan bisnis.
+- [x] Mendokumentasikan batas layanan gratis, termasuk penghentian Supabase Free saat tidak aktif dan batas CPU Cloudflare Workers.
+- [ ] Mengaudit ketergantungan MySQL, autentikasi, storage, dan environment variable sebelum migrasi eksternal.
+- [ ] Menyiapkan repositori GitHub privat tanpa mengekspos rahasia aplikasi.
+- [ ] Menyiapkan project Supabase staging, skema PostgreSQL, dan rencana migrasi data yang dapat diulang.
+- [ ] Mengadaptasi aplikasi dari ketergantungan platform saat ini untuk runtime Cloudflare gratis.
+- [ ] Mengonfigurasi DNS Cloudflare dan subdomain staging.sabanachips.biz.id serta faktur.sabanachips.biz.id setelah target hosting siap diverifikasi.
+- [ ] Memvalidasi alur aplikasi pada staging dan menyusun rencana cutover serta rollback produksi.
