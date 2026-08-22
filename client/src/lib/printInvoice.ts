@@ -54,10 +54,10 @@ function printTwoUpInDedicatedWindow() {
     body { color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .dedicated-print-sheet { width: 190mm; height: 268mm; overflow: hidden; break-after: page; page-break-after: always; }
     .dedicated-print-sheet:last-child { break-after: auto; page-break-after: auto; }
-    .dedicated-print-sheet--two { display: grid; grid-template-rows: 130mm 130mm; gap: 4mm; background: #fff; }
-    .dedicated-print-document { position: relative; min-height: 0; height: 130mm; overflow: hidden; }
+    .dedicated-print-sheet--two { display: grid; grid-template-rows: 128mm 128mm; gap: 3mm; background: #fff; }
+    .dedicated-print-document { position: relative; min-height: 0; height: 128mm; overflow: hidden; }
     .dedicated-print-sheet--two .dedicated-print-document:first-child::after { content: ""; position: absolute; right: 0; bottom: 1mm; left: 0; border-bottom: 0.4mm solid #cbd5e1; }
-    .dedicated-print-sheet--two .dedicated-print-document .invoice-paper--compact { width: 100% !important; height: 130mm !important; max-width: none !important; margin: 0 !important; overflow: hidden !important; box-shadow: none !important; border-inline: none !important; }
+    .dedicated-print-sheet--two .dedicated-print-document .invoice-paper--compact { width: 100% !important; height: 128mm !important; max-width: none !important; margin: 0 !important; overflow: hidden !important; box-shadow: none !important; border-inline: none !important; }
     .dedicated-print-sheet--full .dedicated-print-document { height: auto; min-height: 268mm; overflow: visible; }
     .dedicated-print-sheet--full .dedicated-print-document .invoice-paper { height: auto !important; min-height: 268mm; }
     @media print { html, body { overflow: hidden !important; } .dedicated-print-sheet { break-inside: avoid; page-break-inside: avoid; } }
