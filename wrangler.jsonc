@@ -1,0 +1,14 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "faktur-invoice-manager-staging",
+  "main": "cloudflare/worker.ts",
+  "compatibility_date": "2026-08-23",
+  "assets": {
+    "directory": "./dist/public",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  },
+  "vars": {
+    "SUPABASE_URL": "https://jqpiojdxvxnyppjgbbtg.supabase.co"
+  }
+}
