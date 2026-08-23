@@ -87,9 +87,25 @@ Supabase Free menyediakan maksimal dua project aktif, sehingga satu project **st
 
 Rencana nama host adalah `staging.sabanachips.biz.id` untuk pengujian dan `faktur.sabanachips.biz.id` untuk produksi. Perubahan DNS dan deployment produksi tidak akan dilakukan sebelum autentikasi, database, storage, impor, email, PDF, dan alur cetak lulus uji pada staging.
 
+## Hasil audit kode untuk migrasi
+
+Kode saat ini masih terikat pada MySQL dan runtime Express. Konfigurasi Drizzle memakai dialek `mysql`, `server/db.ts` memakai driver `drizzle-orm/mysql2`, dan terdapat beberapa operasi spesifik MySQL seperti `onDuplicateKeyUpdate()` serta pembacaan `insertId`. Operasi pencarian `like()` dapat dipertahankan secara konseptual, tetapi skema, kolom auto-increment, dan operasi upsert harus dikonversi ke sintaks PostgreSQL (`onConflictDoUpdate()` dan pola `returning()`).
+
+| Area | Kondisi saat ini | Perubahan untuk target gratis |
+|---|---|---|
+| ORM dan skema | Drizzle MySQL + `mysql2` | Ubah ke dialek PostgreSQL dan driver yang kompatibel dengan Supabase |
+| API | Express + tRPC Node server | Adaptasi router tRPC ke fetch handler di Cloudflare Worker atau ganti pemanggilan data ke Supabase API secara bertahap |
+| Autentikasi | Manus OAuth dan cookie sesi platform | Pindah ke Supabase Auth dan JWT terverifikasi pada Worker |
+| Penyimpanan | Helper presigned URL platform | Pindah ke bucket Supabase Storage dengan RLS dan signed URL |
+| Beban berat | PDF dan Excel sudah dijalankan secara dinamis di klien | Pertahankan di browser agar Worker Free tidak terkena batas CPU 10 ms |
+
+Migrasi dilakukan pada branch staging dan tidak akan mengubah deployment aktif atau database aktif. Sebelum data nyata disalin, skema PostgreSQL, keamanan RLS, dan seluruh alur kritis akan diuji memakai staging kosong.
+
+Untuk runtime gratis, pendekatan koneksi yang dipilih adalah **`@supabase/supabase-js` melalui API HTTPS** dari Cloudflare Worker, bukan koneksi PostgreSQL langsung. Dokumentasi Cloudflare menyatakan bahwa pendekatan ini memakai Supabase URL dan anon key sebagai Worker secrets, sedangkan Supabase menegaskan `supabase-js` berkomunikasi via PostgREST sehingga tidak menambah masalah koneksi database.[12] [13] Kunci service role, bila diperlukan pada operasi internal, hanya boleh hidup sebagai secret di Worker dan tidak boleh dikirim ke browser karena ia dapat melewati RLS.[13]
+
 ## Status akses awal
 
-Sesi GitHub pengguna terverifikasi aktif pada organisasi/akun `sabanachips-dev`, dan dashboard Cloudflare juga dapat diakses. Belum ada repositori baru, project Supabase, Worker, Pages deployment, atau record DNS yang dibuat maupun diubah. Pembuatan sumber daya eksternal dan perubahan DNS akan meminta persetujuan eksplisit sebelum dijalankan.
+Sesi GitHub pengguna terverifikasi aktif pada organisasi/akun `sabanachips-dev`, dashboard Cloudflare dapat diakses, dan dashboard Supabase pada organisasi Free pengguna juga aktif. Saat pemeriksaan awal, Supabase menunjukkan satu project aktif, sehingga masih tersedia satu slot Free untuk project staging sebelum batas dua project aktif tercapai.[1] Repositori GitHub privat kemudian telah dibuat dan riwayat kode berhasil diunggah. Formulir project Supabase staging telah diisi dengan nama `faktur-staging`; password database acak dibuat langsung pada Supabase tanpa dicatat pada dokumen atau repository. Data API aktif, ekspos otomatis tabel baru nonaktif, dan automatic RLS aktif saat permintaan pembuatan project dikirim. Worker, Pages deployment, dan record DNS juga belum dibuat maupun diubah. Pembuatan sumber daya eksternal dan perubahan DNS akan meminta persetujuan eksplisit sebelum dijalankan.
 
 Jika tujuan utama Anda adalah **memiliki kode dan tidak bergantung pada satu platform**, GitHub privat adalah langkah pertama yang tepat dan rendah risiko. Bila nanti ingin memindahkan seluruh sistem secara eksternal, gunakan jalur bertahap:
 
@@ -122,3 +138,5 @@ Jika tujuan utama Anda adalah **memiliki kode dan tidak bergantung pada satu pla
 [9]: https://vercel.com/kb/guide/cloudflare-with-vercel "Using Cloudflare with Vercel"
 [10]: https://developers.cloudflare.com/workers/platform/limits/ "Cloudflare Workers Limits"
 [11]: https://supabase.com/docs/guides/platform/backups "Supabase Database Backups"
+[12]: https://developers.cloudflare.com/workers/databases/third-party-integrations/supabase/ "Supabase on Cloudflare Workers"
+[13]: https://supabase.com/partners/catalog/cloudflare?tab=cloudflare-workers "Cloudflare Works With Supabase"

@@ -181,8 +181,11 @@
 - [x] Menambahkan pengujian regresi untuk URL publik placeholder dan menyimpan checkpoint perbaikan.
 - [x] Menetapkan arsitektur target GitHub, Supabase, Cloudflare, dan hosting yang sesuai untuk penggunaan bisnis.
 - [x] Mendokumentasikan batas layanan gratis, termasuk penghentian Supabase Free saat tidak aktif dan batas CPU Cloudflare Workers.
+- [ ] Menetapkan penggunaan satu project Supabase Faktur pada batas dua project aktif atau membebaskan slot sebelum membuat production terpisah.
+- [x] Memverifikasi project Supabase baru yang diberikan pengguna dan menyimpan hanya konfigurasi non-rahasia pada dokumentasi migrasi.
+- [x] Memperbaiki verifikasi Supabase dengan endpoint dan respons autentikasi yang tepat sebelum menyimpulkan publishable key tidak valid.
 - [ ] Mengaudit ketergantungan MySQL, autentikasi, storage, dan environment variable sebelum migrasi eksternal.
-- [ ] Menyiapkan repositori GitHub privat tanpa mengekspos rahasia aplikasi.
+- [x] Menyiapkan repositori GitHub privat tanpa mengekspos rahasia aplikasi.
 - [ ] Menyiapkan project Supabase staging, skema PostgreSQL, dan rencana migrasi data yang dapat diulang.
 - [ ] Mengadaptasi aplikasi dari ketergantungan platform saat ini untuk runtime Cloudflare gratis.
 - [ ] Mengonfigurasi DNS Cloudflare dan subdomain staging.sabanachips.biz.id serta faktur.sabanachips.biz.id setelah target hosting siap diverifikasi.
