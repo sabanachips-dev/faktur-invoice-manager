@@ -230,5 +230,5 @@
 - [x] Meningkatkan halaman invoice publik untuk pembeli setelah alur status dan pengiriman stabil.
 - [x] Menampilkan ringkasan serta daftar status pemenuhan pesanan pada Dashboard.
 - [x] Menambahkan Kanban Board pesanan dengan kolom status pemenuhan dan pemindahan status yang terkontrol.
-- [ ] Menambahkan cek ongkir untuk tujuan pengiriman, berat, dan pilihan kurir melalui layanan pengiriman terintegrasi.
-- [ ] Menambahkan cek resi manual dari nomor resi dan kurir pada halaman invoice.
+- [x] Menambahkan cek ongkir untuk tujuan pengiriman, berat, dan pilihan kurir melalui layanan pengiriman terintegrasi.
+- [x] Menambahkan cek resi manual dari nomor resi dan kurir pada halaman invoice.

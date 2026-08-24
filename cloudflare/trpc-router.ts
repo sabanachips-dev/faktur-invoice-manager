@@ -7,7 +7,7 @@ import { DASHBOARD_PERIODS, getDashboardPeriodRange, isDateWithinRange } from ".
 import { FULFILLMENT_STATUSES, getNextAvailableInvoiceNumber, INVOICE_STATUSES } from "../shared/invoice";
 import { parseInvoiceImportRows } from "../shared/invoiceImport";
 
-export type WorkerEnv = { SUPABASE_URL: string; SUPABASE_PUBLISHABLE_KEY: string; RESEND_API_KEY?: string; RESEND_FROM_EMAIL?: string };
+export type WorkerEnv = { SUPABASE_URL: string; SUPABASE_PUBLISHABLE_KEY: string; RESEND_API_KEY?: string; RESEND_FROM_EMAIL?: string; RAJAONGKIR_API_KEY?: string };
 export type WorkerUser = { id: number; authUserId: string; openId: string; name: string | null; email: string | null; role: "admin" | "user" };
 export type WorkerContext = { user: WorkerUser | null; env: WorkerEnv; accessToken: string | null };
 
@@ -89,6 +89,17 @@ const bulkInvoiceInput = z.object({
   dueDate: z.date(),
 });
 const importRowsInput = z.object({ rows: z.array(z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.null()]))).min(1).max(1000) });
+
+async function rajaOngkirRequest(ctx: WorkerContext, path: string, init?: RequestInit) {
+  if (!ctx.env.RAJAONGKIR_API_KEY) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Layanan cek ongkir belum dikonfigurasi." });
+  const response = await fetch(`https://rajaongkir.komerce.id/api/v1/${path}`, {
+    ...init,
+    headers: { key: ctx.env.RAJAONGKIR_API_KEY, ...(init?.headers || {}) },
+  });
+  const payload = await response.json().catch(() => null) as { meta?: { message?: string }; message?: string } | null;
+  if (!response.ok) throw new TRPCError({ code: "BAD_REQUEST", message: payload?.meta?.message || payload?.message || "Layanan pengiriman tidak dapat memproses permintaan." });
+  return payload;
+}
 
 async function getBusinessProfile(ctx: WorkerContext) {
   const rows = await supabaseRest<Record<string, unknown>[]>(ctx, queryPath("businessProfiles", {
@@ -191,6 +202,18 @@ export const workerRouter = t.router({
   }),
   dashboard: t.router({
     get: protectedProcedure.input(z.object({ period: z.enum(DASHBOARD_PERIODS).default("this_month") })).query(({ ctx, input }) => getDashboard(ctx, input.period)),
+  }),
+  shipping: t.router({
+    searchDestination: protectedProcedure.input(z.object({ query: z.string().trim().min(2).max(120) })).query(({ ctx, input }) => rajaOngkirRequest(ctx, `destination/domestic-destination?search=${encodeURIComponent(input.query)}&limit=8&offset=0`)),
+    calculate: protectedProcedure.input(z.object({ originId: z.number().int().positive(), destinationId: z.number().int().positive(), weight: z.number().int().min(1).max(100_000), couriers: z.string().trim().min(2).max(300) })).mutation(({ ctx, input }) => {
+      const form = new URLSearchParams({ origin: String(input.originId), destination: String(input.destinationId), weight: String(input.weight), courier: input.couriers, price: "lowest" });
+      return rajaOngkirRequest(ctx, "calculate/domestic-cost", { method: "POST", headers: { "content-type": "application/x-www-form-urlencoded" }, body: form.toString() });
+    }),
+    track: protectedProcedure.input(z.object({ courier: z.string().trim().min(2).max(40), trackingNumber: z.string().trim().min(4).max(120), lastPhoneDigits: z.string().trim().regex(/^\d{5}$/).optional() })).mutation(({ ctx, input }) => {
+      const form = new URLSearchParams({ courier: input.courier.toLowerCase(), awb: input.trackingNumber });
+      if (input.lastPhoneDigits) form.set("last_phone_number", input.lastPhoneDigits);
+      return rajaOngkirRequest(ctx, "track/waybill", { method: "POST", headers: { "content-type": "application/x-www-form-urlencoded" }, body: form.toString() });
+    }),
   }),
   invoices: t.router({
     list: protectedProcedure.input(z.object({
