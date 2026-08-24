@@ -237,3 +237,6 @@
 - [x] Memperbaiki pencarian wilayah agar Payakumbuh, Sumatera Barat, dan variasi nama lokasi mudah ditemukan.
 - [x] Menyederhanakan cek ongkir menjadi alur asal, tujuan, berat, lalu hasil tanpa input kode kurir manual.
 - [x] Mengurangi latensi serta memperjelas keadaan memuat, hasil, dan error pada halaman Pengiriman.
+- [x] Menetapkan alamat asal default Sabana Chips di Payakumbuh untuk cek ongkir yang lebih cepat dan tetap dapat diubah.
+- [x] Menyusun ringkasan penggunaan Kanban Board baru untuk manajemen pesanan.
+- [x] Menyusun panduan pengujian cek resi otomatis dengan Biteship Sandbox tanpa order produksi.
