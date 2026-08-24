@@ -264,3 +264,4 @@
 - [ ] Melengkapi email bisnis dan nomor rekening pada Pengaturan sebelum invoice dibagikan ke pelanggan.
 - [ ] Mengaktifkan Leaked Password Protection di Supabase Auth bila login kata sandi digunakan saat cutover.
 - [ ] Memindahkan helper RLS terautentikasi ke schema non-API setelah regresi sesi terautentikasi lengkap tersedia.
+- [x] Menambahkan pengingat ringkas pada Pengaturan ketika email bisnis atau nomor rekening belum diisi.

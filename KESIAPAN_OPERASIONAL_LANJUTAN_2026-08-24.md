@@ -39,6 +39,10 @@ Supabase merekomendasikan akses fungsi diberikan hanya kepada peran yang memang 
 3. Uji masuk ulang dengan metode yang dipilih pemilik dan kirim satu email invoice ke alamat uji.
 4. Lakukan **uji cetak fisik sebagai langkah terakhir**, lalu kirim foto hasilnya untuk penilaian margin dan potongan.
 
+## Pengingat dalam Aplikasi
+
+Staging Worker versi `db0de25b-c5c8-487e-bd74-c6a5b126e0ee` kini menampilkan panel singkat pada halaman Pengaturan apabila email bisnis atau nomor rekening belum diisi. Pengingat telah diverifikasi pada browser terautentikasi: panel menunjukkan kedua field yang perlu dilengkapi dan tetap membiarkan pengguna menyimpan perubahan dari tombol utama yang sama.
+
 ## Referensi
 
 [1]: https://supabase.com/docs/guides/api/securing-your-api "Supabase — Securing your API"
