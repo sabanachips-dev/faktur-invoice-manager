@@ -222,3 +222,5 @@
 - [x] Memverifikasi dashboard dan daftar invoice staging kosong setelah pembersihan data demo.
 - [ ] Menguji alur staging lengkap dengan akun Supabase, lalu menyiapkan cutover dan rollback tanpa mengubah domain Manus aktif.
 - [x] Menyusun panduan review seluruh fitur dan alur penggunaan staging agar penambahan berikutnya dapat diprioritaskan bersama pengguna.
+- [x] Menganalisis spesifikasi diskon per item dan dampaknya pada katalog, editor invoice, dokumen, impor, invoice massal, ekspor, serta migrasi data Supabase.
+- [x] Menyusun roadmap bertahap untuk kebutuhan operasional bisnis sendiri dan opsi perluasan menjadi SaaS multi-tenant.
