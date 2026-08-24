@@ -16,5 +16,9 @@
 | Pengaturan bisnis hasil impor | Lulus | Halaman Pengaturan memuat nama bisnis, telepon, alamat, rekening, warna, template, dan kontrol unggah logo Supabase. |
 | Pembersihan data demo | Lulus | Setelah snapshot tambahan, staging hanya menyisakan empat klien bernama Fresh dan tiga produk; invoice, item, dan aktivitas demo telah dihapus dalam satu transaksi. |
 | Dashboard setelah pembersihan | Lulus | Dashboard staging memuat 0 invoice dan Rp 0, menampilkan grafik nol serta keadaan kosong tanpa error API. |
+| Daftar invoice setelah pembersihan | Lulus | Halaman Invoice menampilkan keadaan kosong dan tidak menampilkan invoice demo. |
+| Daftar klien setelah pembersihan | Lulus | Halaman Klien hanya menampilkan empat entri yang namanya mengandung Fresh. |
+| Katalog setelah pembersihan | Lulus | Halaman Katalog tetap menampilkan tiga produk yang dipertahankan dan dapat digunakan saat membuat invoice baru. |
+| Pengujian regresi pascapembersihan | Lulus | Seluruh 40 berkas pengujian dan 76 pengujian lulus; pemeriksaan TypeScript selesai tanpa error. |
 
 Tahap berikutnya adalah memverifikasi halaman data lain dan alur staging dengan data hasil impor. Deployment Manus tetap tidak disentuh dan berfungsi sebagai fallback.

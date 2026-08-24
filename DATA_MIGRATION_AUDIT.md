@@ -34,3 +34,18 @@ Dengan persetujuan pengguna, data yang dapat direlasikan telah diimpor ke akun S
 | Riwayat aktivitas yang terhubung | 17 |
 
 Satu profil bisnis tambahan dan 523 riwayat aktivitas tanpa invoice asal tetap tersedia pada arsip transformasi privat. Keduanya tidak dimasukkan ke tabel aplikasi karena akan membuat satu akun memiliki lebih dari satu profil aktif atau melanggar relasi invoice.
+
+## Pembersihan Data Demo Staging
+
+Setelah meninjau hasil impor, pengguna menegaskan bahwa invoice dan riwayat lama hanya merupakan data demo. Snapshot logis privat tambahan dibuat sebelum pembersihan sehingga pemulihan tetap dimungkinkan bila dibutuhkan. Pembersihan dilaksanakan dalam satu transaksi dengan urutan penghapusan aktivitas invoice, item invoice, invoice, lalu klien yang namanya tidak mengandung `Fresh`. Profil bisnis dan seluruh katalog produk tidak diubah.
+
+| Data di Supabase staging setelah pembersihan | Jumlah |
+|---|---:|
+| Profil bisnis aktif | 1 |
+| Klien toko Fresh | 4 |
+| Katalog produk | 3 |
+| Invoice | 0 |
+| Item invoice | 0 |
+| Riwayat aktivitas invoice | 0 |
+
+Verifikasi relasi setelah pembersihan menunjukkan tidak ada invoice tanpa klien, item tanpa invoice, maupun riwayat tanpa invoice. Deployment dan database aplikasi Manus aktif tidak diubah.
