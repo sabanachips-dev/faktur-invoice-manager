@@ -73,6 +73,13 @@ const invoiceInput = z.object({
 }).superRefine((value, context) => {
   if (value.discountType === "percentage" && value.discountValue > 100) context.addIssue({ code: "custom", path: ["discountValue"], message: "Diskon persentase maksimal 100%." });
 });
+const bulkInvoiceInput = z.object({
+  sourceInvoiceId: z.number().int().positive(),
+  storeNumbers: z.array(z.string().trim().min(1).max(100)).min(1).max(100).refine(values => new Set(values).size === values.length, "Nomor toko tidak boleh duplikat."),
+  shippingAddress: z.string().trim().min(1).max(1000),
+  invoiceDate: z.date(),
+  dueDate: z.date(),
+});
 
 async function getBusinessProfile(ctx: WorkerContext) {
   const rows = await supabaseRest<Record<string, unknown>[]>(ctx, queryPath("businessProfiles", {
@@ -209,6 +216,10 @@ export const workerRouter = t.router({
         p_notes: input.data.notes || null, p_store_number: input.data.storeNumber || null, p_shipping_address: input.data.shippingAddress || null, p_items: input.data.items,
       });
     }),
+    bulkCreate: protectedProcedure.input(bulkInvoiceInput).mutation(({ ctx, input }) => supabaseRpc<{ batchId: string; storeInvoiceIds: number[]; summaryInvoiceId: number }>(ctx, "create_bulk_invoices_atomic", {
+      p_source_invoice_id: input.sourceInvoiceId, p_store_numbers: input.storeNumbers, p_shipping_address: input.shippingAddress,
+      p_invoice_date: input.invoiceDate.toISOString(), p_due_date: input.dueDate.toISOString(),
+    })),
     get: protectedProcedure.input(z.object({ id: z.number().int().positive() })).query(({ ctx, input }) => getInvoiceDetail(ctx, input.id)),
     getMany: protectedProcedure.input(z.object({ ids: z.array(z.number().int().positive()).min(1).max(100) })).query(async ({ ctx, input }) => {
       const details = await Promise.all([...new Set(input.ids)].map(id => getInvoiceDetail(ctx, id)));
