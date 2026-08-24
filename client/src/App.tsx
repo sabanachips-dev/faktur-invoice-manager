@@ -10,6 +10,7 @@ import ImportInvoices from "@/pages/ImportInvoices";
 import InvoiceHistory from "@/pages/InvoiceHistory";
 import InvoiceList from "@/pages/InvoiceList";
 import InvoicePreview from "@/pages/InvoicePreview";
+import OrdersBoard from "@/pages/OrdersBoard";
 import NotFound from "@/pages/NotFound";
 import PublicInvoice from "@/pages/PublicInvoice";
 import Settings from "@/pages/Settings";
@@ -32,6 +33,7 @@ function Router() {
     <Route path="/invoice/history" component={() => <ProtectedPage component={InvoiceHistory} />} />
     <Route path="/invoice/:id/preview" component={() => <ProtectedPage component={InvoicePreview} />} />
     <Route path="/invoice/:id" component={() => <ProtectedPage component={InvoiceEditor} />} />
+    <Route path="/orders" component={() => <ProtectedPage component={OrdersBoard} />} />
     <Route path="/clients" component={() => <ProtectedPage component={Clients} />} />
     <Route path="/catalog" component={() => <ProtectedPage component={Catalog} />} />
     <Route path="/settings" component={() => <ProtectedPage component={Settings} />} />

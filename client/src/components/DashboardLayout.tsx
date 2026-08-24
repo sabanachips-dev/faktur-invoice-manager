@@ -3,13 +3,14 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { SupabaseLoginCard } from "@/components/SupabaseLoginCard";
 import { navigateBack } from "@/lib/navigation";
-import { ArrowLeft, BookOpen, FileText, LayoutDashboard, LogOut, Menu, Settings, Users, X } from "lucide-react";
+import { ArrowLeft, BookOpen, FileText, LayoutDashboard, LogOut, Menu, PanelsTopLeft, Settings, Users, X } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/" },
   { icon: FileText, label: "Invoice", path: "/invoice" },
+  { icon: PanelsTopLeft, label: "Pesanan", path: "/orders" },
   { icon: Users, label: "Klien", path: "/clients" },
   { icon: BookOpen, label: "Katalog", path: "/catalog" },
   { icon: Settings, label: "Pengaturan", path: "/settings" },

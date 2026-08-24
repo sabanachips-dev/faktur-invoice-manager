@@ -6,11 +6,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { formatDate, formatMoney } from "@/lib/format";
-import { AlertCircle, ArrowUpRight, CheckCircle2, Clock3, FileText, Layers3, PackageCheck, Plus, WalletCards } from "lucide-react";
+import { AlertCircle, ArrowUpRight, CheckCircle2, Clock3, FileText, Layers3, PackageCheck, PanelsTopLeft, Plus, WalletCards } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useLocation } from "wouter";
 import { useState } from "react";
 import type { DashboardPeriod } from "@shared/dashboard";
+import { labelFulfillmentStatus, type FulfillmentStatus } from "@shared/invoice";
 
 const cardConfig = (periodLabel: string) => [
   { key: "monthTotal", count: "monthCount", label: `Invoice ${periodLabel}`, icon: FileText, tint: "bg-blue-50 text-blue-700" },
@@ -24,6 +25,7 @@ export default function Dashboard() {
   const [period, setPeriod] = useState<DashboardPeriod>("this_month");
   const dashboard = trpc.dashboard.get.useQuery({ period });
   const data = dashboard.data;
+  const fulfillment = (data as unknown as { fulfillment?: { status: FulfillmentStatus; count: number; total: number }[] } | undefined)?.fulfillment || [];
 
   return <>
     <PageHeader eyebrow="Ringkasan" title="Dashboard" description="Pantau kesehatan arus kas dan invoice bisnis Anda." action={<div className="flex flex-wrap gap-2"><Select value={period} onValueChange={value => setPeriod(value as DashboardPeriod)}><SelectTrigger className="w-[152px] bg-white"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="this_month">Bulan ini</SelectItem><SelectItem value="last_month">Bulan lalu</SelectItem><SelectItem value="this_year">Tahun ini</SelectItem></SelectContent></Select><Button onClick={() => setLocation("/invoice/new")} className="gap-2"><Plus className="size-4" />Buat invoice baru</Button></div>} />
@@ -39,6 +41,11 @@ export default function Dashboard() {
             <p className="mt-1 text-2xl font-bold tracking-tight text-slate-950">{formatMoney(total)}</p>
           </CardContent></Card>;
         })}
+      </section>
+
+      <section className="mt-6 overflow-hidden rounded-xl border border-slate-200/80 bg-white">
+        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 px-5 py-5 sm:px-6"><div><div className="flex items-center gap-2"><div className="grid size-9 place-items-center rounded-xl bg-indigo-50 text-indigo-700"><PanelsTopLeft className="size-4" /></div><h2 className="font-bold tracking-tight">Status pesanan</h2></div><p className="mt-2 text-sm text-muted-foreground">Pantau pekerjaan pengiriman dalam {data.periodLabel}; status ini terpisah dari pembayaran invoice.</p></div><Button variant="outline" size="sm" className="gap-2" onClick={() => setLocation("/orders")}><PanelsTopLeft className="size-4" />Buka Kanban Board</Button></div>
+        <div className="grid divide-y divide-slate-100 sm:grid-cols-2 sm:divide-x sm:divide-y-0 xl:grid-cols-3">{fulfillment.map(item => <button key={item.status} className="group flex min-h-28 items-center justify-between gap-4 p-5 text-left transition-colors hover:bg-slate-50" onClick={() => setLocation("/orders")}><div><p className="text-sm font-semibold text-slate-800">{labelFulfillmentStatus(item.status)}</p><p className="mt-1 text-xs text-muted-foreground">{item.count} pesanan</p></div><div className="text-right"><p className="font-bold text-slate-900">{item.count}</p><p className="mt-1 text-xs text-slate-500">{formatMoney(item.total)}</p></div></button>)}</div>
       </section>
 
       <section className="mt-6 grid gap-6 xl:grid-cols-[1.55fr_1fr]">

@@ -17,8 +17,8 @@ describe("Cloudflare dashboard router", () => {
   it("menghitung metrik periode aktif tanpa memasukkan invoice rekap batch", async () => {
     const today = new Date().toISOString();
     const rows = [
-      { id: 1, invoiceDate: today, total: 150000, status: "paid", isBatchSummary: false, bulkBatchId: null, client: { id: 2, name: "Toko A" } },
-      { id: 2, invoiceDate: today, total: 80000, status: "unpaid", isBatchSummary: false, bulkBatchId: null, client: { id: 3, name: "Toko B" } },
+      { id: 1, invoiceDate: today, total: 150000, status: "paid", fulfillmentStatus: "processing", isBatchSummary: false, bulkBatchId: null, client: { id: 2, name: "Toko A" } },
+      { id: 2, invoiceDate: today, total: 80000, status: "unpaid", fulfillmentStatus: "pending_payment", isBatchSummary: false, bulkBatchId: null, client: { id: 3, name: "Toko B" } },
       { id: 3, invoiceDate: today, total: 230000, status: "draft", isBatchSummary: true, bulkBatchId: "batch-a", client: { id: 2, name: "Toko A" } },
     ];
     vi.stubGlobal("fetch", vi.fn().mockImplementation(() => Promise.resolve(json(rows))));
@@ -29,5 +29,9 @@ describe("Cloudflare dashboard router", () => {
     expect(dashboard.metrics).toMatchObject({ monthTotal: 230000, monthCount: 2, paidTotal: 150000, unpaidTotal: 80000 });
     expect(dashboard.recent).toHaveLength(2);
     expect(dashboard.batchRecaps).toHaveLength(1);
+    expect(dashboard.fulfillment).toEqual(expect.arrayContaining([
+      expect.objectContaining({ status: "processing", count: 1, total: 150000 }),
+      expect.objectContaining({ status: "pending_payment", count: 1, total: 80000 }),
+    ]));
   });
 });

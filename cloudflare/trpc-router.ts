@@ -161,6 +161,10 @@ async function getDashboard(ctx: WorkerContext, period: (typeof DASHBOARD_PERIOD
       paidTotal: sum(filteredRows.filter(invoice => invoice.status === "paid")), paidCount: filteredRows.filter(invoice => invoice.status === "paid").length,
       overdueTotal: sum(filteredRows.filter(invoice => invoice.status === "overdue")), overdueCount: filteredRows.filter(invoice => invoice.status === "overdue").length,
     },
+    fulfillment: FULFILLMENT_STATUSES.map(status => {
+      const invoices = filteredRows.filter(invoice => (invoice.fulfillmentStatus || "pending_payment") === status);
+      return { status, count: invoices.length, total: sum(invoices) };
+    }),
     income,
     recent: all.filter(row => !row.invoice.isBatchSummary && isDateWithinRange(new Date(row.invoice.invoiceDate), range.start, range.end)).slice(0, 5),
     batchRecaps,
