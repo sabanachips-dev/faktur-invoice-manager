@@ -6,6 +6,7 @@
 | --- | --- | --- |
 | Worker staging dapat dibuka | Lulus | `https://faktur-invoice-manager-staging.sabanachips.workers.dev` merespons dan memuat aplikasi. |
 | Sesi Supabase | Lulus | Akun Supabase yang telah login tampil pada sidebar staging. |
-| API data dashboard | Belum dimigrasikan | Dashboard tetap menampilkan skeleton karena procedure `dashboard.get` belum tersedia pada router Worker. Tidak ada data produksi yang diubah. |
+| API data dashboard | Lulus | Dashboard memuat metrik nol, grafik, dan kondisi kosong setelah procedure `dashboard.get` dipindahkan ke Worker. |
+| API daftar invoice | Lulus | Halaman Invoice memuat filter serta kondisi kosong tanpa skeleton setelah procedure pembacaan invoice dipindahkan ke Worker. |
 
-Tahap berikutnya adalah memigrasikan procedure dashboard dan invoice ke API PostgreSQL/RLS. Deployment Manus tetap tidak disentuh dan berfungsi sebagai fallback.
+Tahap berikutnya adalah memigrasikan pembuatan, pembaruan, batch, dan impor invoice melalui transaksi PostgreSQL/RPC. Deployment Manus tetap tidak disentuh dan berfungsi sebagai fallback.

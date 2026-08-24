@@ -4,6 +4,7 @@ import superjson from "superjson";
 import { z } from "zod";
 import { queryPath, supabaseRest } from "./supabase-rest";
 import { DASHBOARD_PERIODS, getDashboardPeriodRange, isDateWithinRange } from "../shared/dashboard";
+import { getNextAvailableInvoiceNumber, INVOICE_STATUSES } from "../shared/invoice";
 
 export type WorkerEnv = { SUPABASE_URL: string; SUPABASE_PUBLISHABLE_KEY: string };
 export type WorkerUser = { id: number; authUserId: string; openId: string; name: string | null; email: string | null; role: "admin" | "user" };
@@ -133,6 +134,15 @@ async function getDashboard(ctx: WorkerContext, period: (typeof DASHBOARD_PERIOD
   };
 }
 
+async function getInvoiceDetail(ctx: WorkerContext, invoiceId: number) {
+  const rows = await listInvoiceRows(ctx);
+  const row = rows.find(candidate => candidate.invoice.id === invoiceId);
+  if (!row) return null;
+  const business = await getBusinessProfile(ctx);
+  const items = await supabaseRest<Record<string, unknown>[]>(ctx, queryPath("invoiceItems", { select: "*", invoiceId: `eq.${invoiceId}`, order: "position.asc" }));
+  return { ...row, business, items };
+}
+
 export const workerRouter = t.router({
   auth: t.router({
     me: t.procedure.query(({ ctx }) => ctx.user),
@@ -140,6 +150,58 @@ export const workerRouter = t.router({
   }),
   dashboard: t.router({
     get: protectedProcedure.input(z.object({ period: z.enum(DASHBOARD_PERIODS).default("this_month") })).query(({ ctx, input }) => getDashboard(ctx, input.period)),
+  }),
+  invoices: t.router({
+    list: protectedProcedure.input(z.object({
+      status: z.enum(INVOICE_STATUSES).optional(), clientId: z.number().int().positive().optional(), search: z.string().optional(), from: z.date().optional(), to: z.date().optional(),
+    })).query(async ({ ctx, input }) => {
+      const search = input.search?.trim().toLocaleLowerCase();
+      const rows = await listInvoiceRows(ctx);
+      return rows.filter(row => {
+        const invoiceDate = new Date(row.invoice.invoiceDate);
+        const invoiceNumber = String(row.invoice.invoiceNumber || "").toLocaleLowerCase();
+        const clientName = String(row.client?.name || "").toLocaleLowerCase();
+        return (!input.status || row.invoice.status === input.status)
+          && (!input.clientId || Number(row.invoice.clientId) === input.clientId)
+          && (!input.from || invoiceDate >= input.from)
+          && (!input.to || invoiceDate <= input.to)
+          && (!search || invoiceNumber.includes(search) || clientName.includes(search));
+      });
+    }),
+    nextNumber: protectedProcedure.query(async ({ ctx }) => {
+      const [profile, rows] = await Promise.all([
+        getBusinessProfile(ctx),
+        supabaseRest<{ invoiceNumber: string }[]>(ctx, queryPath("invoices", { select: "invoiceNumber" })),
+      ]);
+      return getNextAvailableInvoiceNumber(rows.map(row => row.invoiceNumber), new Date().getFullYear(), String(profile?.invoiceNumberFormat || "INV-{YYYY}-{SEQ}"));
+    }),
+    get: protectedProcedure.input(z.object({ id: z.number().int().positive() })).query(({ ctx, input }) => getInvoiceDetail(ctx, input.id)),
+    getMany: protectedProcedure.input(z.object({ ids: z.array(z.number().int().positive()).min(1).max(100) })).query(async ({ ctx, input }) => {
+      const details = await Promise.all([...new Set(input.ids)].map(id => getInvoiceDetail(ctx, id)));
+      return details.filter((detail): detail is NonNullable<typeof detail> => Boolean(detail));
+    }),
+    history: protectedProcedure.input(z.object({ id: z.number().int().positive().optional() })).query(async ({ ctx, input }) => {
+      const rows = await supabaseRest<(Record<string, unknown> & { invoice: { invoiceNumber?: string } | null })[]>(ctx, queryPath("invoiceActivities", {
+        select: "*,invoice:invoices(invoiceNumber)", order: "createdAt.desc", limit: "100", invoiceId: input.id ? `eq.${input.id}` : undefined,
+      }));
+      return rows.map(({ invoice, ...activity }) => ({ activity, invoiceNumber: invoice?.invoiceNumber || null }));
+    }),
+    updateStatus: protectedProcedure.input(z.object({ id: z.number().int().positive(), status: z.enum(INVOICE_STATUSES) })).mutation(async ({ ctx, input }) => {
+      const now = new Date().toISOString();
+      const rows = await supabaseRest<Record<string, unknown>[]>(ctx, queryPath("invoices", { id: `eq.${input.id}` }), {
+        method: "PATCH", headers: { Prefer: "return=representation" },
+        body: JSON.stringify({ status: input.status, paidAt: input.status === "paid" ? now : null, sentAt: input.status === "sent" ? now : null }),
+      });
+      if (!rows[0]) throw new TRPCError({ code: "NOT_FOUND", message: "Invoice tidak ditemukan." });
+      await postgrestInsert(ctx, "invoiceActivities", { userId: ctx.user.id, invoiceId: input.id, action: "status_changed", description: `Status invoice diubah menjadi ${input.status}.` });
+      return rows[0];
+    }),
+    remove: protectedProcedure.input(z.object({ id: z.number().int().positive() })).mutation(async ({ ctx, input }) => {
+      const existing = await getInvoiceDetail(ctx, input.id);
+      if (!existing) throw new TRPCError({ code: "NOT_FOUND", message: "Invoice tidak ditemukan atau sudah dihapus." });
+      await supabaseRest<void>(ctx, queryPath("invoices", { id: `eq.${input.id}` }), { method: "DELETE" });
+      return { deletedId: input.id };
+    }),
   }),
   business: t.router({
     get: protectedProcedure.query(({ ctx }) => getBusinessProfile(ctx)),
