@@ -232,3 +232,8 @@
 - [x] Menambahkan Kanban Board pesanan dengan kolom status pemenuhan dan pemindahan status yang terkontrol.
 - [x] Menambahkan cek ongkir untuk tujuan pengiriman, berat, dan pilihan kurir melalui layanan pengiriman terintegrasi.
 - [x] Menambahkan cek resi manual dari nomor resi dan kurir pada halaman invoice.
+- [x] Memverifikasi kemampuan, biaya, dan batas paket gratis Biteship untuk cek ongkir, tracking resi, pembuatan order, serta label pengiriman.
+- [x] Menyusun rencana penggantian RajaOngkir dengan Biteship sebagai satu integrasi pengiriman Sabana Chips tanpa mengganggu staging yang aktif.
+- [x] Memperbaiki pencarian wilayah agar Payakumbuh, Sumatera Barat, dan variasi nama lokasi mudah ditemukan.
+- [x] Menyederhanakan cek ongkir menjadi alur asal, tujuan, berat, lalu hasil tanpa input kode kurir manual.
+- [x] Mengurangi latensi serta memperjelas keadaan memuat, hasil, dan error pada halaman Pengiriman.

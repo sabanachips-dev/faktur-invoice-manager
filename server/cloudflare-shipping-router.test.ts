@@ -11,10 +11,10 @@ describe("Cloudflare shipping router", () => {
     const fetchMock = vi.fn().mockResolvedValue(json({ meta: { status: "success" }, data: [] }));
     vi.stubGlobal("fetch", fetchMock);
     const caller = workerRouter.createCaller(context);
-    await caller.shipping.searchDestination({ query: "Jakarta" });
+    await caller.shipping.searchDestination({ query: "sumbar" });
     await caller.shipping.calculate({ originId: 1, destinationId: 2, weight: 1000, couriers: "jne:jnt" });
     await caller.shipping.track({ courier: "jne", trackingNumber: "JNE123456" });
-    expect(fetchMock.mock.calls[0][0]).toContain("destination/domestic-destination?search=Jakarta");
+    expect(fetchMock.mock.calls[0][0]).toContain("destination/domestic-destination?search=sumatera%20barat");
     expect(fetchMock.mock.calls[0][1].headers.key).toBe("shipping-key");
     expect(fetchMock.mock.calls[1][0]).toContain("calculate/domestic-cost");
     expect(fetchMock.mock.calls[1][1].body).toContain("weight=1000");

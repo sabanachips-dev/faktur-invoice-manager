@@ -101,6 +101,10 @@ async function rajaOngkirRequest(ctx: WorkerContext, path: string, init?: Reques
   return payload;
 }
 
+function normalizeShippingLocationSearch(query: string) {
+  return query.trim().replace(/\bsumbar\b/gi, "sumatera barat").replace(/\bsumsel\b/gi, "sumatera selatan").replace(/\bsumut\b/gi, "sumatera utara");
+}
+
 async function getBusinessProfile(ctx: WorkerContext) {
   const rows = await supabaseRest<Record<string, unknown>[]>(ctx, queryPath("businessProfiles", {
     select: "*", userId: `eq.${ctx.user!.id}`, limit: "1",
@@ -204,7 +208,7 @@ export const workerRouter = t.router({
     get: protectedProcedure.input(z.object({ period: z.enum(DASHBOARD_PERIODS).default("this_month") })).query(({ ctx, input }) => getDashboard(ctx, input.period)),
   }),
   shipping: t.router({
-    searchDestination: protectedProcedure.input(z.object({ query: z.string().trim().min(2).max(120) })).query(({ ctx, input }) => rajaOngkirRequest(ctx, `destination/domestic-destination?search=${encodeURIComponent(input.query)}&limit=8&offset=0`)),
+    searchDestination: protectedProcedure.input(z.object({ query: z.string().trim().min(2).max(120) })).query(({ ctx, input }) => rajaOngkirRequest(ctx, `destination/domestic-destination?search=${encodeURIComponent(normalizeShippingLocationSearch(input.query))}&limit=8&offset=0`)),
     calculate: protectedProcedure.input(z.object({ originId: z.number().int().positive(), destinationId: z.number().int().positive(), weight: z.number().int().min(1).max(100_000), couriers: z.string().trim().min(2).max(300) })).mutation(({ ctx, input }) => {
       const form = new URLSearchParams({ origin: String(input.originId), destination: String(input.destinationId), weight: String(input.weight), courier: input.couriers, price: "lowest" });
       return rajaOngkirRequest(ctx, "calculate/domestic-cost", { method: "POST", headers: { "content-type": "application/x-www-form-urlencoded" }, body: form.toString() });
