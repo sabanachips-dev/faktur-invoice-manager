@@ -1,6 +1,6 @@
-import type { DiscountType } from "./invoice";
+import type { DiscountType, ItemDiscountType } from "./invoice";
 
-export type InvoiceImportItem = { description: string; quantity: number; unitPrice: number };
+export type InvoiceImportItem = { description: string; quantity: number; unitPrice: number; discountType: ItemDiscountType; discountValue: number };
 export type ImportedInvoice = {
   importId: string;
   clientName: string;
@@ -39,6 +39,8 @@ const aliases: Record<string, string[]> = {
   itemDescription: ["nama_item", "item", "deskripsi_item", "description"],
   quantity: ["qty", "kuantitas", "quantity"],
   unitPrice: ["harga", "harga_satuan", "unit_price"],
+  itemDiscountType: ["jenis_diskon_item", "item_discount_type", "tipe_diskon_item"],
+  itemDiscountValue: ["nilai_diskon_item", "item_discount_value", "diskon_item"],
 };
 
 function normalizeHeader(header: string) {
@@ -70,6 +72,12 @@ function discountTypeValue(value: string): DiscountType {
   return ["persen", "percentage", "%", "percent"].includes(value.trim().toLowerCase()) ? "percentage" : "amount";
 }
 
+function itemDiscountTypeValue(value: string): ItemDiscountType {
+  const normalized = value.trim().toLowerCase();
+  if (!normalized || ["none", "tidak", "tanpa", "-"].includes(normalized)) return "none";
+  return discountTypeValue(normalized);
+}
+
 function invoiceLevelFields(invoice: Omit<ImportedInvoice, "items">) {
   return {
     clientName: invoice.clientName, clientEmail: invoice.clientEmail, clientPhone: invoice.clientPhone, billingAddress: invoice.billingAddress,
@@ -94,6 +102,8 @@ export function parseInvoiceImportRows(rows: Record<string, unknown>[]): ImportI
     const unitPrice = numberValue(valueFor(row, "unitPrice"));
     const discountType = discountTypeValue(valueFor(row, "discountType"));
     const discountValue = Math.max(0, numberValue(valueFor(row, "discountValue")) || 0);
+    const itemDiscountType = itemDiscountTypeValue(valueFor(row, "itemDiscountType"));
+    const itemDiscountValue = Math.max(0, numberValue(valueFor(row, "itemDiscountValue")) || 0);
     const taxRate = Math.max(0, numberValue(valueFor(row, "taxRate")) || 0);
     if (!importId) errors.push(`Baris ${rowNumber}: Import_ID wajib diisi.`);
     if (!storeNumber) errors.push(`Baris ${rowNumber}: Nama_Toko wajib diisi.`);
@@ -104,8 +114,10 @@ export function parseInvoiceImportRows(rows: Record<string, unknown>[]): ImportI
     if (!Number.isFinite(quantity) || quantity <= 0) errors.push(`Baris ${rowNumber}: Qty harus lebih dari 0.`);
     if (!Number.isFinite(unitPrice) || unitPrice < 0) errors.push(`Baris ${rowNumber}: Harga harus 0 atau lebih.`);
     if (discountType === "percentage" && discountValue > 100) errors.push(`Baris ${rowNumber}: Diskon persentase maksimal 100.`);
+    if (itemDiscountType === "percentage" && itemDiscountValue > 100) errors.push(`Baris ${rowNumber}: Diskon item persentase maksimal 100.`);
+    if (itemDiscountType === "amount" && itemDiscountValue > unitPrice) errors.push(`Baris ${rowNumber}: Potongan item per unit tidak boleh melebihi harga satuan.`);
     if (taxRate > 100) errors.push(`Baris ${rowNumber}: Pajak maksimal 100.`);
-    if (!importId || !storeNumber || !clientName || !invoiceDate || !dueDate || !description || !Number.isFinite(quantity) || quantity <= 0 || !Number.isFinite(unitPrice) || unitPrice < 0 || (discountType === "percentage" && discountValue > 100) || taxRate > 100) return;
+    if (!importId || !storeNumber || !clientName || !invoiceDate || !dueDate || !description || !Number.isFinite(quantity) || quantity <= 0 || !Number.isFinite(unitPrice) || unitPrice < 0 || (discountType === "percentage" && discountValue > 100) || (itemDiscountType === "percentage" && itemDiscountValue > 100) || (itemDiscountType === "amount" && itemDiscountValue > unitPrice) || taxRate > 100) return;
     const invoiceData: Omit<ImportedInvoice, "items"> = {
       importId, clientName, clientEmail: nullable(valueFor(row, "clientEmail")), clientPhone: nullable(valueFor(row, "clientPhone")), billingAddress: nullable(valueFor(row, "billingAddress")),
       storeNumber, shippingAddress: nullable(valueFor(row, "shippingAddress")), invoiceDate, dueDate, currency: valueFor(row, "currency") || "IDR", discountType, discountValue, taxRate, notes: nullable(valueFor(row, "notes")),
@@ -116,10 +128,10 @@ export function parseInvoiceImportRows(rows: Record<string, unknown>[]): ImportI
       const currentFields = invoiceLevelFields(invoiceData);
       const different = Object.keys(existingFields).filter(key => existingFields[key as keyof typeof existingFields] !== currentFields[key as keyof typeof currentFields]);
       if (different.length) errors.push(`Baris ${rowNumber}: field ${different.join(", ")} harus sama untuk Import_ID ${importId}.`);
-      existing.items.push({ description, quantity, unitPrice });
+      existing.items.push({ description, quantity, unitPrice, discountType: itemDiscountType, discountValue: itemDiscountValue });
       return;
     }
-    groups.set(importId, { ...invoiceData, items: [{ description, quantity, unitPrice }] });
+    groups.set(importId, { ...invoiceData, items: [{ description, quantity, unitPrice, discountType: itemDiscountType, discountValue: itemDiscountValue }] });
   });
   return { invoices: errors.length ? [] : Array.from(groups.values()), errors };
 }

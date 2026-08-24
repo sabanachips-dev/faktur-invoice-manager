@@ -42,6 +42,8 @@ const catalogInput = z.object({
   name: z.string().trim().min(1).max(255),
   description: nullableString,
   defaultPrice: z.number().int().min(0),
+  discountType: z.enum(["none", "amount", "percentage"]).default("none"),
+  discountValue: z.number().int().min(0).default(0),
 });
 const businessInput = z.object({
   businessName: z.string().trim().min(1).max(255),
@@ -71,9 +73,13 @@ const invoiceInput = z.object({
   notes: nullableString,
   storeNumber: z.string().trim().max(100).optional().nullable(),
   shippingAddress: nullableString,
-  items: z.array(z.object({ catalogItemId: z.number().int().positive().optional().nullable(), description: z.string().trim().min(1).max(500), quantity: z.number().int().min(1).max(100000), unitPrice: z.number().int().min(0) })),
+  items: z.array(z.object({ catalogItemId: z.number().int().positive().optional().nullable(), description: z.string().trim().min(1).max(500), quantity: z.number().int().min(1).max(100000), unitPrice: z.number().int().min(0), discountType: z.enum(["none", "amount", "percentage"]).default("none"), discountValue: z.number().int().min(0).default(0) })),
 }).superRefine((value, context) => {
   if (value.discountType === "percentage" && value.discountValue > 100) context.addIssue({ code: "custom", path: ["discountValue"], message: "Diskon persentase maksimal 100%." });
+  value.items.forEach((item, index) => {
+    if (item.discountType === "percentage" && item.discountValue > 100) context.addIssue({ code: "custom", path: ["items", index, "discountValue"], message: "Diskon item persentase maksimal 100%." });
+    if (item.discountType === "amount" && item.discountValue > item.unitPrice) context.addIssue({ code: "custom", path: ["items", index, "discountValue"], message: "Potongan item per unit tidak boleh melebihi harga satuan." });
+  });
 });
 const bulkInvoiceInput = z.object({
   sourceInvoiceId: z.number().int().positive(),
@@ -242,7 +248,7 @@ export const workerRouter = t.router({
         p_client_id: Number(invoice.clientId), p_invoice_number: invoiceNumber, p_invoice_date: new Date().toISOString(), p_due_date: String(invoice.dueDate), p_status: "draft",
         p_currency: String(invoice.currency), p_discount_type: String(invoice.discountType), p_discount_value: Number(invoice.discountValue), p_tax_rate: Number(invoice.taxRate),
         p_notes: invoice.notes || null, p_store_number: invoice.storeNumber || null, p_shipping_address: invoice.shippingAddress || null,
-        p_items: existing.items.map(item => ({ catalogItemId: item.catalogItemId || null, description: item.description, quantity: item.quantity, unitPrice: item.unitPrice })),
+        p_items: existing.items.map(item => ({ catalogItemId: item.catalogItemId || null, description: item.description, quantity: item.quantity, unitPrice: item.unitPrice, discountType: item.discountType || "none", discountValue: Number(item.discountValue || 0) })),
       });
     }),
     get: protectedProcedure.input(z.object({ id: z.number().int().positive() })).query(({ ctx, input }) => getInvoiceDetail(ctx, input.id)),

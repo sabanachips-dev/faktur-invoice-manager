@@ -20,5 +20,7 @@
 | Daftar klien setelah pembersihan | Lulus | Halaman Klien hanya menampilkan empat entri yang namanya mengandung Fresh. |
 | Katalog setelah pembersihan | Lulus | Halaman Katalog tetap menampilkan tiga produk yang dipertahankan dan dapat digunakan saat membuat invoice baru. |
 | Pengujian regresi pascapembersihan | Lulus | Seluruh 40 berkas pengujian dan 76 pengujian lulus; pemeriksaan TypeScript selesai tanpa error. |
+| Editor diskon per item | Lulus | Invoice draft nyata yang sudah ada dapat dibuka setelah migrasi; setiap baris item menampilkan kontrol Tidak ada/Persen/Nominal dan subtotal tetap konsisten tanpa mengubah isi draft. |
+| Rilis diskon per item | Lulus | Promo katalog, perhitungan atomik, duplikasi, invoice massal, impor spreadsheet, ekspor ringkasan, preview, PDF, tautan publik, dan cetak telah diperbarui. Seluruh 40 berkas dan 79 pengujian lulus sebelum Worker staging versi `1f36bfcc-5c06-4118-aef4-eb944a83b920` diterbitkan. |
 
 Tahap berikutnya adalah memverifikasi halaman data lain dan alur staging dengan data hasil impor. Deployment Manus tetap tidak disentuh dan berfungsi sebagai fallback.

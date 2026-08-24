@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calculateInvoiceAmounts, formatInvoiceNumber, getNextAvailableInvoiceNumber } from "../shared/invoice";
+import { calculateInvoiceAmounts, calculateInvoiceItemAmounts, formatInvoiceNumber, getNextAvailableInvoiceNumber } from "../shared/invoice";
 
 describe("invoice calculation", () => {
   it("calculates subtotal, discount, tax, and total in rupiah", () => {
@@ -38,6 +38,26 @@ describe("invoice calculation", () => {
       discount: 125000,
       taxAmount: 0,
       total: 0,
+    });
+  });
+
+  it("calculates item percentage discounts before invoice discount and tax", () => {
+    expect(calculateInvoiceAmounts([
+      { quantity: 4, unitPrice: 50000, discountType: "percentage", discountValue: 10 },
+      { quantity: 2, unitPrice: 10000, discountType: "none", discountValue: 0 },
+    ], 5, 11, "percentage")).toEqual({
+      subtotal: 200000,
+      discount: 10000,
+      taxAmount: 20900,
+      total: 210900,
+    });
+  });
+
+  it("treats item nominal discounts as a potongan per unit", () => {
+    expect(calculateInvoiceItemAmounts({ quantity: 4, unitPrice: 50000, discountType: "amount", discountValue: 2000 })).toMatchObject({
+      gross: 200000,
+      discount: 8000,
+      subtotal: 192000,
     });
   });
 });

@@ -16,10 +16,11 @@ export type InvoiceExportSource = {
     notes: string | null;
   };
   client: { name: string; email: string | null };
+  itemDiscount?: number;
 };
 
 export function createInvoiceExportRows(source: InvoiceExportSource[]) {
-  return source.map(({ invoice, client }) => ({
+  return source.map(({ invoice, client, itemDiscount = 0 }) => ({
     "No. Invoice": invoice.invoiceNumber,
     Klien: client.name,
     "Email Klien": client.email || "",
@@ -28,7 +29,8 @@ export function createInvoiceExportRows(source: InvoiceExportSource[]) {
     Status: labelStatus(invoice.status),
     MataUang: invoice.currency,
     Subtotal: invoice.subtotal,
-    Diskon: invoice.discount,
+    "Diskon Per Item": itemDiscount,
+    "Diskon Invoice": invoice.discount,
     "Pajak (%)": invoice.taxRate,
     "Nominal Pajak": invoice.taxAmount,
     Total: invoice.total,
@@ -60,7 +62,7 @@ export async function exportInvoicesExcel(source: InvoiceExportSource[], filenam
   const sheet = XLSX.utils.json_to_sheet(rows);
   sheet["!cols"] = [
     { wch: 18 }, { wch: 28 }, { wch: 30 }, { wch: 16 }, { wch: 16 }, { wch: 16 }, { wch: 10 },
-    { wch: 16 }, { wch: 16 }, { wch: 11 }, { wch: 16 }, { wch: 18 }, { wch: 38 },
+    { wch: 16 }, { wch: 18 }, { wch: 18 }, { wch: 11 }, { wch: 16 }, { wch: 18 }, { wch: 38 },
   ];
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, sheet, "Invoice");
