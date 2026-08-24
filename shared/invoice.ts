@@ -9,6 +9,28 @@ export const INVOICE_STATUSES = [
 
 export type InvoiceStatus = (typeof INVOICE_STATUSES)[number];
 
+export const FULFILLMENT_STATUSES = [
+  "pending_payment",
+  "paid",
+  "processing",
+  "shipped",
+  "completed",
+  "cancelled",
+] as const;
+
+export type FulfillmentStatus = (typeof FULFILLMENT_STATUSES)[number];
+
+export function labelFulfillmentStatus(status: FulfillmentStatus) {
+  return ({
+    pending_payment: "Menunggu pembayaran",
+    paid: "Dibayar",
+    processing: "Diproses",
+    shipped: "Dikirim",
+    completed: "Selesai",
+    cancelled: "Dibatalkan",
+  })[status];
+}
+
 export type InvoiceLineCalculationInput = {
   quantity: number;
   unitPrice: number;

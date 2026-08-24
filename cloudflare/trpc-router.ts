@@ -4,7 +4,7 @@ import superjson from "superjson";
 import { z } from "zod";
 import { queryPath, supabaseRest, supabaseRpc } from "./supabase-rest";
 import { DASHBOARD_PERIODS, getDashboardPeriodRange, isDateWithinRange } from "../shared/dashboard";
-import { getNextAvailableInvoiceNumber, INVOICE_STATUSES } from "../shared/invoice";
+import { FULFILLMENT_STATUSES, getNextAvailableInvoiceNumber, INVOICE_STATUSES } from "../shared/invoice";
 import { parseInvoiceImportRows } from "../shared/invoiceImport";
 
 export type WorkerEnv = { SUPABASE_URL: string; SUPABASE_PUBLISHABLE_KEY: string; RESEND_API_KEY?: string; RESEND_FROM_EMAIL?: string };
@@ -272,6 +272,9 @@ export const workerRouter = t.router({
       await postgrestInsert(ctx, "invoiceActivities", { userId: ctx.user.id, invoiceId: input.id, action: "status_changed", description: `Status invoice diubah menjadi ${input.status}.` });
       return rows[0];
     }),
+    updateFulfillment: protectedProcedure.input(z.object({ id: z.number().int().positive(), fulfillmentStatus: z.enum(FULFILLMENT_STATUSES), courierName: z.string().trim().max(100).optional().nullable(), trackingNumber: z.string().trim().max(120).optional().nullable() }).superRefine((value, context) => {
+      if (["shipped", "completed"].includes(value.fulfillmentStatus) && (!value.courierName || !value.trackingNumber)) context.addIssue({ code: "custom", path: ["trackingNumber"], message: "Kurir dan nomor resi wajib diisi untuk pesanan yang dikirim atau selesai." });
+    })).mutation(({ ctx, input }) => supabaseRpc<number>(ctx, "update_invoice_fulfillment", { p_invoice_id: input.id, p_fulfillment_status: input.fulfillmentStatus, p_courier_name: input.courierName || null, p_tracking_number: input.trackingNumber || null })),
     sendEmail: protectedProcedure.input(z.object({ id: z.number().int().positive(), origin: z.string().url() })).mutation(async ({ ctx, input }) => {
       const document = await getInvoiceDetail(ctx, input.id);
       if (!document) throw new TRPCError({ code: "NOT_FOUND", message: "Invoice tidak ditemukan." });

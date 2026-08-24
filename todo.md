@@ -226,5 +226,5 @@
 - [x] Menyusun roadmap bertahap untuk kebutuhan operasional bisnis sendiri dan opsi perluasan menjadi SaaS multi-tenant.
 - [x] Menerapkan diskon per item dengan diskon nominal per unit, default promo katalog, dan perhitungan total invoice yang atomik.
 - [x] Memperluas dukungan diskon per item ke duplikasi, invoice massal, impor spreadsheet, ekspor ringkasan, preview, PDF, tautan publik, dan cetak.
-- [ ] Menambahkan status pemenuhan pesanan yang terpisah dari status pembayaran serta informasi kurir dan nomor resi manual.
+- [x] Menambahkan status pemenuhan pesanan yang terpisah dari status pembayaran serta informasi kurir dan nomor resi manual.
 - [ ] Meningkatkan halaman invoice publik untuk pembeli setelah alur status dan pengiriman stabil.
