@@ -56,6 +56,7 @@ const businessInput = z.object({
   defaultTaxRate: z.number().int().min(0).max(100),
   defaultCurrency: z.string().trim().length(3),
 });
+const logoInput = z.object({ dataUrl: z.string().max(2_100_000) });
 const invoiceInput = z.object({
   clientId: z.number().int().positive(),
   invoiceNumber: z.string().trim().max(80).optional(),
@@ -262,6 +263,27 @@ export const workerRouter = t.router({
         method: "PATCH", headers: { Prefer: "return=representation" }, body: JSON.stringify({ ...input, email: input.email || null }),
       });
       return rows[0] ?? getBusinessProfile(ctx);
+    }),
+    uploadLogo: protectedProcedure.input(logoInput).mutation(async ({ ctx, input }) => {
+      const match = input.dataUrl.match(/^data:(image\/(?:png|jpeg|webp));base64,([A-Za-z0-9+/=]+)$/);
+      if (!match) throw new TRPCError({ code: "BAD_REQUEST", message: "Gunakan format PNG, JPG, atau WEBP." });
+      const mimeType = match[1];
+      const binary = atob(match[2]);
+      if (binary.length > 1_500_000) throw new TRPCError({ code: "BAD_REQUEST", message: "Ukuran logo maksimal 1,5 MB." });
+      const bytes = Uint8Array.from(binary, character => character.charCodeAt(0));
+      const extension = mimeType === "image/jpeg" ? "jpg" : mimeType.slice("image/".length);
+      const objectPath = `${ctx.user.authUserId}/logo.${extension}`;
+      const upload = await fetch(`${ctx.env.SUPABASE_URL}/storage/v1/object/business-logos/${objectPath}`, {
+        method: "POST",
+        headers: { apikey: ctx.env.SUPABASE_PUBLISHABLE_KEY, authorization: ctx.accessToken!, "content-type": mimeType, "x-upsert": "true" },
+        body: bytes,
+      });
+      if (!upload.ok) throw new TRPCError({ code: "BAD_REQUEST", message: "Logo bisnis tidak dapat diunggah." });
+      const logoUrl = `${ctx.env.SUPABASE_URL}/storage/v1/object/public/business-logos/${objectPath}`;
+      const rows = await supabaseRest<Record<string, unknown>[]>(ctx, queryPath("businessProfiles", { userId: `eq.${ctx.user.id}` }), {
+        method: "PATCH", headers: { Prefer: "return=representation" }, body: JSON.stringify({ logoUrl }),
+      });
+      return rows[0] ?? { logoUrl };
     }),
   }),
   clients: t.router({

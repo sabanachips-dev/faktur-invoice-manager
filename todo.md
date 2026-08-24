@@ -206,5 +206,6 @@
 - [x] Menulis dan menjalankan pengujian regresi Dashboard Worker untuk periode dan metrik invoice.
 - [ ] Menyiapkan endpoint invoice publik, storage logo Supabase, dan pengiriman email tanpa membuka data privat.
 - [x] Membuat fungsi RPC invoice publik yang hanya mengembalikan dokumen berdasarkan publicId tanpa membuka tabel invoice secara global.
+- [x] Memigrasikan unggahan logo bisnis ke bucket Supabase Storage dan membatasi akses sesuai pemilik bisnis.
 - [ ] Menyusun ekspor, transformasi, impor, dan backup data deterministik dari database Manus sebelum data produksi dipindahkan.
 - [ ] Menguji alur staging lengkap dengan akun Supabase, lalu menyiapkan cutover dan rollback tanpa mengubah domain Manus aktif.
