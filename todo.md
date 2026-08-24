@@ -199,6 +199,7 @@
 - [ ] Memigrasikan procedure Invoice, dashboard, aktivitas, batch, serta impor ke transaksi/RPC PostgreSQL yang aman.
 - [x] Membuat fungsi RPC PostgreSQL atomik untuk invoice massal dan invoice rekap per batch.
 - [x] Membuat fungsi RPC PostgreSQL atomik untuk impor spreadsheet invoice setelah validasi data selesai di browser.
+- [x] Memigrasikan duplikasi invoice ke Worker dengan pembuatan invoice baru yang atomik.
 - [x] Membuat fungsi RPC PostgreSQL atomik untuk pembuatan invoice dan item agar tidak ada invoice tersimpan sebagian.
 - [x] Membuat fungsi RPC PostgreSQL atomik untuk pembaruan invoice dan penggantian item.
 - [x] Memigrasikan pembacaan daftar/detail invoice, nomor berikutnya, riwayat, dan perubahan status ke Worker Supabase/RLS.

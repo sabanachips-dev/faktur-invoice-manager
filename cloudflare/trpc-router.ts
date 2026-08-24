@@ -229,6 +229,18 @@ export const workerRouter = t.router({
       const invoiceIds = await supabaseRpc<number[]>(ctx, "import_invoices_atomic", { p_invoices: parsed.invoices });
       return { invoiceIds, createdCount: invoiceIds.length };
     }),
+    duplicate: protectedProcedure.input(z.object({ id: z.number().int().positive() })).mutation(async ({ ctx, input }) => {
+      const existing = await getInvoiceDetail(ctx, input.id);
+      if (!existing) throw new TRPCError({ code: "NOT_FOUND", message: "Invoice tidak ditemukan." });
+      const invoice = existing.invoice as Record<string, unknown>;
+      const invoiceNumber = await workerRouter.createCaller(ctx).invoices.nextNumber();
+      return supabaseRpc<number>(ctx, "create_invoice_atomic", {
+        p_client_id: Number(invoice.clientId), p_invoice_number: invoiceNumber, p_invoice_date: new Date().toISOString(), p_due_date: String(invoice.dueDate), p_status: "draft",
+        p_currency: String(invoice.currency), p_discount_type: String(invoice.discountType), p_discount_value: Number(invoice.discountValue), p_tax_rate: Number(invoice.taxRate),
+        p_notes: invoice.notes || null, p_store_number: invoice.storeNumber || null, p_shipping_address: invoice.shippingAddress || null,
+        p_items: existing.items.map(item => ({ catalogItemId: item.catalogItemId || null, description: item.description, quantity: item.quantity, unitPrice: item.unitPrice })),
+      });
+    }),
     get: protectedProcedure.input(z.object({ id: z.number().int().positive() })).query(({ ctx, input }) => getInvoiceDetail(ctx, input.id)),
     getMany: protectedProcedure.input(z.object({ ids: z.array(z.number().int().positive()).min(1).max(100) })).query(async ({ ctx, input }) => {
       const details = await Promise.all([...new Set(input.ids)].map(id => getInvoiceDetail(ctx, id)));
