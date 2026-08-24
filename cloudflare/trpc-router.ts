@@ -2,7 +2,7 @@ import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { z } from "zod";
-import { queryPath, supabaseRest } from "./supabase-rest";
+import { queryPath, supabaseRest, supabaseRpc } from "./supabase-rest";
 import { DASHBOARD_PERIODS, getDashboardPeriodRange, isDateWithinRange } from "../shared/dashboard";
 import { getNextAvailableInvoiceNumber, INVOICE_STATUSES } from "../shared/invoice";
 
@@ -55,6 +55,23 @@ const businessInput = z.object({
   invoiceNumberFormat: z.string().trim().min(1).max(80),
   defaultTaxRate: z.number().int().min(0).max(100),
   defaultCurrency: z.string().trim().length(3),
+});
+const invoiceInput = z.object({
+  clientId: z.number().int().positive(),
+  invoiceNumber: z.string().trim().max(80).optional(),
+  invoiceDate: z.date(),
+  dueDate: z.date(),
+  status: z.enum(INVOICE_STATUSES),
+  currency: z.string().trim().length(3),
+  discountType: z.enum(["amount", "percentage"]),
+  discountValue: z.number().int().min(0),
+  taxRate: z.number().int().min(0).max(100),
+  notes: nullableString,
+  storeNumber: z.string().trim().max(100).optional().nullable(),
+  shippingAddress: nullableString,
+  items: z.array(z.object({ catalogItemId: z.number().int().positive().optional().nullable(), description: z.string().trim().min(1).max(500), quantity: z.number().int().min(1).max(100000), unitPrice: z.number().int().min(0) })),
+}).superRefine((value, context) => {
+  if (value.discountType === "percentage" && value.discountValue > 100) context.addIssue({ code: "custom", path: ["discountValue"], message: "Diskon persentase maksimal 100%." });
 });
 
 async function getBusinessProfile(ctx: WorkerContext) {
@@ -174,6 +191,15 @@ export const workerRouter = t.router({
         supabaseRest<{ invoiceNumber: string }[]>(ctx, queryPath("invoices", { select: "invoiceNumber" })),
       ]);
       return getNextAvailableInvoiceNumber(rows.map(row => row.invoiceNumber), new Date().getFullYear(), String(profile?.invoiceNumberFormat || "INV-{YYYY}-{SEQ}"));
+    }),
+    create: protectedProcedure.input(invoiceInput).mutation(async ({ ctx, input }) => {
+      const invoiceNumber = input.invoiceNumber?.trim() || await workerRouter.createCaller(ctx).invoices.nextNumber();
+      const invoiceId = await supabaseRpc<number>(ctx, "create_invoice_atomic", {
+        p_client_id: input.clientId, p_invoice_number: invoiceNumber, p_invoice_date: input.invoiceDate.toISOString(), p_due_date: input.dueDate.toISOString(), p_status: input.status,
+        p_currency: input.currency, p_discount_type: input.discountType, p_discount_value: input.discountValue, p_tax_rate: input.taxRate,
+        p_notes: input.notes || null, p_store_number: input.storeNumber || null, p_shipping_address: input.shippingAddress || null, p_items: input.items,
+      });
+      return invoiceId;
     }),
     get: protectedProcedure.input(z.object({ id: z.number().int().positive() })).query(({ ctx, input }) => getInvoiceDetail(ctx, input.id)),
     getMany: protectedProcedure.input(z.object({ ids: z.array(z.number().int().positive()).min(1).max(100) })).query(async ({ ctx, input }) => {

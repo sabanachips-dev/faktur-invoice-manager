@@ -31,3 +31,10 @@ export function queryPath(table: string, params: Record<string, string | undefin
   for (const [key, value] of Object.entries(params)) if (value !== undefined) search.set(key, value);
   return `${table}?${search.toString()}`;
 }
+
+export function supabaseRpc<T>(ctx: SupabaseRestContext, functionName: string, args: Record<string, unknown>) {
+  return supabaseRest<T>(ctx, `rpc/${functionName}`, {
+    method: "POST",
+    body: JSON.stringify(args),
+  });
+}
