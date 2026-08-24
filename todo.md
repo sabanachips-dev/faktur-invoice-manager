@@ -240,3 +240,12 @@
 - [x] Menetapkan alamat asal default Sabana Chips di Payakumbuh untuk cek ongkir yang lebih cepat dan tetap dapat diubah.
 - [x] Menyusun ringkasan penggunaan Kanban Board baru untuk manajemen pesanan.
 - [x] Menyusun panduan pengujian cek resi otomatis dengan Biteship Sandbox tanpa order produksi.
+- [x] Mengaudit alur inti staging, termasuk login, dashboard, invoice, klien, katalog, status pesanan, Kanban, pengiriman, ekspor, dan tautan publik.
+- [x] Menilai ketahanan regresi, respons aplikasi, keamanan dasar, serta log error staging.
+- [x] Menilai estetika dan UX desktop/mobile untuk pengguna awam serta IKM pemula, lalu memperbaiki temuan prioritas.
+- [x] Menyusun laporan kesiapan staging dengan batasan yang masih perlu diuji pengguna sebelum go-live.
+- [x] Menambahkan header keamanan browser pada respons Worker tanpa mengganggu font, analytics, PDF, dan alur aplikasi.
+- [x] Menambahkan petunjuk scroll horizontal Kanban Board agar pengguna ponsel memahami cara melihat seluruh tahap pesanan.
+- [x] Menambahkan petunjuk scroll tabel invoice pada ponsel agar aksi dan kolom tidak tersembunyi bagi pengguna pemula.
+- [x] Meninjau dan mengurangi latensi pemeriksaan kesehatan staging yang bergantung pada layanan Supabase upstream.
+- [ ] Meninjau dua entri klien FRESH Mart Toko 01 yang tampak duplikat dan menggabungkannya hanya setelah persetujuan pemilik.

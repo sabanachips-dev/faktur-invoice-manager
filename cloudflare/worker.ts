@@ -7,10 +7,20 @@ type Env = {
 };
 
 function json(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), {
+  return withSecurityHeaders(new Response(JSON.stringify(body), {
     status,
     headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" },
-  });
+  }));
+}
+
+function withSecurityHeaders(response: Response) {
+  const headers = new Headers(response.headers);
+  headers.set("x-content-type-options", "nosniff");
+  headers.set("x-frame-options", "SAMEORIGIN");
+  headers.set("referrer-policy", "strict-origin-when-cross-origin");
+  headers.set("permissions-policy", "camera=(), geolocation=(), microphone=()");
+  headers.set("cross-origin-opener-policy", "same-origin");
+  return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
 }
 
 export default {
@@ -18,6 +28,10 @@ export default {
     const url = new URL(request.url);
 
     if (url.pathname === "/api/health") {
+      return json({ status: "ok", services: { worker: true } });
+    }
+
+    if (url.pathname === "/api/health/deep") {
       const supabase = await fetch(`${env.SUPABASE_URL}/auth/v1/settings`, {
         headers: { apikey: env.SUPABASE_PUBLISHABLE_KEY },
       });
@@ -49,13 +63,13 @@ export default {
     }
 
     if (url.pathname === "/api/trpc" || url.pathname.startsWith("/api/trpc/")) {
-      return handleTrpcRequest(request, env);
+      return withSecurityHeaders(await handleTrpcRequest(request, env));
     }
 
     if (url.pathname.startsWith("/api/")) {
       return json({ error: "API route is not available in the staging worker." }, 404);
     }
 
-    return env.ASSETS.fetch(request);
+    return withSecurityHeaders(await env.ASSETS.fetch(request));
   },
 };
