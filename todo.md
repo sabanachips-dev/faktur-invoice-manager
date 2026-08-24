@@ -248,4 +248,9 @@
 - [x] Menambahkan petunjuk scroll horizontal Kanban Board agar pengguna ponsel memahami cara melihat seluruh tahap pesanan.
 - [x] Menambahkan petunjuk scroll tabel invoice pada ponsel agar aksi dan kolom tidak tersembunyi bagi pengguna pemula.
 - [x] Meninjau dan mengurangi latensi pemeriksaan kesehatan staging yang bergantung pada layanan Supabase upstream.
-- [ ] Meninjau dua entri klien FRESH Mart Toko 01 yang tampak duplikat dan menggabungkannya hanya setelah persetujuan pemilik.
+- [x] Meninjau dua entri klien FRESH Mart Toko 01 yang tampak duplikat dan menggabungkannya hanya setelah persetujuan pemilik.
+- [x] Membandingkan dua klien FRESH Mart Toko 01 secara non-destruktif berdasarkan kontak, alamat, dan relasi invoice.
+- [x] Memvalidasi pratinjau cetak invoice tanpa mengubah invoice aktif serta menyiapkan bukti yang dibutuhkan untuk uji printer fisik.
+- [x] Meminta keputusan pemilik sebelum melakukan penggabungan klien atau perubahan layout cetak.
+- [x] Menghapus satu entri FRESH Mart Toko 01 duplikat yang tidak memiliki invoice setelah persetujuan pemilik.
+- [x] Memverifikasi satu entri FRESH Mart Toko 01 tersisa dan tidak ada invoice yang berubah setelah penghapusan.
