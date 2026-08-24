@@ -197,6 +197,7 @@
 - [ ] Menggantikan procedure data inti Profil Bisnis, Klien, dan Katalog dengan endpoint Supabase/RLS yang berjalan di Worker.
 - [x] Menulis dan menjalankan pengujian unit untuk otorisasi serta operasi Profil Bisnis, Klien, dan Katalog pada Worker.
 - [ ] Memigrasikan procedure Invoice, dashboard, aktivitas, batch, serta impor ke transaksi/RPC PostgreSQL yang aman.
+- [ ] Membuat fungsi RPC PostgreSQL atomik untuk pembuatan invoice dan item agar tidak ada invoice tersimpan sebagian.
 - [ ] Memigrasikan pembacaan daftar/detail invoice, nomor berikutnya, riwayat, dan perubahan status ke Worker Supabase/RLS.
 - [x] Menulis dan menjalankan pengujian endpoint Worker untuk daftar invoice, nomor berikutnya, dan perubahan status.
 - [x] Memigrasikan procedure Dashboard beserta filter periode dan metrik pendapatan ke Worker Supabase/RLS.
