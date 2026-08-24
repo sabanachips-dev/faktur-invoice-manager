@@ -201,6 +201,14 @@ export const workerRouter = t.router({
       });
       return invoiceId;
     }),
+    update: protectedProcedure.input(z.object({ id: z.number().int().positive(), data: invoiceInput })).mutation(async ({ ctx, input }) => {
+      const invoiceNumber = input.data.invoiceNumber?.trim() || await workerRouter.createCaller(ctx).invoices.nextNumber();
+      return supabaseRpc<number>(ctx, "update_invoice_atomic", {
+        p_invoice_id: input.id, p_client_id: input.data.clientId, p_invoice_number: invoiceNumber, p_invoice_date: input.data.invoiceDate.toISOString(), p_due_date: input.data.dueDate.toISOString(), p_status: input.data.status,
+        p_currency: input.data.currency, p_discount_type: input.data.discountType, p_discount_value: input.data.discountValue, p_tax_rate: input.data.taxRate,
+        p_notes: input.data.notes || null, p_store_number: input.data.storeNumber || null, p_shipping_address: input.data.shippingAddress || null, p_items: input.data.items,
+      });
+    }),
     get: protectedProcedure.input(z.object({ id: z.number().int().positive() })).query(({ ctx, input }) => getInvoiceDetail(ctx, input.id)),
     getMany: protectedProcedure.input(z.object({ ids: z.array(z.number().int().positive()).min(1).max(100) })).query(async ({ ctx, input }) => {
       const details = await Promise.all([...new Set(input.ids)].map(id => getInvoiceDetail(ctx, id)));
