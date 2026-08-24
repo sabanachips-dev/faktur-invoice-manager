@@ -248,6 +248,12 @@ export const workerRouter = t.router({
       return { deletedId: input.id };
     }),
   }),
+  publicInvoice: t.router({
+    get: t.procedure.input(z.object({ publicId: z.string().regex(/^[A-Za-z0-9]{8,32}$/, "Tautan invoice tidak valid.") })).query(({ ctx, input }) => {
+      const anonymousContext: WorkerContext = { ...ctx, accessToken: `Bearer ${ctx.env.SUPABASE_PUBLISHABLE_KEY}` };
+      return supabaseRpc<Record<string, unknown> | null>(anonymousContext, "get_public_invoice", { p_public_id: input.publicId });
+    }),
+  }),
   business: t.router({
     get: protectedProcedure.query(({ ctx }) => getBusinessProfile(ctx)),
     update: protectedProcedure.input(businessInput).mutation(async ({ ctx, input }) => {
