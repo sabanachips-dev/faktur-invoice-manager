@@ -221,3 +221,4 @@
 - [x] Mempertahankan klien toko Fresh serta nama produk yang relevan dan menghapus data invoice demo secara transaksional.
 - [x] Memverifikasi dashboard dan daftar invoice staging kosong setelah pembersihan data demo.
 - [ ] Menguji alur staging lengkap dengan akun Supabase, lalu menyiapkan cutover dan rollback tanpa mengubah domain Manus aktif.
+- [x] Menyusun panduan review seluruh fitur dan alur penggunaan staging agar penambahan berikutnya dapat diprioritaskan bersama pengguna.
