@@ -3,6 +3,7 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { z } from "zod";
 import { queryPath, supabaseRest } from "./supabase-rest";
+import { DASHBOARD_PERIODS, getDashboardPeriodRange, isDateWithinRange } from "../shared/dashboard";
 
 export type WorkerEnv = { SUPABASE_URL: string; SUPABASE_PUBLISHABLE_KEY: string };
 export type WorkerUser = { id: number; authUserId: string; openId: string; name: string | null; email: string | null; role: "admin" | "user" };
@@ -76,10 +77,69 @@ function postgrestInsert(ctx: WorkerContext, table: string, body: unknown) {
   });
 }
 
+type InvoiceRow = Record<string, unknown> & {
+  id: number;
+  invoiceDate: string;
+  total: number;
+  status: string;
+  isBatchSummary: boolean;
+  bulkBatchId: string | null;
+};
+
+async function listInvoiceRows(ctx: WorkerContext) {
+  const rows = await supabaseRest<(InvoiceRow & { client: Record<string, unknown> | null })[]>(ctx, queryPath("invoices", {
+    select: "*,client:clients(*)", order: "createdAt.desc",
+  }));
+  return rows.map(({ client, ...invoice }) => ({ invoice, client }));
+}
+
+async function getDashboard(ctx: WorkerContext, period: (typeof DASHBOARD_PERIODS)[number]) {
+  const all = await listInvoiceRows(ctx);
+  const range = getDashboardPeriodRange(period);
+  const rows = all.map(row => row.invoice).filter(invoice => !invoice.isBatchSummary);
+  const filteredRows = rows.filter(invoice => isDateWithinRange(new Date(invoice.invoiceDate), range.start, range.end));
+  const sum = (items: InvoiceRow[]) => items.reduce((total, invoice) => total + Number(invoice.total || 0), 0);
+  const income = period === "this_year"
+    ? Array.from({ length: 12 }, (_, index) => {
+      const date = new Date(range.start.getFullYear(), index, 1);
+      const value = filteredRows.filter(invoice => invoice.status === "paid" && new Date(invoice.invoiceDate).getMonth() === index).reduce((total, invoice) => total + Number(invoice.total || 0), 0);
+      return { label: date.toLocaleString("id-ID", { month: "short" }), value };
+    })
+    : Array.from({ length: Math.ceil((range.end.getTime() - range.start.getTime()) / 86_400_000) }, (_, index) => {
+      const date = new Date(range.start.getFullYear(), range.start.getMonth(), range.start.getDate() + index);
+      const nextDate = new Date(range.start.getFullYear(), range.start.getMonth(), range.start.getDate() + index + 1);
+      const value = filteredRows.filter(invoice => invoice.status === "paid" && isDateWithinRange(new Date(invoice.invoiceDate), date, nextDate)).reduce((total, invoice) => total + Number(invoice.total || 0), 0);
+      return { label: String(date.getDate()), value };
+    });
+  const summaryRows = all.filter(row => row.invoice.isBatchSummary && isDateWithinRange(new Date(row.invoice.invoiceDate), range.start, range.end)).slice(0, 3);
+  const batchRecaps = await Promise.all(summaryRows.map(async row => {
+    const items = await supabaseRest<Record<string, unknown>[]>(ctx, queryPath("invoiceItems", { select: "*", invoiceId: `eq.${row.invoice.id}`, order: "position.asc" }));
+    const storeCount = all.filter(candidate => candidate.invoice.bulkBatchId === row.invoice.bulkBatchId && !candidate.invoice.isBatchSummary).length;
+    return { invoice: row.invoice, client: row.client, storeCount, items };
+  }));
+  return {
+    period,
+    periodLabel: range.label,
+    metrics: {
+      monthTotal: sum(filteredRows), monthCount: filteredRows.length,
+      unpaidTotal: sum(filteredRows.filter(invoice => invoice.status === "unpaid" || invoice.status === "sent")),
+      unpaidCount: filteredRows.filter(invoice => invoice.status === "unpaid" || invoice.status === "sent").length,
+      paidTotal: sum(filteredRows.filter(invoice => invoice.status === "paid")), paidCount: filteredRows.filter(invoice => invoice.status === "paid").length,
+      overdueTotal: sum(filteredRows.filter(invoice => invoice.status === "overdue")), overdueCount: filteredRows.filter(invoice => invoice.status === "overdue").length,
+    },
+    income,
+    recent: all.filter(row => !row.invoice.isBatchSummary && isDateWithinRange(new Date(row.invoice.invoiceDate), range.start, range.end)).slice(0, 5),
+    batchRecaps,
+  };
+}
+
 export const workerRouter = t.router({
   auth: t.router({
     me: t.procedure.query(({ ctx }) => ctx.user),
     session: protectedProcedure.query(({ ctx }) => ({ id: ctx.user.id, email: ctx.user.email, name: ctx.user.name })),
+  }),
+  dashboard: t.router({
+    get: protectedProcedure.input(z.object({ period: z.enum(DASHBOARD_PERIODS).default("this_month") })).query(({ ctx, input }) => getDashboard(ctx, input.period)),
   }),
   business: t.router({
     get: protectedProcedure.query(({ ctx }) => getBusinessProfile(ctx)),
