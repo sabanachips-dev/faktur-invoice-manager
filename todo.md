@@ -254,3 +254,13 @@
 - [x] Meminta keputusan pemilik sebelum melakukan penggabungan klien atau perubahan layout cetak.
 - [x] Menghapus satu entri FRESH Mart Toko 01 duplikat yang tidak memiliki invoice setelah persetujuan pemilik.
 - [x] Memverifikasi satu entri FRESH Mart Toko 01 tersisa dan tidak ada invoice yang berubah setelah penghapusan.
+- [x] Memeriksa kelengkapan konfigurasi profil bisnis dan rekening pada staging secara baca-saja sebelum cutover.
+- [x] Memeriksa metode akses Supabase aktif dan sinyal keamanan dasar secara baca-saja.
+- [x] Menyusun urutan sisa validasi operasional dengan uji cetak fisik sebagai langkah terakhir.
+- [x] Membatasi fungsi helper dan trigger SECURITY DEFINER agar tidak dapat dipanggil langsung melalui API publik.
+- [x] Menambahkan indeks foreign key invoice yang direkomendasikan advisor untuk menjaga performa saat data bertambah.
+- [x] Mengoptimalkan pemanggilan fungsi auth pada kebijakan RLS pengguna tanpa mengubah otorisasi.
+- [x] Memvalidasi ulang akses staging, security advisor, dan performance advisor setelah penguatan database.
+- [ ] Melengkapi email bisnis dan nomor rekening pada Pengaturan sebelum invoice dibagikan ke pelanggan.
+- [ ] Mengaktifkan Leaked Password Protection di Supabase Auth bila login kata sandi digunakan saat cutover.
+- [ ] Memindahkan helper RLS terautentikasi ke schema non-API setelah regresi sesi terautentikasi lengkap tersedia.
