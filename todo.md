@@ -212,4 +212,9 @@
 - [x] Memigrasikan unggahan logo bisnis ke bucket Supabase Storage dan membatasi akses sesuai pemilik bisnis.
 - [ ] Menyusun ekspor, transformasi, impor, dan backup data deterministik dari database Manus sebelum data produksi dipindahkan.
 - [x] Mengaudit jumlah dan relasi data sumber tanpa menyalin data produksi sebelum persetujuan migrasi data.
+- [x] Membuat backup logis Supabase sebelum impor seluruh data sumber dimulai.
+- [x] Mengekspor dan mentransformasikan seluruh data sumber untuk akun Supabase pengguna saat ini.
+- [x] Mengimpor profil bisnis, klien, katalog, invoice, item, dan aktivitas dengan relasi yang terverifikasi.
+- [x] Mengimpor data valid yang disetujui pengguna sambil mengarsipkan profil tambahan dan riwayat tanpa invoice terkait.
+- [x] Memverifikasi jumlah data, relasi invoice, dan tampilan staging setelah impor selesai.
 - [ ] Menguji alur staging lengkap dengan akun Supabase, lalu menyiapkan cutover dan rollback tanpa mengubah domain Manus aktif.
