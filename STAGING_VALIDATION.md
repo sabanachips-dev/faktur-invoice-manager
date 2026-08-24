@@ -23,5 +23,6 @@
 | Editor diskon per item | Lulus | Invoice draft nyata yang sudah ada dapat dibuka setelah migrasi; setiap baris item menampilkan kontrol Tidak ada/Persen/Nominal dan subtotal tetap konsisten tanpa mengubah isi draft. |
 | Rilis diskon per item | Lulus | Promo katalog, perhitungan atomik, duplikasi, invoice massal, impor spreadsheet, ekspor ringkasan, preview, PDF, tautan publik, dan cetak telah diperbarui. Seluruh 40 berkas dan 79 pengujian lulus sebelum Worker staging versi `1f36bfcc-5c06-4118-aef4-eb944a83b920` diterbitkan. |
 | Status pesanan dan resi manual | Lulus | Preview invoice menampilkan panel terpisah untuk tahap pesanan, kurir, dan nomor resi; invoice lama tetap aman dengan nilai awal Menunggu pembayaran tanpa kurir/resi. Seluruh 41 berkas dan 81 pengujian lulus sebelum Worker staging versi `6e7a86e3-c26d-49d4-b037-1327d7a1d6cd` diterbitkan. |
+| Halaman invoice publik pembeli | Lulus | Halaman publik mobile-first kini menampilkan total tagihan, aksi salin nomor invoice, status pesanan, keadaan resi, dan tautan telepon bisnis tanpa membuka data operasional internal. Rilis diterbitkan sebagai Worker staging versi `e12813fb-ecf5-4d50-800e-5600cb4c695f`. |
 
 Tahap berikutnya adalah memverifikasi halaman data lain dan alur staging dengan data hasil impor. Deployment Manus tetap tidak disentuh dan berfungsi sebagai fallback.
