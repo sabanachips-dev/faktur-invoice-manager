@@ -200,6 +200,7 @@
 - [x] Membuat fungsi RPC PostgreSQL atomik untuk invoice massal dan invoice rekap per batch.
 - [x] Membuat fungsi RPC PostgreSQL atomik untuk impor spreadsheet invoice setelah validasi data selesai di browser.
 - [x] Memigrasikan duplikasi invoice ke Worker dengan pembuatan invoice baru yang atomik.
+- [x] Memigrasikan pengiriman email invoice melalui Resend di Worker dengan secret Cloudflare yang tidak terekspos ke browser.
 - [x] Membuat fungsi RPC PostgreSQL atomik untuk pembuatan invoice dan item agar tidak ada invoice tersimpan sebagian.
 - [x] Membuat fungsi RPC PostgreSQL atomik untuk pembaruan invoice dan penggantian item.
 - [x] Memigrasikan pembacaan daftar/detail invoice, nomor berikutnya, riwayat, dan perubahan status ke Worker Supabase/RLS.

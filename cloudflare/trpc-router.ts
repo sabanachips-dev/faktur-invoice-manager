@@ -7,7 +7,7 @@ import { DASHBOARD_PERIODS, getDashboardPeriodRange, isDateWithinRange } from ".
 import { getNextAvailableInvoiceNumber, INVOICE_STATUSES } from "../shared/invoice";
 import { parseInvoiceImportRows } from "../shared/invoiceImport";
 
-export type WorkerEnv = { SUPABASE_URL: string; SUPABASE_PUBLISHABLE_KEY: string };
+export type WorkerEnv = { SUPABASE_URL: string; SUPABASE_PUBLISHABLE_KEY: string; RESEND_API_KEY?: string; RESEND_FROM_EMAIL?: string };
 export type WorkerUser = { id: number; authUserId: string; openId: string; name: string | null; email: string | null; role: "admin" | "user" };
 export type WorkerContext = { user: WorkerUser | null; env: WorkerEnv; accessToken: string | null };
 
@@ -170,6 +170,10 @@ async function getInvoiceDetail(ctx: WorkerContext, invoiceId: number) {
   return { ...row, business, items };
 }
 
+function escapeHtml(value: string) {
+  return value.replace(/[&<>'"]/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[character] || character);
+}
+
 export const workerRouter = t.router({
   auth: t.router({
     me: t.procedure.query(({ ctx }) => ctx.user),
@@ -261,6 +265,23 @@ export const workerRouter = t.router({
       if (!rows[0]) throw new TRPCError({ code: "NOT_FOUND", message: "Invoice tidak ditemukan." });
       await postgrestInsert(ctx, "invoiceActivities", { userId: ctx.user.id, invoiceId: input.id, action: "status_changed", description: `Status invoice diubah menjadi ${input.status}.` });
       return rows[0];
+    }),
+    sendEmail: protectedProcedure.input(z.object({ id: z.number().int().positive(), origin: z.string().url() })).mutation(async ({ ctx, input }) => {
+      const document = await getInvoiceDetail(ctx, input.id);
+      if (!document) throw new TRPCError({ code: "NOT_FOUND", message: "Invoice tidak ditemukan." });
+      const invoice = document.invoice as Record<string, unknown>;
+      const client = document.client as Record<string, unknown>;
+      const business = document.business as Record<string, unknown>;
+      const email = String(client.email || "");
+      if (!email) throw new TRPCError({ code: "BAD_REQUEST", message: "Klien belum memiliki alamat email." });
+      if (!ctx.env.RESEND_API_KEY || !ctx.env.RESEND_FROM_EMAIL) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Layanan email belum dikonfigurasi." });
+      const publicLink = `${input.origin.replace(/\/$/, "")}/p/${String(invoice.publicId)}`;
+      const subject = `Invoice ${String(invoice.invoiceNumber)} dari ${String(business.businessName)}`;
+      const response = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${ctx.env.RESEND_API_KEY}`, "content-type": "application/json" }, body: JSON.stringify({ from: ctx.env.RESEND_FROM_EMAIL, to: [email], subject, html: `<main style="font-family:Arial,sans-serif;color:#18233a;max-width:560px;margin:0 auto;padding:28px"><h1 style="font-size:24px">Invoice ${escapeHtml(String(invoice.invoiceNumber))}</h1><p>Halo ${escapeHtml(String(client.name))},</p><p>${escapeHtml(String(business.businessName))} telah mengirimkan invoice. <a href="${escapeHtml(publicLink)}">Lihat invoice</a></p></main>` }) });
+      if (!response.ok) throw new TRPCError({ code: "BAD_REQUEST", message: "Email tidak dapat dikirim." });
+      await workerRouter.createCaller(ctx).invoices.updateStatus({ id: input.id, status: "sent" });
+      await postgrestInsert(ctx, "invoiceActivities", { userId: ctx.user.id, invoiceId: input.id, action: "email_sent", description: "Invoice dikirim melalui email kepada klien." });
+      return { success: true } as const;
     }),
     remove: protectedProcedure.input(z.object({ id: z.number().int().positive() })).mutation(async ({ ctx, input }) => {
       const existing = await getInvoiceDetail(ctx, input.id);
