@@ -211,4 +211,5 @@
 - [x] Membuat fungsi RPC invoice publik yang hanya mengembalikan dokumen berdasarkan publicId tanpa membuka tabel invoice secara global.
 - [x] Memigrasikan unggahan logo bisnis ke bucket Supabase Storage dan membatasi akses sesuai pemilik bisnis.
 - [ ] Menyusun ekspor, transformasi, impor, dan backup data deterministik dari database Manus sebelum data produksi dipindahkan.
+- [x] Mengaudit jumlah dan relasi data sumber tanpa menyalin data produksi sebelum persetujuan migrasi data.
 - [ ] Menguji alur staging lengkap dengan akun Supabase, lalu menyiapkan cutover dan rollback tanpa mengubah domain Manus aktif.
