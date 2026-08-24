@@ -5,6 +5,7 @@ import { z } from "zod";
 import { queryPath, supabaseRest, supabaseRpc } from "./supabase-rest";
 import { DASHBOARD_PERIODS, getDashboardPeriodRange, isDateWithinRange } from "../shared/dashboard";
 import { getNextAvailableInvoiceNumber, INVOICE_STATUSES } from "../shared/invoice";
+import { parseInvoiceImportRows } from "../shared/invoiceImport";
 
 export type WorkerEnv = { SUPABASE_URL: string; SUPABASE_PUBLISHABLE_KEY: string };
 export type WorkerUser = { id: number; authUserId: string; openId: string; name: string | null; email: string | null; role: "admin" | "user" };
@@ -81,6 +82,7 @@ const bulkInvoiceInput = z.object({
   invoiceDate: z.date(),
   dueDate: z.date(),
 });
+const importRowsInput = z.object({ rows: z.array(z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.null()]))).min(1).max(1000) });
 
 async function getBusinessProfile(ctx: WorkerContext) {
   const rows = await supabaseRest<Record<string, unknown>[]>(ctx, queryPath("businessProfiles", {
@@ -221,6 +223,12 @@ export const workerRouter = t.router({
       p_source_invoice_id: input.sourceInvoiceId, p_store_numbers: input.storeNumbers, p_shipping_address: input.shippingAddress,
       p_invoice_date: input.invoiceDate.toISOString(), p_due_date: input.dueDate.toISOString(),
     })),
+    importFromSheet: protectedProcedure.input(importRowsInput).mutation(async ({ ctx, input }) => {
+      const parsed = parseInvoiceImportRows(input.rows);
+      if (parsed.errors.length) throw new TRPCError({ code: "BAD_REQUEST", message: parsed.errors.join(" ") });
+      const invoiceIds = await supabaseRpc<number[]>(ctx, "import_invoices_atomic", { p_invoices: parsed.invoices });
+      return { invoiceIds, createdCount: invoiceIds.length };
+    }),
     get: protectedProcedure.input(z.object({ id: z.number().int().positive() })).query(({ ctx, input }) => getInvoiceDetail(ctx, input.id)),
     getMany: protectedProcedure.input(z.object({ ids: z.array(z.number().int().positive()).min(1).max(100) })).query(async ({ ctx, input }) => {
       const details = await Promise.all([...new Set(input.ids)].map(id => getInvoiceDetail(ctx, id)));
