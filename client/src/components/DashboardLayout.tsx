@@ -1,7 +1,7 @@
-import { useAuth } from "@/_core/hooks/useAuth";
+import { useSupabaseAuth } from "@/_core/hooks/useSupabaseAuth";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { startLogin } from "@/const";
+import { SupabaseLoginCard } from "@/components/SupabaseLoginCard";
 import { navigateBack } from "@/lib/navigation";
 import { ArrowLeft, BookOpen, FileText, LayoutDashboard, LogOut, Menu, Settings, Users, X } from "lucide-react";
 import { useState } from "react";
@@ -16,7 +16,7 @@ const menuItems = [
 ] as const;
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { loading, user, logout } = useAuth();
+  const { loading, user, logout } = useSupabaseAuth();
   const [location, setLocation] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -26,12 +26,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (!user) {
     return (
       <div className="min-h-screen app-surface grid place-items-center px-5">
-        <div className="w-full max-w-md rounded-2xl border bg-card p-8 text-center shadow-sm">
-          <div className="mx-auto mb-5 grid size-12 place-items-center rounded-xl bg-primary text-lg font-bold text-primary-foreground">F</div>
-          <h1 className="text-2xl font-bold tracking-tight">Masuk ke Faktur</h1>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">Kelola invoice, klien, dan pengaturan bisnis Anda di satu tempat.</p>
-          <Button className="mt-6 w-full" onClick={() => startLogin()}>Masuk untuk melanjutkan</Button>
-        </div>
+        <SupabaseLoginCard />
       </div>
     );
   }
@@ -54,7 +49,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </nav>
       <div className="border-t p-3">
         <div className="flex items-center gap-3 rounded-xl p-2">
-          <Avatar className="size-9 border"><AvatarFallback className="bg-slate-100 text-xs font-bold text-primary">{user.name?.slice(0, 2).toUpperCase() || "BU"}</AvatarFallback></Avatar>
+          <Avatar className="size-9 border"><AvatarFallback className="bg-slate-100 text-xs font-bold text-primary">{user.name.slice(0, 2).toUpperCase() || "BU"}</AvatarFallback></Avatar>
           <div className="min-w-0 flex-1"><p className="truncate text-sm font-semibold">{user.name || "Pemilik bisnis"}</p><p className="truncate text-xs text-muted-foreground">{user.email || "Akun bisnis"}</p></div>
           <button onClick={logout} aria-label="Keluar" className="rounded-md p-2 text-muted-foreground hover:bg-slate-100 hover:text-destructive"><LogOut className="size-4" /></button>
         </div>

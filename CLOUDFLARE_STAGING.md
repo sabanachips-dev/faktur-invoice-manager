@@ -9,3 +9,9 @@ Copy `.dev.vars.example` to `.dev.vars`, set the real `SUPABASE_PUBLISHABLE_KEY`
 ## Safety boundary
 
 The Worker does not expose database tables or bypass RLS. It only uses the public key to call Supabase Auth settings for a health check. API migration, Supabase Auth, Storage, database schema, and DNS remain separate steps.
+
+## Supabase Auth
+
+The migration branch includes a Supabase login card supporting email/password sign-up and sign-in, magic links, and Google OAuth. Before exposing the login screen publicly, add the Worker URL and future custom domain to **Supabase Authentication → URL Configuration → Redirect URLs**.
+
+Google OAuth must be enabled in **Supabase Authentication → Providers → Google**. Supply a Google OAuth Client ID and Client Secret there, and add Supabase's callback URL shown in that provider panel to the Google Cloud OAuth client. These Google credentials must stay in Supabase settings and must never be committed to this repository.
