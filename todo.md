@@ -190,3 +190,13 @@
 - [ ] Mengadaptasi aplikasi dari ketergantungan platform saat ini untuk runtime Cloudflare gratis.
 - [ ] Mengonfigurasi DNS Cloudflare dan subdomain staging.sabanachips.biz.id serta faktur.sabanachips.biz.id setelah target hosting siap diverifikasi.
 - [ ] Memvalidasi alur aplikasi pada staging dan menyusun rencana cutover serta rollback produksi.
+- [x] Menerapkan skema PostgreSQL Faktur, RLS berbasis pemilik, dan trigger profil Supabase Auth pada project target.
+- [x] Menerapkan login Supabase email/sandi, magic link, dan tombol Google OAuth pada branch staging tanpa mengubah aplikasi Manus aktif.
+- [x] Menerapkan Worker staging dengan health check Supabase, endpoint pemeriksaan sesi, dan fondasi tRPC bearer-token Supabase.
+- [x] Meneruskan sesi Supabase dari frontend staging sebagai Authorization Bearer untuk permintaan API tRPC.
+- [ ] Menggantikan procedure data inti Profil Bisnis, Klien, dan Katalog dengan endpoint Supabase/RLS yang berjalan di Worker.
+- [x] Menulis dan menjalankan pengujian unit untuk otorisasi serta operasi Profil Bisnis, Klien, dan Katalog pada Worker.
+- [ ] Memigrasikan procedure Invoice, dashboard, aktivitas, batch, serta impor ke transaksi/RPC PostgreSQL yang aman.
+- [ ] Menyiapkan endpoint invoice publik, storage logo Supabase, dan pengiriman email tanpa membuka data privat.
+- [ ] Menyusun ekspor, transformasi, impor, dan backup data deterministik dari database Manus sebelum data produksi dipindahkan.
+- [ ] Menguji alur staging lengkap dengan akun Supabase, lalu menyiapkan cutover dan rollback tanpa mengubah domain Manus aktif.
