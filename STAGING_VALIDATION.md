@@ -14,5 +14,7 @@
 | Direktori klien hasil impor | Lulus | Halaman Klien menampilkan enam data klien hasil impor serta aksi cari, tambah, pilih detail, dan edit. |
 | Katalog hasil impor | Lulus | Halaman Katalog menampilkan tiga item hasil impor dengan harga dan aksi cari, tambah, edit, serta hapus. |
 | Pengaturan bisnis hasil impor | Lulus | Halaman Pengaturan memuat nama bisnis, telepon, alamat, rekening, warna, template, dan kontrol unggah logo Supabase. |
+| Pembersihan data demo | Lulus | Setelah snapshot tambahan, staging hanya menyisakan empat klien bernama Fresh dan tiga produk; invoice, item, dan aktivitas demo telah dihapus dalam satu transaksi. |
+| Dashboard setelah pembersihan | Lulus | Dashboard staging memuat 0 invoice dan Rp 0, menampilkan grafik nol serta keadaan kosong tanpa error API. |
 
 Tahap berikutnya adalah memverifikasi halaman data lain dan alur staging dengan data hasil impor. Deployment Manus tetap tidak disentuh dan berfungsi sebagai fallback.

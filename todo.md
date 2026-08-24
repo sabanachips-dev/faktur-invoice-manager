@@ -217,4 +217,7 @@
 - [x] Mengimpor profil bisnis, klien, katalog, invoice, item, dan aktivitas dengan relasi yang terverifikasi.
 - [x] Mengimpor data valid yang disetujui pengguna sambil mengarsipkan profil tambahan dan riwayat tanpa invoice terkait.
 - [x] Memverifikasi jumlah data, relasi invoice, dan tampilan staging setelah impor selesai.
+- [x] Membuat snapshot tambahan sebelum menghapus data invoice demo dari staging.
+- [x] Mempertahankan klien toko Fresh serta nama produk yang relevan dan menghapus data invoice demo secara transaksional.
+- [x] Memverifikasi dashboard dan daftar invoice staging kosong setelah pembersihan data demo.
 - [ ] Menguji alur staging lengkap dengan akun Supabase, lalu menyiapkan cutover dan rollback tanpa mengubah domain Manus aktif.
