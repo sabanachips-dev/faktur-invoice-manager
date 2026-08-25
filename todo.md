@@ -271,4 +271,13 @@
 - [x] Memeriksa zona Cloudflare dan konflik record untuk faktur.sabanachips.biz.id secara baca-saja.
 - [x] Meminta persetujuan akhir sebelum mengikat faktur.sabanachips.biz.id ke Worker staging.
 - [x] Mengikat faktur.sabanachips.biz.id, memverifikasi HTTPS, dan mencatat hasil cutover subdomain.
-- [ ] Memvalidasi login akun pemilik dan magic link pada faktur.sabanachips.biz.id sebelum subdomain dibagikan luas.
+- [x] Memvalidasi login akun pemilik dan magic link pada faktur.sabanachips.biz.id sebelum subdomain dibagikan luas.
+- [x] Memeriksa URL situs, URL redirect, dan provider autentikasi Supabase untuk faktur.sabanachips.biz.id secara baca-saja.
+- [x] Memperbaiki konfigurasi magic link dan Google OAuth pada subdomain baru setelah persetujuan pemilik.
+- [x] Memvalidasi login Google dan magic link pada faktur.sabanachips.biz.id tanpa mengubah akun atau invoice.
+- [x] Memvalidasi magic link pada faktur.sabanachips.biz.id hingga pengguna masuk ke Dashboard.
+- [x] Menyiapkan Google OAuth Client ID dan Client Secret, lalu mengaktifkan provider Google di Supabase.
+- [x] Memvalidasi login Google pada faktur.sabanachips.biz.id setelah provider diaktifkan.
+- [x] Menyiapkan callback Google OAuth Supabase dan memeriksa apakah kredensial Google Cloud sudah tersedia.
+- [x] Membuat atau melengkapi OAuth Client Google jenis Web application bersama pemilik.
+- [x] Mengaktifkan provider Google Supabase dan memvalidasi login pada faktur.sabanachips.biz.id.
