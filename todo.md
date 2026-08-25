@@ -268,3 +268,7 @@
 - [x] Mengidentifikasi modul dan halaman yang menyebabkan bundle awal staging terlalu besar.
 - [x] Memuat alur PDF, ekspor, impor, dan cetak secara tertunda agar dashboard awal lebih ringan.
 - [x] Memvalidasi ulang regresi dan ukuran build setelah optimasi pemuatan.
+- [x] Memeriksa zona Cloudflare dan konflik record untuk faktur.sabanachips.biz.id secara baca-saja.
+- [x] Meminta persetujuan akhir sebelum mengikat faktur.sabanachips.biz.id ke Worker staging.
+- [x] Mengikat faktur.sabanachips.biz.id, memverifikasi HTTPS, dan mencatat hasil cutover subdomain.
+- [ ] Memvalidasi login akun pemilik dan magic link pada faktur.sabanachips.biz.id sebelum subdomain dibagikan luas.
