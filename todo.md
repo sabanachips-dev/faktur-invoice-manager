@@ -292,17 +292,17 @@
 - [ ] Menguji instalasi APK serta login Google dan magic link pada perangkat Android fisik yang kompatibel.
 - [x] Menata ulang halaman Buat Faktur agar form, item invoice, total, dan aksi dapat digunakan nyaman pada layar ponsel.
 - [x] Memverifikasi Dashboard tidak berhenti pada skeleton pemuatan setelah sesi dan data berhasil dimuat.
-- [ ] Meminta konfirmasi penggunaan halaman Buat Faktur pada ponsel pemilik setelah versi responsif diterbitkan.
+- [x] Meminta konfirmasi penggunaan halaman Buat Faktur pada ponsel pemilik setelah versi responsif diterbitkan.
 - [x] Mengaudit regresi live untuk Dashboard, daftar invoice, editor invoice, klien, katalog, pesanan, pengiriman, dan tautan invoice publik.
-- [ ] Memeriksa responsivitas layar ponsel untuk Dashboard, daftar invoice, editor invoice, dan pengiriman tanpa mengubah data bisnis.
+- [x] Memeriksa responsivitas layar ponsel untuk Dashboard, daftar invoice, editor invoice, dan pengiriman tanpa mengubah data bisnis.
 - [x] Memeriksa manifest PWA, service worker, Digital Asset Links, serta respons HTTP penting pada domain produksi.
 - [x] Meninjau log browser dan jaringan untuk error konsol atau permintaan API yang gagal selama audit regresi.
 - [x] Menata ulang halaman Pengiriman pada ponsel agar form ongkir dan resi menjadi satu kolom, tombol mudah dijangkau, dan tidak ada kontrol terpotong.
 - [x] Menambahkan regresi struktur mobile untuk halaman Pengiriman tanpa mengubah alur cek ongkir atau cek resi.
-- [ ] Meminta detail atau tangkapan layar halaman Invoice ponsel sebelum melakukan perubahan tambahan yang tidak diperlukan.
-- [ ] Meminta konfirmasi visual halaman Pengiriman pada ponsel setelah versi satu-kolom diterbitkan.
+- [x] Meminta detail atau tangkapan layar halaman Invoice ponsel sebelum melakukan perubahan tambahan yang tidak diperlukan.
+- [x] Meminta konfirmasi visual halaman Pengiriman pada ponsel setelah versi satu-kolom diterbitkan.
 - [x] Merapikan header dan aksi daftar Invoice ponsel agar judul tetap terbaca serta tombol laporan tersusun efisien.
 - [x] Menata filter daftar Invoice ponsel dengan label tanggal yang jelas dan kontrol satu kolom tanpa ruang kosong.
 - [x] Menampilkan ringkasan invoice berbentuk kartu pada ponsel sambil mempertahankan tabel serta semua aksi pada desktop.
 - [x] Menambahkan regresi struktur mobile daftar Invoice tanpa mengubah ekspor, pencarian, filter, atau aksi invoice.
-- [ ] Meminta konfirmasi visual daftar Invoice ponsel setelah tampilan kartu dan filter berlabel diterbitkan.
+- [x] Meminta konfirmasi visual daftar Invoice ponsel setelah tampilan kartu dan filter berlabel diterbitkan.
