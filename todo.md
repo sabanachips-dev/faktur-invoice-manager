@@ -290,3 +290,6 @@
 - [x] Memvalidasi struktur, tanda tangan, checksum, serta association domain pada APK rilis Faktur.
 - [x] Mendokumentasikan cara pemasangan PWA dan APK Android, batasan pengujian perangkat, serta prosedur pembaruan rilis.
 - [ ] Menguji instalasi APK serta login Google dan magic link pada perangkat Android fisik yang kompatibel.
+- [x] Menata ulang halaman Buat Faktur agar form, item invoice, total, dan aksi dapat digunakan nyaman pada layar ponsel.
+- [x] Memverifikasi Dashboard tidak berhenti pada skeleton pemuatan setelah sesi dan data berhasil dimuat.
+- [ ] Meminta konfirmasi penggunaan halaman Buat Faktur pada ponsel pemilik setelah versi responsif diterbitkan.

@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { formatDate, formatMoney } from "@/lib/format";
-import { AlertCircle, ArrowUpRight, CheckCircle2, Clock3, FileText, Layers3, PackageCheck, PanelsTopLeft, Plus, WalletCards } from "lucide-react";
+import { AlertCircle, ArrowUpRight, CheckCircle2, Clock3, FileText, Layers3, PackageCheck, PanelsTopLeft, Plus, RefreshCw, WalletCards } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useLocation } from "wouter";
 import { useState } from "react";
@@ -23,13 +23,13 @@ const cardConfig = (periodLabel: string) => [
 export default function Dashboard() {
   const [, setLocation] = useLocation();
   const [period, setPeriod] = useState<DashboardPeriod>("this_month");
-  const dashboard = trpc.dashboard.get.useQuery({ period });
+  const dashboard = trpc.dashboard.get.useQuery({ period }, { retry: 1 });
   const data = dashboard.data;
   const fulfillment = (data as unknown as { fulfillment?: { status: FulfillmentStatus; count: number; total: number }[] } | undefined)?.fulfillment || [];
 
   return <>
     <PageHeader eyebrow="Ringkasan" title="Dashboard" description="Pantau kesehatan arus kas dan invoice bisnis Anda." action={<div className="flex flex-wrap gap-2"><Select value={period} onValueChange={value => setPeriod(value as DashboardPeriod)}><SelectTrigger className="w-[152px] bg-white"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="this_month">Bulan ini</SelectItem><SelectItem value="last_month">Bulan lalu</SelectItem><SelectItem value="this_year">Tahun ini</SelectItem></SelectContent></Select><Button onClick={() => setLocation("/invoice/new")} className="gap-2"><Plus className="size-4" />Buat invoice baru</Button></div>} />
-    {dashboard.isLoading || !data ? <DashboardSkeleton /> : <>
+    {dashboard.isError || !data && !dashboard.isLoading ? <DashboardLoadError onRetry={() => void dashboard.refetch()} isRetrying={dashboard.isFetching} /> : dashboard.isLoading || !data ? <DashboardSkeleton /> : <>
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {cardConfig(data.periodLabel).map(card => {
           const Icon = card.icon;
@@ -70,3 +70,5 @@ export default function Dashboard() {
 }
 
 function DashboardSkeleton() { return <div className="space-y-6"><div className="flex justify-between"><div className="space-y-2"><Skeleton className="h-8 w-40" /><Skeleton className="h-4 w-72" /></div><Skeleton className="h-10 w-40" /></div><div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-40" />)}</div><div className="grid gap-6 xl:grid-cols-[1.55fr_1fr]"><Skeleton className="h-80" /><Skeleton className="h-80" /></div></div>; }
+
+function DashboardLoadError({ onRetry, isRetrying }: { onRetry: () => void; isRetrying: boolean }) { return <section role="alert" className="rounded-xl border border-amber-200 bg-amber-50 p-5 sm:p-6"><div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"><div className="flex gap-3"><div className="grid size-10 shrink-0 place-items-center rounded-xl bg-amber-100 text-amber-700"><AlertCircle className="size-5" /></div><div><h2 className="font-bold text-slate-900">Ringkasan belum dapat dimuat</h2><p className="mt-1 text-sm leading-6 text-slate-600">Periksa koneksi lalu coba muat ulang. Invoice dan data Anda tidak diubah.</p></div></div><Button type="button" variant="outline" className="gap-2 border-amber-300 bg-white" onClick={onRetry} disabled={isRetrying}><RefreshCw className={`size-4 ${isRetrying ? "animate-spin" : ""}`} />Coba lagi</Button></div></section>; }
