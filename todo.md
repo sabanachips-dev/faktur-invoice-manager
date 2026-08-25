@@ -301,3 +301,8 @@
 - [x] Menambahkan regresi struktur mobile untuk halaman Pengiriman tanpa mengubah alur cek ongkir atau cek resi.
 - [ ] Meminta detail atau tangkapan layar halaman Invoice ponsel sebelum melakukan perubahan tambahan yang tidak diperlukan.
 - [ ] Meminta konfirmasi visual halaman Pengiriman pada ponsel setelah versi satu-kolom diterbitkan.
+- [x] Merapikan header dan aksi daftar Invoice ponsel agar judul tetap terbaca serta tombol laporan tersusun efisien.
+- [x] Menata filter daftar Invoice ponsel dengan label tanggal yang jelas dan kontrol satu kolom tanpa ruang kosong.
+- [x] Menampilkan ringkasan invoice berbentuk kartu pada ponsel sambil mempertahankan tabel serta semua aksi pada desktop.
+- [x] Menambahkan regresi struktur mobile daftar Invoice tanpa mengubah ekspor, pencarian, filter, atau aksi invoice.
+- [ ] Meminta konfirmasi visual daftar Invoice ponsel setelah tampilan kartu dan filter berlabel diterbitkan.
