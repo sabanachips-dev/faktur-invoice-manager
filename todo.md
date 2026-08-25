@@ -315,3 +315,6 @@
 - [x] Menambahkan template portable yang ringkas untuk printer thermal/portable dan pilihan jelas di dialog cetak.
 - [x] Menambahkan regresi cetak cepat A4 dan template portable tanpa mengubah cetak batch yang ada.
 - [ ] Meminta bukti uji cetak A4 satu halaman serta template portable dari perangkat pengguna.
+- [x] Memperbaiki media dan margin thermal setelah pratinjau printer menunjukkan template 80 mm masih diperlakukan sebagai halaman A4.
+- [x] Memastikan template portable 80 mm memakai lebar fisik printer dan tinggi otomatis tanpa halaman kedua.
+- [ ] Meminta bukti pratinjau ulang Bluetooth Printer 80 mm setelah aturan media thermal diperbaiki.

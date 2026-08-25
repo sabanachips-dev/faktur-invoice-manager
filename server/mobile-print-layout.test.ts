@@ -23,13 +23,16 @@ describe("mobile invoice print layouts", () => {
   });
 
   it("renders a dedicated portable template and exposes it from invoice preview", () => {
+    const printRules = read("client/src/lib/printInvoice.ts");
     const portable = read("client/src/components/PortableInvoiceDocument.tsx");
     const preview = read("client/src/pages/InvoicePreview.tsx");
 
+    expect(printRules).toContain('receipt80: { page: "80mm 210mm", margin: "0", documentWidth: "80mm", documentPadding: "0" }');
+    expect(printRules).toContain("html, body { width: 80mm !important");
+    expect(printRules).toContain("#invoice-print-host #invoice-portable { width: 74mm !important");
     expect(portable).toContain('id={documentId}');
     expect(portable).toContain('w-[74mm]');
     expect(preview).toContain('printInvoice("receipt80", "invoice-portable")');
     expect(preview).toContain("Template portable 80 mm");
   });
 });
-
