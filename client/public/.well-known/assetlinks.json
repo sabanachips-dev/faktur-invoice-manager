@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "id.biz.sabanachips.faktur.twa",
+      "sha256_cert_fingerprints": [
+        "FA:F7:B1:D2:49:9A:EB:E8:2A:E1:35:DD:2C:B2:19:4C:4C:3D:90:17:9C:D1:05:ED:CA:7B:7C:AE:A7:B7:36:EE"
+      ]
+    }
+  }
+]

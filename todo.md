@@ -281,3 +281,12 @@
 - [x] Menyiapkan callback Google OAuth Supabase dan memeriksa apakah kredensial Google Cloud sudah tersedia.
 - [x] Membuat atau melengkapi OAuth Client Google jenis Web application bersama pemilik.
 - [x] Mengaktifkan provider Google Supabase dan memvalidasi login pada faktur.sabanachips.biz.id.
+- [x] Memeriksa manifest, service worker, aset ikon, build web, dan ketersediaan tool Android untuk Faktur.
+- [x] Menambahkan manifest, service worker, dan aset instalasi agar Faktur dapat dipasang sebagai PWA dari Chrome Android.
+- [x] Menyiapkan proyek wrapper Android yang hanya memuat faktur.sabanachips.biz.id melalui HTTPS.
+- [x] Membangun APK debug atau mendokumentasikan langkah build Android yang tersisa bila SDK tidak tersedia di lingkungan ini.
+- [ ] Memvalidasi PWA dan wrapper Android tidak mengganggu magic link maupun Google OAuth.
+- [x] Mempublikasikan Digital Asset Links untuk package Android Faktur dan fingerprint sertifikat rilisnya.
+- [x] Memvalidasi struktur, tanda tangan, checksum, serta association domain pada APK rilis Faktur.
+- [x] Mendokumentasikan cara pemasangan PWA dan APK Android, batasan pengujian perangkat, serta prosedur pembaruan rilis.
+- [ ] Menguji instalasi APK serta login Google dan magic link pada perangkat Android fisik yang kompatibel.
