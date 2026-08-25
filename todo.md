@@ -322,3 +322,6 @@
 - [x] Menambahkan pilihan template portable 58 mm dan 80 mm dengan lebar serta tata letak yang sesuai rol.
 - [x] Menambahkan regresi untuk aturan rol kontinu tanpa mengubah cetak A4 dan batch.
 - [ ] Meminta bukti pratinjau Bluetooth Printer untuk rol 58 mm atau 80 mm setelah perubahan diterbitkan.
+- [x] Mengukur tinggi konten template portable sebelum cetak agar media thermal memiliki panjang fisik yang cukup.
+- [x] Menerapkan ukuran media thermal eksplisit berdasarkan tinggi konten untuk mencegah pemisahan halaman oleh driver Bluetooth.
+- [x] Menambahkan regresi perhitungan tinggi media thermal dan meminta uji pratinjau ulang pada printer pengguna.

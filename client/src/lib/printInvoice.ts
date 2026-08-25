@@ -7,9 +7,14 @@ const printRules: Record<PrintPaperSize, { page: string; margin: string; documen
   a4: { page: "A4 portrait", margin: "10mm" },
   letter: { page: "Letter portrait", margin: "10mm" },
   a5: { page: "A5 portrait", margin: "8mm" },
-  receipt58: { page: "auto", margin: "0", documentWidth: "58mm", documentPadding: "0" },
-  receipt80: { page: "auto", margin: "0", documentWidth: "80mm", documentPadding: "0" },
+  receipt58: { page: "58mm", margin: "0", documentWidth: "58mm", documentPadding: "0" },
+  receipt80: { page: "80mm", margin: "0", documentWidth: "80mm", documentPadding: "0" },
 };
+
+export function calculateThermalPageHeightMm(contentHeightPx: number) {
+  const measuredMm = Math.ceil((Math.max(contentHeightPx, 0) * 25.4) / 96) + 8;
+  return Math.max(90, Math.min(1_200, measuredMm));
+}
 
 export function printInvoice(paperSize: PrintPaperSize, documentId = "invoice-document") {
   const source = document.getElementById(documentId);
@@ -26,11 +31,20 @@ export function printInvoice(paperSize: PrintPaperSize, documentId = "invoice-do
   host.id = "invoice-print-host";
   host.appendChild(source.cloneNode(true));
   document.body.appendChild(host);
+  const thermalDocument = isThermal ? host.querySelector<HTMLElement>(`#${documentId}`) : null;
+  let thermalPageHeightMm: number | null = null;
+  if (thermalDocument) {
+    thermalDocument.style.width = thermalDocumentWidth;
+    thermalDocument.style.maxWidth = thermalDocumentWidth;
+    thermalDocument.style.margin = `0 ${thermalMargin}`;
+    thermalDocument.style.padding = "3mm";
+    thermalPageHeightMm = calculateThermalPageHeightMm(thermalDocument.scrollHeight);
+  }
   const style = document.createElement("style");
   style.id = "invoice-print-rules";
   style.textContent = `
     @media print {
-      @page { size: ${rule.page}; margin: ${rule.margin}; }
+      @page { size: ${isThermal && thermalPageHeightMm ? `${thermalPaperWidth} ${thermalPageHeightMm}mm` : rule.page}; margin: ${rule.margin}; }
       body > :not(#invoice-print-host) { display: none !important; }
       #invoice-print-host {
         display: block !important;
@@ -49,9 +63,9 @@ export function printInvoice(paperSize: PrintPaperSize, documentId = "invoice-do
         page-break-inside: avoid !important;
       }
       ${isThermal ? `
-        html, body { width: ${thermalPaperWidth} !important; min-width: ${thermalPaperWidth} !important; min-height: 0 !important; height: auto !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; background: #fff !important; }
-        #invoice-print-host { width: ${thermalPaperWidth} !important; min-width: ${thermalPaperWidth} !important; min-height: 0 !important; height: auto !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }
-        #invoice-print-host #invoice-portable { width: ${thermalDocumentWidth} !important; min-width: ${thermalDocumentWidth} !important; max-width: ${thermalDocumentWidth} !important; min-height: 0 !important; height: auto !important; margin: 0 ${thermalMargin} !important; padding: 3mm !important; overflow: visible !important; break-after: auto !important; page-break-after: auto !important; }
+        html, body { width: ${thermalPaperWidth} !important; min-width: ${thermalPaperWidth} !important; min-height: ${thermalPageHeightMm || 90}mm !important; height: ${thermalPageHeightMm || 90}mm !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; background: #fff !important; }
+        #invoice-print-host { width: ${thermalPaperWidth} !important; min-width: ${thermalPaperWidth} !important; min-height: ${thermalPageHeightMm || 90}mm !important; height: ${thermalPageHeightMm || 90}mm !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; }
+        #invoice-print-host #invoice-portable { width: ${thermalDocumentWidth} !important; min-width: ${thermalDocumentWidth} !important; max-width: ${thermalDocumentWidth} !important; min-height: 0 !important; height: auto !important; margin: 0 ${thermalMargin} !important; padding: 3mm !important; overflow: visible !important; break-after: avoid !important; page-break-after: avoid !important; }
       ` : ""}
       ${paperSize === "a4" && documentId === "invoice-document" ? `
         #invoice-print-host #invoice-document.invoice-paper { width: 190mm !important; padding: 7mm 9mm !important; }
