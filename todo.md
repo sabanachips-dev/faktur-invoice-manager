@@ -265,3 +265,6 @@
 - [ ] Mengaktifkan Leaked Password Protection di Supabase Auth bila login kata sandi digunakan saat cutover.
 - [ ] Memindahkan helper RLS terautentikasi ke schema non-API setelah regresi sesi terautentikasi lengkap tersedia.
 - [x] Menambahkan pengingat ringkas pada Pengaturan ketika email bisnis atau nomor rekening belum diisi.
+- [x] Mengidentifikasi modul dan halaman yang menyebabkan bundle awal staging terlalu besar.
+- [x] Memuat alur PDF, ekspor, impor, dan cetak secara tertunda agar dashboard awal lebih ringan.
+- [x] Memvalidasi ulang regresi dan ukuran build setelah optimasi pemuatan.

@@ -1,44 +1,50 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import DashboardLayout from "@/components/DashboardLayout";
-import Catalog from "@/pages/Catalog";
-import Clients from "@/pages/Clients";
 import Dashboard from "@/pages/Dashboard";
-import InvoiceEditor from "@/pages/InvoiceEditor";
-import BulkInvoice from "@/pages/BulkInvoice";
-import ImportInvoices from "@/pages/ImportInvoices";
-import InvoiceHistory from "@/pages/InvoiceHistory";
-import InvoiceList from "@/pages/InvoiceList";
-import InvoicePreview from "@/pages/InvoicePreview";
-import OrdersBoard from "@/pages/OrdersBoard";
-import ShippingTools from "@/pages/ShippingTools";
 import NotFound from "@/pages/NotFound";
-import PublicInvoice from "@/pages/PublicInvoice";
-import Settings from "@/pages/Settings";
 import { Route, Switch } from "wouter";
+import { lazy, Suspense } from "react";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
-function ProtectedPage({ component: Component }: { component: React.ComponentType }) {
-  return <DashboardLayout><Component /></DashboardLayout>;
+const Catalog = lazy(() => import("@/pages/Catalog"));
+const Clients = lazy(() => import("@/pages/Clients"));
+const InvoiceEditor = lazy(() => import("@/pages/InvoiceEditor"));
+const BulkInvoice = lazy(() => import("@/pages/BulkInvoice"));
+const ImportInvoices = lazy(() => import("@/pages/ImportInvoices"));
+const InvoiceHistory = lazy(() => import("@/pages/InvoiceHistory"));
+const InvoiceList = lazy(() => import("@/pages/InvoiceList"));
+const InvoicePreview = lazy(() => import("@/pages/InvoicePreview"));
+const OrdersBoard = lazy(() => import("@/pages/OrdersBoard"));
+const ShippingTools = lazy(() => import("@/pages/ShippingTools"));
+const PublicInvoice = lazy(() => import("@/pages/PublicInvoice"));
+const Settings = lazy(() => import("@/pages/Settings"));
+
+function PageLoading() {
+  return <div className="py-16 text-center text-sm text-muted-foreground" role="status">Memuat halaman…</div>;
+}
+
+function ProtectedPage({ children }: { children: React.ReactNode }) {
+  return <DashboardLayout><Suspense fallback={<PageLoading />}>{children}</Suspense></DashboardLayout>;
 }
 
 function Router() {
   return <Switch>
-    <Route path="/p/:publicId" component={PublicInvoice} />
-    <Route path="/" component={() => <ProtectedPage component={Dashboard} />} />
-    <Route path="/invoice" component={() => <ProtectedPage component={InvoiceList} />} />
-    <Route path="/invoice/new" component={() => <ProtectedPage component={InvoiceEditor} />} />
-    <Route path="/invoice/bulk" component={() => <ProtectedPage component={BulkInvoice} />} />
-    <Route path="/invoice/import" component={() => <ProtectedPage component={ImportInvoices} />} />
-    <Route path="/invoice/history" component={() => <ProtectedPage component={InvoiceHistory} />} />
-    <Route path="/invoice/:id/preview" component={() => <ProtectedPage component={InvoicePreview} />} />
-    <Route path="/invoice/:id" component={() => <ProtectedPage component={InvoiceEditor} />} />
-    <Route path="/orders" component={() => <ProtectedPage component={OrdersBoard} />} />
-    <Route path="/shipping" component={() => <ProtectedPage component={ShippingTools} />} />
-    <Route path="/clients" component={() => <ProtectedPage component={Clients} />} />
-    <Route path="/catalog" component={() => <ProtectedPage component={Catalog} />} />
-    <Route path="/settings" component={() => <ProtectedPage component={Settings} />} />
+    <Route path="/p/:publicId" component={() => <Suspense fallback={<PageLoading />}><PublicInvoice /></Suspense>} />
+    <Route path="/" component={() => <ProtectedPage><Dashboard /></ProtectedPage>} />
+    <Route path="/invoice" component={() => <ProtectedPage><InvoiceList /></ProtectedPage>} />
+    <Route path="/invoice/new" component={() => <ProtectedPage><InvoiceEditor /></ProtectedPage>} />
+    <Route path="/invoice/bulk" component={() => <ProtectedPage><BulkInvoice /></ProtectedPage>} />
+    <Route path="/invoice/import" component={() => <ProtectedPage><ImportInvoices /></ProtectedPage>} />
+    <Route path="/invoice/history" component={() => <ProtectedPage><InvoiceHistory /></ProtectedPage>} />
+    <Route path="/invoice/:id/preview" component={() => <ProtectedPage><InvoicePreview /></ProtectedPage>} />
+    <Route path="/invoice/:id" component={() => <ProtectedPage><InvoiceEditor /></ProtectedPage>} />
+    <Route path="/orders" component={() => <ProtectedPage><OrdersBoard /></ProtectedPage>} />
+    <Route path="/shipping" component={() => <ProtectedPage><ShippingTools /></ProtectedPage>} />
+    <Route path="/clients" component={() => <ProtectedPage><Clients /></ProtectedPage>} />
+    <Route path="/catalog" component={() => <ProtectedPage><Catalog /></ProtectedPage>} />
+    <Route path="/settings" component={() => <ProtectedPage><Settings /></ProtectedPage>} />
     <Route component={NotFound} />
   </Switch>;
 }
