@@ -318,3 +318,7 @@
 - [x] Memperbaiki media dan margin thermal setelah pratinjau printer menunjukkan template 80 mm masih diperlakukan sebagai halaman A4.
 - [x] Memastikan template portable 80 mm memakai lebar fisik printer dan tinggi otomatis tanpa halaman kedua.
 - [ ] Meminta bukti pratinjau ulang Bluetooth Printer 80 mm setelah aturan media thermal diperbaiki.
+- [x] Mengganti tinggi media thermal tetap dengan rol kontinu agar panjang cetak mengikuti isi invoice.
+- [x] Menambahkan pilihan template portable 58 mm dan 80 mm dengan lebar serta tata letak yang sesuai rol.
+- [x] Menambahkan regresi untuk aturan rol kontinu tanpa mengubah cetak A4 dan batch.
+- [ ] Meminta bukti pratinjau Bluetooth Printer untuk rol 58 mm atau 80 mm setelah perubahan diterbitkan.

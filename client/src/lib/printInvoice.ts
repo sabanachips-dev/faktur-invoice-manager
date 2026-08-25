@@ -1,13 +1,14 @@
 import type { BatchPrintLayout } from "@shared/batchPrintLayout";
 
-export type PrintPaperSize = "a4" | "letter" | "a5" | "receipt80";
+export type PrintPaperSize = "a4" | "letter" | "a5" | "receipt58" | "receipt80";
 export type { BatchPrintLayout };
 
 const printRules: Record<PrintPaperSize, { page: string; margin: string; documentWidth?: string; documentPadding?: string }> = {
   a4: { page: "A4 portrait", margin: "10mm" },
   letter: { page: "Letter portrait", margin: "10mm" },
   a5: { page: "A5 portrait", margin: "8mm" },
-  receipt80: { page: "80mm 210mm", margin: "0", documentWidth: "80mm", documentPadding: "0" },
+  receipt58: { page: "auto", margin: "0", documentWidth: "58mm", documentPadding: "0" },
+  receipt80: { page: "auto", margin: "0", documentWidth: "80mm", documentPadding: "0" },
 };
 
 export function printInvoice(paperSize: PrintPaperSize, documentId = "invoice-document") {
@@ -15,7 +16,10 @@ export function printInvoice(paperSize: PrintPaperSize, documentId = "invoice-do
   if (!source) return false;
 
   const rule = printRules[paperSize];
-  const isThermal = paperSize === "receipt80";
+  const isThermal = paperSize === "receipt58" || paperSize === "receipt80";
+  const thermalPaperWidth = paperSize === "receipt58" ? "58mm" : "80mm";
+  const thermalDocumentWidth = paperSize === "receipt58" ? "52mm" : "74mm";
+  const thermalMargin = paperSize === "receipt58" ? "3mm" : "3mm";
   document.getElementById("invoice-print-rules")?.remove();
   document.getElementById("invoice-print-host")?.remove();
   const host = document.createElement("div");
@@ -45,9 +49,9 @@ export function printInvoice(paperSize: PrintPaperSize, documentId = "invoice-do
         page-break-inside: avoid !important;
       }
       ${isThermal ? `
-        html, body { width: 80mm !important; min-width: 80mm !important; min-height: 0 !important; height: auto !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; background: #fff !important; }
-        #invoice-print-host { width: 80mm !important; min-width: 80mm !important; min-height: 0 !important; height: auto !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }
-        #invoice-print-host #invoice-portable { width: 74mm !important; min-width: 74mm !important; max-width: 74mm !important; min-height: 0 !important; height: auto !important; margin: 0 3mm !important; padding: 3mm !important; overflow: visible !important; break-after: auto !important; page-break-after: auto !important; }
+        html, body { width: ${thermalPaperWidth} !important; min-width: ${thermalPaperWidth} !important; min-height: 0 !important; height: auto !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; background: #fff !important; }
+        #invoice-print-host { width: ${thermalPaperWidth} !important; min-width: ${thermalPaperWidth} !important; min-height: 0 !important; height: auto !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }
+        #invoice-print-host #invoice-portable { width: ${thermalDocumentWidth} !important; min-width: ${thermalDocumentWidth} !important; max-width: ${thermalDocumentWidth} !important; min-height: 0 !important; height: auto !important; margin: 0 ${thermalMargin} !important; padding: 3mm !important; overflow: visible !important; break-after: auto !important; page-break-after: auto !important; }
       ` : ""}
       ${paperSize === "a4" && documentId === "invoice-document" ? `
         #invoice-print-host #invoice-document.invoice-paper { width: 190mm !important; padding: 7mm 9mm !important; }

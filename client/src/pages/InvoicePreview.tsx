@@ -77,6 +77,10 @@ export default function InvoicePreview() {
     if (printInvoice("receipt80", "invoice-portable")) toast.success("Template portable 80 mm dibuka. Pilih printer thermal atau portable.");
     else toast.error("Template portable belum siap. Silakan coba lagi.");
   };
+  const printPortable58 = () => {
+    if (printInvoice("receipt58", "invoice-portable")) toast.success("Template portable 58 mm dibuka. Pilih printer thermal atau portable.");
+    else toast.error("Template portable belum siap. Silakan coba lagi.");
+  };
 
   return (
     <div className="pb-10">
@@ -84,7 +88,8 @@ export default function InvoicePreview() {
         <div><div className="flex items-center gap-2"><h1 className="text-xl font-bold tracking-tight">Preview invoice</h1><InvoiceStatusBadge status={data.invoice.status} /></div><p className="mt-1 text-sm text-muted-foreground">{data.invoice.invoiceNumber}</p></div>
         <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap">
           <Button className="order-first col-span-2 h-12 w-full justify-center gap-2 sm:h-9 sm:w-auto" onClick={printQuickly}><Printer className="size-4" />Cetak cepat</Button>
-          <Button variant="outline" size="sm" className="order-2 col-span-2 h-11 w-full justify-center gap-2 sm:h-9 sm:w-auto" onClick={printPortable}><ReceiptText className="size-4" />Template portable 80 mm</Button>
+          <Button variant="outline" size="sm" className="order-2 h-11 w-full justify-center gap-2 sm:h-9 sm:w-auto" onClick={printPortable58}><ReceiptText className="size-4" />Rol 58 mm</Button>
+          <Button variant="outline" size="sm" className="order-2 h-11 w-full justify-center gap-2 sm:h-9 sm:w-auto" onClick={printPortable}><ReceiptText className="size-4" />Rol 80 mm</Button>
           <Button variant="outline" size="sm" className="h-10 w-full justify-center gap-2 sm:h-9 sm:w-auto" onClick={() => setLocation(`/invoice/${id}`)}><Pencil className="size-4" />Edit</Button>
           <Button variant="outline" size="sm" className="h-10 w-full justify-center gap-2 sm:h-9 sm:w-auto" disabled={duplicate.isPending} onClick={() => duplicate.mutate({ id })}><Copy className="size-4" />{duplicate.isPending ? "Menyalin…" : "Copy & edit"}</Button>
           <div className="sm:contents"><BatchPrintDialog documents={[data]} /></div>

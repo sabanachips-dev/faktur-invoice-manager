@@ -27,12 +27,15 @@ describe("mobile invoice print layouts", () => {
     const portable = read("client/src/components/PortableInvoiceDocument.tsx");
     const preview = read("client/src/pages/InvoicePreview.tsx");
 
-    expect(printRules).toContain('receipt80: { page: "80mm 210mm", margin: "0", documentWidth: "80mm", documentPadding: "0" }');
-    expect(printRules).toContain("html, body { width: 80mm !important");
-    expect(printRules).toContain("#invoice-print-host #invoice-portable { width: 74mm !important");
+    expect(printRules).toContain('receipt58: { page: "auto", margin: "0", documentWidth: "58mm", documentPadding: "0" }');
+    expect(printRules).toContain('receipt80: { page: "auto", margin: "0", documentWidth: "80mm", documentPadding: "0" }');
+    expect(printRules).toContain('const thermalPaperWidth = paperSize === "receipt58" ? "58mm" : "80mm"');
+    expect(printRules).toContain('const thermalDocumentWidth = paperSize === "receipt58" ? "52mm" : "74mm"');
     expect(portable).toContain('id={documentId}');
     expect(portable).toContain('w-[74mm]');
+    expect(preview).toContain('printInvoice("receipt58", "invoice-portable")');
     expect(preview).toContain('printInvoice("receipt80", "invoice-portable")');
-    expect(preview).toContain("Template portable 80 mm");
+    expect(preview).toContain("Rol 58 mm");
+    expect(preview).toContain("Rol 80 mm");
   });
 });
