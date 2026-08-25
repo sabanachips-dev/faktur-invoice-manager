@@ -297,3 +297,7 @@
 - [ ] Memeriksa responsivitas layar ponsel untuk Dashboard, daftar invoice, editor invoice, dan pengiriman tanpa mengubah data bisnis.
 - [x] Memeriksa manifest PWA, service worker, Digital Asset Links, serta respons HTTP penting pada domain produksi.
 - [x] Meninjau log browser dan jaringan untuk error konsol atau permintaan API yang gagal selama audit regresi.
+- [x] Menata ulang halaman Pengiriman pada ponsel agar form ongkir dan resi menjadi satu kolom, tombol mudah dijangkau, dan tidak ada kontrol terpotong.
+- [x] Menambahkan regresi struktur mobile untuk halaman Pengiriman tanpa mengubah alur cek ongkir atau cek resi.
+- [ ] Meminta detail atau tangkapan layar halaman Invoice ponsel sebelum melakukan perubahan tambahan yang tidak diperlukan.
+- [ ] Meminta konfirmasi visual halaman Pengiriman pada ponsel setelah versi satu-kolom diterbitkan.
