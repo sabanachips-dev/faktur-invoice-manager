@@ -10,26 +10,54 @@ const printRules: Record<PrintPaperSize, { page: string; margin: string; documen
   receipt80: { page: "80mm auto", margin: "3mm", documentWidth: "74mm", documentPadding: "3mm" },
 };
 
-export function printInvoice(paperSize: PrintPaperSize) {
+export function printInvoice(paperSize: PrintPaperSize, documentId = "invoice-document") {
+  const source = document.getElementById(documentId);
+  if (!source) return false;
+
   const rule = printRules[paperSize];
   document.getElementById("invoice-print-rules")?.remove();
+  document.getElementById("invoice-print-host")?.remove();
+  const host = document.createElement("div");
+  host.id = "invoice-print-host";
+  host.appendChild(source.cloneNode(true));
+  document.body.appendChild(host);
   const style = document.createElement("style");
   style.id = "invoice-print-rules";
   style.textContent = `
     @media print {
       @page { size: ${rule.page}; margin: ${rule.margin}; }
-      #invoice-document {
+      body > :not(#invoice-print-host) { display: none !important; }
+      #invoice-print-host {
+        display: block !important;
+        width: ${rule.documentWidth || "190mm"} !important;
+        margin: 0 auto !important;
+        background: #fff !important;
+      }
+      #invoice-print-host #${documentId} {
+        display: block !important;
         width: ${rule.documentWidth || "auto"} !important;
         max-width: ${rule.documentWidth || "none"} !important;
         padding: ${rule.documentPadding || "0"} !important;
         box-shadow: none !important;
         border: none !important;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
       }
+      ${paperSize === "a4" && documentId === "invoice-document" ? `
+        #invoice-print-host #invoice-document.invoice-paper { width: 190mm !important; padding: 7mm 9mm !important; }
+        #invoice-print-host #invoice-document > header { gap: 3mm !important; padding-bottom: 4mm !important; }
+        #invoice-print-host #invoice-document > section { gap: 4mm !important; }
+        #invoice-print-host #invoice-document > section:nth-of-type(1) { padding-block: 4mm !important; }
+        #invoice-print-host #invoice-document table th, #invoice-print-host #invoice-document table td { padding-top: 1.8mm !important; padding-bottom: 1.8mm !important; }
+        #invoice-print-host #invoice-document .mt-7, #invoice-print-host #invoice-document .mt-9 { margin-top: 4mm !important; }
+        #invoice-print-host #invoice-document .p-4 { padding: 2.5mm !important; }
+      ` : ""}
     }
   `;
   document.head.appendChild(style);
   window.print();
-  window.setTimeout(() => style.remove(), 1_000);
+  window.setTimeout(() => { style.remove(); host.remove(); }, 1_000);
+  return true;
 }
 
 function printTwoUpInDedicatedWindow() {

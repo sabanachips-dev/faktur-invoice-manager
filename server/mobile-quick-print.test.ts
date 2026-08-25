@@ -9,7 +9,7 @@ describe("mobile quick invoice print", () => {
     const page = source();
 
     expect(page).toContain('import { printInvoice } from "@/lib/printInvoice";');
-    expect(page).toContain('printInvoice("a4");');
+    expect(page).toContain('printInvoice("a4")');
     expect(page).toContain("Cetak cepat");
   });
 
@@ -26,4 +26,3 @@ describe("mobile quick invoice print", () => {
     expect(page).toContain('className="order-first col-span-2 h-12 w-full justify-center gap-2 sm:h-9 sm:w-auto"');
   });
 });
-

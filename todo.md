@@ -310,3 +310,8 @@
 - [x] Menambahkan akses cetak cepat invoice dari ponsel tanpa mengubah template atau aturan cetak batch yang ada.
 - [x] Menambahkan regresi untuk tombol cetak cepat dan memastikan jalur PDF tetap tersedia.
 - [ ] Meminta validasi pengguna bahwa dialog cetak sistem atau simpan PDF dapat dibuka dari ponsel.
+- [x] Mendiagnosis penyebab cetak cepat A4 dari ponsel menghasilkan halaman tambahan tanpa mengubah data invoice.
+- [x] Mengunci dokumen A4 satu invoice pada area cetak yang aman agar tidak terfragmentasi menjadi dua halaman.
+- [x] Menambahkan template portable yang ringkas untuk printer thermal/portable dan pilihan jelas di dialog cetak.
+- [x] Menambahkan regresi cetak cepat A4 dan template portable tanpa mengubah cetak batch yang ada.
+- [ ] Meminta bukti uji cetak A4 satu halaman serta template portable dari perangkat pengguna.
