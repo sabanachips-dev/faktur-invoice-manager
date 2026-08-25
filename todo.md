@@ -293,3 +293,7 @@
 - [x] Menata ulang halaman Buat Faktur agar form, item invoice, total, dan aksi dapat digunakan nyaman pada layar ponsel.
 - [x] Memverifikasi Dashboard tidak berhenti pada skeleton pemuatan setelah sesi dan data berhasil dimuat.
 - [ ] Meminta konfirmasi penggunaan halaman Buat Faktur pada ponsel pemilik setelah versi responsif diterbitkan.
+- [x] Mengaudit regresi live untuk Dashboard, daftar invoice, editor invoice, klien, katalog, pesanan, pengiriman, dan tautan invoice publik.
+- [ ] Memeriksa responsivitas layar ponsel untuk Dashboard, daftar invoice, editor invoice, dan pengiriman tanpa mengubah data bisnis.
+- [x] Memeriksa manifest PWA, service worker, Digital Asset Links, serta respons HTTP penting pada domain produksi.
+- [x] Meninjau log browser dan jaringan untuk error konsol atau permintaan API yang gagal selama audit regresi.
