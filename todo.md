@@ -306,3 +306,7 @@
 - [x] Menampilkan ringkasan invoice berbentuk kartu pada ponsel sambil mempertahankan tabel serta semua aksi pada desktop.
 - [x] Menambahkan regresi struktur mobile daftar Invoice tanpa mengubah ekspor, pencarian, filter, atau aksi invoice.
 - [x] Meminta konfirmasi visual daftar Invoice ponsel setelah tampilan kartu dan filter berlabel diterbitkan.
+- [x] Menelaah alur cetak invoice dan tombol terkait pada preview serta daftar invoice untuk penggunaan ponsel.
+- [x] Menambahkan akses cetak cepat invoice dari ponsel tanpa mengubah template atau aturan cetak batch yang ada.
+- [x] Menambahkan regresi untuk tombol cetak cepat dan memastikan jalur PDF tetap tersedia.
+- [ ] Meminta validasi pengguna bahwa dialog cetak sistem atau simpan PDF dapat dibuka dari ponsel.
