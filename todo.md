@@ -346,3 +346,4 @@
 - [x] Menambahkan pembuatan dan penerimaan undangan anggota dengan token sekali pakai yang kedaluwarsa.
 - [x] Menambahkan antarmuka Pengaturan Tim yang responsif beserta status role dan undangan tertunda.
 - [ ] Menjalankan pengujian regresi hak owner/admin/staff serta penolakan akses lintas organisasi.
+- [ ] Melakukan uji end-to-end dua akun: undang anggota, terima undangan, pindah ruang kerja, dan buktikan data antar organisasi tidak dapat dibaca atau diubah; ditunda atas keputusan pemilik.
