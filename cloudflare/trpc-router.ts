@@ -39,6 +39,23 @@ const protectedProcedure = t.procedure.use(({ ctx, next }) => {
   return next({ ctx: { user: ctx.user } });
 });
 
+function requireOrganization(ctx: WorkerContext) {
+  if (!ctx.user?.organizationId || !ctx.user.organizationRole) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Organisasi aktif tidak ditemukan." });
+  return { organizationId: ctx.user.organizationId, role: ctx.user.organizationRole };
+}
+
+function requireOrganizationRole(ctx: WorkerContext, allowed: WorkerUser["organizationRole"][]) {
+  const organization = requireOrganization(ctx);
+  if (!allowed.includes(organization.role)) throw new TRPCError({ code: "FORBIDDEN", message: "Anda tidak memiliki hak akses untuk mengelola tim ini." });
+  return organization;
+}
+
+async function hashInvitationToken(token: string) {
+  const bytes = new TextEncoder().encode(token);
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, "0")).join("");
+}
+
 const nullableString = z.string().trim().max(1000).optional().nullable();
 const clientInput = z.object({
   name: z.string().trim().min(1).max(255),
@@ -69,6 +86,7 @@ const businessInput = z.object({
   defaultCurrency: z.string().trim().length(3),
 });
 const logoInput = z.object({ dataUrl: z.string().max(2_100_000) });
+const organizationMemberRole = z.enum(["admin", "staff"]);
 const invoiceInput = z.object({
   clientId: z.number().int().positive(),
   invoiceNumber: z.string().trim().max(80).optional(),
@@ -214,6 +232,79 @@ export const workerRouter = t.router({
   auth: t.router({
     me: t.procedure.query(({ ctx }) => ctx.user),
     session: protectedProcedure.query(({ ctx }) => ({ id: ctx.user.id, email: ctx.user.email, name: ctx.user.name, organizationId: ctx.user.organizationId, organizationRole: ctx.user.organizationRole })),
+  }),
+  organizations: t.router({
+    current: protectedProcedure.query(async ({ ctx }) => {
+      const { organizationId, role } = requireOrganization(ctx);
+      const rows = await supabaseRest<Record<string, unknown>[]>(ctx, queryPath("organizations", { select: "id,name,slug,createdAt", id: `eq.${organizationId}`, limit: "1" }));
+      return rows[0] ? { ...rows[0], role } : null;
+    }),
+    list: protectedProcedure.query(async ({ ctx }) => {
+      const rows = await supabaseRest<(Record<string, unknown> & { organization: Record<string, unknown> | null })[]>(ctx, queryPath("organizationMembers", {
+        select: "organizationId,role,organization:organizations(id,name,slug)", userId: `eq.${ctx.user.id}`, order: "createdAt.asc",
+      }));
+      return rows.map(({ organization, ...membership }) => ({ ...membership, organization }));
+    }),
+    switch: protectedProcedure.input(z.object({ organizationId: z.number().int().positive() })).mutation(async ({ ctx, input }) => {
+      const rows = await supabaseRest<Record<string, unknown>[]>(ctx, queryPath("userActiveOrganizations", { on_conflict: "userId" }), {
+        method: "POST", headers: { Prefer: "resolution=merge-duplicates,return=representation" }, body: JSON.stringify({ userId: ctx.user.id, organizationId: input.organizationId }),
+      });
+      if (!rows[0]) throw new TRPCError({ code: "FORBIDDEN", message: "Ruang kerja tidak tersedia untuk akun ini." });
+      return rows[0];
+    }),
+    members: protectedProcedure.query(async ({ ctx }) => {
+      const { organizationId } = requireOrganization(ctx);
+      const rows = await supabaseRest<(Record<string, unknown> & { user: Record<string, unknown> | null })[]>(ctx, queryPath("organizationMembers", {
+        select: "id,userId,role,createdAt,user:users(id,name,email)", organizationId: `eq.${organizationId}`, order: "createdAt.asc",
+      }));
+      return rows.map(({ user, ...membership }) => ({ ...membership, user }));
+    }),
+    invitations: protectedProcedure.query(async ({ ctx }) => {
+      const { organizationId, role } = requireOrganization(ctx);
+      if (!(["owner", "admin"] as const).includes(role)) return [];
+      return supabaseRest<Record<string, unknown>[]>(ctx, queryPath("organizationInvitations", {
+        select: "id,email,role,expiresAt,createdAt", organizationId: `eq.${organizationId}`, acceptedAt: "is.null", order: "createdAt.desc",
+      }));
+    }),
+    invite: protectedProcedure.input(z.object({ email: z.string().trim().email().max(320), role: organizationMemberRole, origin: z.string().url().max(300) })).mutation(async ({ ctx, input }) => {
+      const { organizationId } = requireOrganizationRole(ctx, ["owner", "admin"]);
+      const existing = await supabaseRest<{ id: number }[]>(ctx, queryPath("organizationInvitations", {
+        select: "id", organizationId: `eq.${organizationId}`, email: `ilike.${input.email}`, acceptedAt: "is.null", limit: "1",
+      }));
+      if (existing[0]) throw new TRPCError({ code: "CONFLICT", message: "Undangan aktif untuk email ini sudah ada." });
+      const token = crypto.randomUUID().replace(/-/g, "");
+      const tokenHash = await hashInvitationToken(token);
+      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+      const rows = await postgrestInsert(ctx, "organizationInvitations", { organizationId, email: input.email.toLowerCase(), role: input.role, tokenHash, invitedByUserId: ctx.user.id, expiresAt });
+      if (!rows[0]) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Undangan tidak dapat dibuat." });
+      const origin = new URL(input.origin).origin;
+      return { invitation: rows[0], inviteUrl: `${origin}/invite/${token}` };
+    }),
+    cancelInvitation: protectedProcedure.input(z.object({ id: z.number().int().positive() })).mutation(async ({ ctx, input }) => {
+      const { organizationId } = requireOrganizationRole(ctx, ["owner", "admin"]);
+      await supabaseRest<void>(ctx, queryPath("organizationInvitations", { id: `eq.${input.id}`, organizationId: `eq.${organizationId}` }), { method: "DELETE" });
+      return { success: true } as const;
+    }),
+    updateMemberRole: protectedProcedure.input(z.object({ memberId: z.number().int().positive(), role: organizationMemberRole })).mutation(async ({ ctx, input }) => {
+      const { organizationId } = requireOrganizationRole(ctx, ["owner"]);
+      const members = await supabaseRest<{ userId: number }[]>(ctx, queryPath("organizationMembers", { select: "userId", id: `eq.${input.memberId}`, organizationId: `eq.${organizationId}`, limit: "1" }));
+      if (!members[0]) throw new TRPCError({ code: "NOT_FOUND", message: "Anggota tidak ditemukan." });
+      if (members[0].userId === ctx.user.id) throw new TRPCError({ code: "BAD_REQUEST", message: "Pemilik tidak dapat mengubah role dirinya sendiri." });
+      const rows = await supabaseRest<Record<string, unknown>[]>(ctx, queryPath("organizationMembers", { id: `eq.${input.memberId}`, organizationId: `eq.${organizationId}` }), {
+        method: "PATCH", headers: { Prefer: "return=representation" }, body: JSON.stringify({ role: input.role }),
+      });
+      return rows[0] ?? null;
+    }),
+    removeMember: protectedProcedure.input(z.object({ memberId: z.number().int().positive() })).mutation(async ({ ctx, input }) => {
+      const { organizationId } = requireOrganizationRole(ctx, ["owner"]);
+      const members = await supabaseRest<{ userId: number }[]>(ctx, queryPath("organizationMembers", { select: "userId", id: `eq.${input.memberId}`, organizationId: `eq.${organizationId}`, limit: "1" }));
+      if (!members[0]) throw new TRPCError({ code: "NOT_FOUND", message: "Anggota tidak ditemukan." });
+      if (members[0].userId === ctx.user.id) throw new TRPCError({ code: "BAD_REQUEST", message: "Pemilik tidak dapat menghapus dirinya sendiri." });
+      await supabaseRest<void>(ctx, queryPath("organizationMembers", { id: `eq.${input.memberId}`, organizationId: `eq.${organizationId}` }), { method: "DELETE" });
+      return { success: true } as const;
+    }),
+    acceptInvitation: protectedProcedure.input(z.object({ token: z.string().regex(/^[A-Za-z0-9]{24,80}$/, "Tautan undangan tidak valid.") })).mutation(async ({ ctx, input }) =>
+      supabaseRpc<Record<string, unknown>>(ctx, "accept_organization_invitation", { p_token_hash: await hashInvitationToken(input.token) })),
   }),
   dashboard: t.router({
     get: protectedProcedure.input(z.object({ period: z.enum(DASHBOARD_PERIODS).default("this_month") })).query(({ ctx, input }) => getDashboard(ctx, input.period)),

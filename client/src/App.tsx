@@ -20,6 +20,7 @@ const OrdersBoard = lazy(() => import("@/pages/OrdersBoard"));
 const ShippingTools = lazy(() => import("@/pages/ShippingTools"));
 const PublicInvoice = lazy(() => import("@/pages/PublicInvoice"));
 const Settings = lazy(() => import("@/pages/Settings"));
+const InvitationAccept = lazy(() => import("@/pages/InvitationAccept"));
 
 function PageLoading() {
   return <div className="py-16 text-center text-sm text-muted-foreground" role="status">Memuat halaman…</div>;
@@ -31,6 +32,7 @@ function ProtectedPage({ children }: { children: React.ReactNode }) {
 
 function Router() {
   return <Switch>
+    <Route path="/invite/:token" component={() => <Suspense fallback={<PageLoading />}><InvitationAccept /></Suspense>} />
     <Route path="/p/:publicId" component={() => <Suspense fallback={<PageLoading />}><PublicInvoice /></Suspense>} />
     <Route path="/" component={() => <ProtectedPage><Dashboard /></ProtectedPage>} />
     <Route path="/invoice" component={() => <ProtectedPage><InvoiceList /></ProtectedPage>} />

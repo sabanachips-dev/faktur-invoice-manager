@@ -58,6 +58,11 @@ export const bulkInvoiceInput = z.object({
   dueDate: z.date(),
 });
 const importInvoiceRowInput = z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.null()]));
+const organizationMemberRole = z.enum(["admin", "staff"]);
+type OrganizationSummary = { id: number; name: string; slug: string | null; createdAt: string; role: "owner" | "admin" | "staff" };
+type OrganizationMembership = { organizationId: number; role: "owner" | "admin" | "staff"; organization: { id: number; name: string; slug: string | null } | null };
+type OrganizationMember = { id: number; userId: number; role: "owner" | "admin" | "staff"; createdAt: string; user: { id: number; name: string | null; email: string | null } | null };
+type OrganizationInvitation = { id: number; email: string; role: "admin" | "staff"; expiresAt: string; createdAt: string };
 
 export const appRouter = router({
   system: systemRouter,
@@ -68,6 +73,19 @@ export const appRouter = router({
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
     }),
+  }),
+  // Kontrak tipe untuk UI; runtime produksi ditangani oleh Cloudflare Worker dengan otorisasi organisasi.
+  organizations: router({
+    current: protectedProcedure.query((): OrganizationSummary | null => null),
+    list: protectedProcedure.query((): OrganizationMembership[] => []),
+    switch: protectedProcedure.input(z.object({ organizationId: z.number().int().positive() })).mutation(({ input }) => ({ organizationId: input.organizationId })),
+    members: protectedProcedure.query((): OrganizationMember[] => []),
+    invitations: protectedProcedure.query((): OrganizationInvitation[] => []),
+    invite: protectedProcedure.input(z.object({ email: z.string().trim().email().max(320), role: organizationMemberRole, origin: z.string().url().max(300) })).mutation(() => ({ invitation: null as OrganizationInvitation | null, inviteUrl: "" })),
+    cancelInvitation: protectedProcedure.input(z.object({ id: z.number().int().positive() })).mutation(() => ({ success: true })),
+    updateMemberRole: protectedProcedure.input(z.object({ memberId: z.number().int().positive(), role: organizationMemberRole })).mutation(() => null as OrganizationMember | null),
+    removeMember: protectedProcedure.input(z.object({ memberId: z.number().int().positive() })).mutation(() => ({ success: true })),
+    acceptInvitation: protectedProcedure.input(z.object({ token: z.string().regex(/^[A-Za-z0-9]{24,80}$/) })).mutation(() => ({ organizationId: 0, role: "staff" as const })),
   }),
   dashboard: router({
     get: protectedProcedure.input(z.object({ period: z.enum(DASHBOARD_PERIODS).default("this_month") })).query(({ ctx, input }) => db.getDashboard(ctx.user.id, input.period)),

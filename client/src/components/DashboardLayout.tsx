@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { SupabaseLoginCard } from "@/components/SupabaseLoginCard";
 import { navigateBack } from "@/lib/navigation";
+import { trpc } from "@/lib/trpc";
 import { ArrowLeft, BookOpen, FileText, LayoutDashboard, LogOut, MapPinned, Menu, PanelsTopLeft, Settings, Users, X } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
@@ -21,6 +22,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { loading, user, logout } = useSupabaseAuth();
   const [location, setLocation] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const workspace = trpc.organizations.current.useQuery(undefined, { enabled: Boolean(user) });
 
   if (loading) {
     return <div className="min-h-screen app-surface grid place-items-center text-sm text-muted-foreground">Memuat ruang kerja…</div>;
@@ -70,7 +72,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <header className="sticky top-0 z-20 flex h-16 items-center border-b bg-white/90 px-4 backdrop-blur lg:px-8">
           <button className="rounded-md p-2 text-slate-600 hover:bg-slate-100 lg:hidden" onClick={() => setMobileOpen(true)} aria-label="Buka menu"><Menu className="size-5" /></button>
           {location !== "/" && <button className="ml-1 inline-flex items-center gap-1.5 rounded-md px-2.5 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900" onClick={goBack}><ArrowLeft className="size-4" />Kembali</button>}
-          <div className="ml-auto text-xs font-medium text-muted-foreground">Ruang kerja bisnis</div>
+          <div className="ml-auto max-w-[13rem] truncate text-right text-xs font-medium text-muted-foreground" title={workspace.data?.name || "Ruang kerja bisnis"}>{workspace.data?.name || "Ruang kerja bisnis"}</div>
         </header>
         <div className="mx-auto w-full max-w-[1540px] p-4 sm:p-6 lg:p-8">{children}</div>
       </main>

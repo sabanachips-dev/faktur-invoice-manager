@@ -342,3 +342,7 @@
 - [x] Mengukur tinggi konten template portable sebelum cetak agar media thermal memiliki panjang fisik yang cukup.
 - [x] Menerapkan ukuran media thermal eksplisit berdasarkan tinggi konten untuk mencegah pemisahan halaman oleh driver Bluetooth.
 - [x] Menambahkan regresi perhitungan tinggi media thermal dan meminta uji pratinjau ulang pada printer pengguna.
+- [ ] Menambahkan API organisasi aktif, pemilih ruang kerja, daftar anggota, dan perubahan role yang dibatasi owner.
+- [ ] Menambahkan pembuatan dan penerimaan undangan anggota dengan token sekali pakai yang kedaluwarsa.
+- [ ] Menambahkan antarmuka Pengaturan Tim yang responsif beserta status role dan undangan tertunda.
+- [ ] Menjalankan pengujian regresi hak owner/admin/staff serta penolakan akses lintas organisasi.

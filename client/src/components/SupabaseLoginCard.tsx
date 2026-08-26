@@ -5,7 +5,7 @@ import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { Loader2, Mail, ShieldCheck } from "lucide-react";
 import { FormEvent, useState } from "react";
 
-export function SupabaseLoginCard() {
+export function SupabaseLoginCard({ redirectTo }: { redirectTo?: string }) {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -30,7 +30,7 @@ export function SupabaseLoginCard() {
         const result = await client.auth.signUp({
           email,
           password,
-          options: { data: { full_name: name.trim() }, emailRedirectTo: window.location.origin },
+          options: { data: { full_name: name.trim() }, emailRedirectTo: redirectTo || window.location.origin },
         });
         if (!result.error) setNotice("Akun dibuat. Periksa email Anda bila konfirmasi email diaktifkan.");
         return result;
@@ -44,7 +44,7 @@ export function SupabaseLoginCard() {
     const client = supabase;
     if (!client) return;
     await run("magic", async () => {
-      const result = await client.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.origin } });
+      const result = await client.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo || window.location.origin } });
       if (!result.error) setNotice("Tautan masuk telah dikirim. Periksa email Anda.");
       return result;
     });
@@ -53,7 +53,7 @@ export function SupabaseLoginCard() {
   const signInWithGoogle = async () => {
     const client = supabase;
     if (!client) return;
-    await run("google", () => client.auth.signInWithOAuth({ provider: "google", options: { redirectTo: window.location.origin } }));
+    await run("google", () => client.auth.signInWithOAuth({ provider: "google", options: { redirectTo: redirectTo || window.location.origin } }));
   };
 
   if (!isSupabaseConfigured) {
