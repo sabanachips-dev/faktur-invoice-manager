@@ -1,4 +1,4 @@
-const CACHE_NAME = "faktur-shell-v1";
+const CACHE_NAME = "faktur-shell-v2";
 const APP_SHELL = ["/", "/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
@@ -23,6 +23,12 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  // Berkas Vite memakai hash per rilis. Cache-first pada aset ini dapat meminta modul yang
+  // sudah tidak ada setelah deployment baru, sehingga chunk lazy gagal dimuat.
+  if (url.pathname.startsWith("/assets/")) {
+    return;
+  }
+
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request)
@@ -40,7 +46,7 @@ self.addEventListener("fetch", (event) => {
     caches.match(request).then((cached) =>
       cached ||
       fetch(request).then((response) => {
-        if (response.ok && (url.pathname.startsWith("/assets/") || url.pathname.endsWith(".webmanifest"))) {
+        if (response.ok && url.pathname.endsWith(".webmanifest")) {
           const copy = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
         }

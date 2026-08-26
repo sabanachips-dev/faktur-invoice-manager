@@ -27,7 +27,8 @@ describe('aset PWA Faktur', () => {
     const serviceWorker = fs.readFileSync(path.join(publicDir, 'sw.js'), 'utf8');
     expect(serviceWorker).toContain('url.pathname.startsWith("/api/")');
     expect(serviceWorker).toContain('request.method !== "GET"');
-    expect(serviceWorker).toContain('faktur-shell-v1');
+    expect(serviceWorker).toContain('faktur-shell-v2');
+    expect(serviceWorker).toContain('url.pathname.startsWith("/assets/")');
   });
 
   it('mendaftarkan service worker hanya pada build produksi', () => {

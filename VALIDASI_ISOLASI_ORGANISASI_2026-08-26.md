@@ -10,4 +10,6 @@ Pada produksi, Dashboard Sabana Chips berhasil memuat ringkasan dan satu invoice
 
 Halaman Klien juga berhasil memuat tiga klien Sabana Chips. Halaman Katalog kemudian berhasil memuat tiga produk dengan harga dan diskon yang tersimpan. Validasi ini mencakup alur baca inti; pengujian tulis sengaja belum dijalankan pada data produksi untuk menghindari pembuatan data bisnis uji.
 
+Saat membuka Pengaturan setelah rilis antarmuka tim, browser menerima error modul dinamis untuk berkas aset Settings dengan hash rilis lama. Temuan ini menunjukkan cache aset klien belum melakukan fallback ke rilis baru dan harus diperbaiki sebelum panel tim dapat divalidasi.
+
 Advisor keamanan Supabase menandai fungsi invoice publik dan helper RLS `SECURITY DEFINER` yang dapat dipanggil oleh peran terkait. Akses invoice publik memang disengaja untuk fitur tautan invoice; helper RLS hanya mengembalikan konteks pemanggil. Peringatan leaked-password protection tetap ada dan merupakan backlog keamanan yang belum diaktifkan.
