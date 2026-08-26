@@ -12,4 +12,6 @@ Halaman Klien juga berhasil memuat tiga klien Sabana Chips. Halaman Katalog kemu
 
 Saat membuka Pengaturan setelah rilis antarmuka tim, browser menerima error modul dinamis untuk berkas aset Settings dengan hash rilis lama. Temuan ini menunjukkan cache aset klien belum melakukan fallback ke rilis baru dan harus diperbaiki sebelum panel tim dapat divalidasi.
 
+Perbaikan cache service worker kemudian diterapkan dengan mengecualikan aset Vite ber-hash dari strategi cache-first. Setelah memuat ulang URL Pengaturan, halaman berhasil memuat: nama ruang kerja aktif, badge Pemilik, pemilih ruang kerja, satu anggota organisasi, form undangan role Staf/Admin, dan daftar undangan tertunda semuanya tampil pada produksi.
+
 Advisor keamanan Supabase menandai fungsi invoice publik dan helper RLS `SECURITY DEFINER` yang dapat dipanggil oleh peran terkait. Akses invoice publik memang disengaja untuk fitur tautan invoice; helper RLS hanya mengembalikan konteks pemanggil. Peringatan leaked-password protection tetap ada dan merupakan backlog keamanan yang belum diaktifkan.

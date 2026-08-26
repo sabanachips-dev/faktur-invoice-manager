@@ -336,13 +336,13 @@
 - [ ] Meminta pemilik memilih tahap implementasi SaaS pertama setelah roadmap disampaikan.
 - [x] Memetakan seluruh tabel, RPC, dan kebijakan RLS Faktur yang perlu diberi batas organisasi.
 - [x] Merancang migrasi organisasi, anggota, role pemilik/admin/staf, dan undangan tanpa mengganggu data Sabana Chips.
-- [ ] Menerapkan isolasi tenant pada skema dan RLS serta mengaitkan data Faktur yang ada ke organisasi awal.
-- [ ] Menambahkan antarmuka dan prosedur pengelolaan anggota/undangan dengan role yang terkendali.
+- [x] Menerapkan isolasi tenant pada skema dan RLS serta mengaitkan data Faktur yang ada ke organisasi awal.
+- [x] Menambahkan antarmuka dan prosedur pengelolaan anggota/undangan dengan role yang terkendali.
 - [ ] Menulis serta menjalankan regresi akses lintas organisasi, peran, dan alur data inti.
 - [x] Mengukur tinggi konten template portable sebelum cetak agar media thermal memiliki panjang fisik yang cukup.
 - [x] Menerapkan ukuran media thermal eksplisit berdasarkan tinggi konten untuk mencegah pemisahan halaman oleh driver Bluetooth.
 - [x] Menambahkan regresi perhitungan tinggi media thermal dan meminta uji pratinjau ulang pada printer pengguna.
-- [ ] Menambahkan API organisasi aktif, pemilih ruang kerja, daftar anggota, dan perubahan role yang dibatasi owner.
-- [ ] Menambahkan pembuatan dan penerimaan undangan anggota dengan token sekali pakai yang kedaluwarsa.
-- [ ] Menambahkan antarmuka Pengaturan Tim yang responsif beserta status role dan undangan tertunda.
+- [x] Menambahkan API organisasi aktif, pemilih ruang kerja, daftar anggota, dan perubahan role yang dibatasi owner.
+- [x] Menambahkan pembuatan dan penerimaan undangan anggota dengan token sekali pakai yang kedaluwarsa.
+- [x] Menambahkan antarmuka Pengaturan Tim yang responsif beserta status role dan undangan tertunda.
 - [ ] Menjalankan pengujian regresi hak owner/admin/staff serta penolakan akses lintas organisasi.
