@@ -331,6 +331,9 @@
 - [x] Menilai kesiapan Faktur untuk operasi internal berdasarkan bukti pengujian, keamanan, dan validasi perangkat yang tersedia.
 - [x] Menilai kesiapan arsitektur multi-tenant, pengelolaan pengguna, observabilitas, backup, dan penagihan untuk arah SaaS.
 - [x] Menyusun prioritas risiko yang perlu ditutup sebelum mengklaim aplikasi layak SaaS.
+- [x] Menyusun roadmap bertahap dari operasi internal menuju SaaS publik dengan batas ruang lingkup yang jelas.
+- [x] Menetapkan kriteria go-live untuk keamanan, multi-tenant, operasi, dan komersialisasi SaaS.
+- [ ] Meminta pemilik memilih tahap implementasi SaaS pertama setelah roadmap disampaikan.
 - [x] Mengukur tinggi konten template portable sebelum cetak agar media thermal memiliki panjang fisik yang cukup.
 - [x] Menerapkan ukuran media thermal eksplisit berdasarkan tinggi konten untuk mencegah pemisahan halaman oleh driver Bluetooth.
 - [x] Menambahkan regresi perhitungan tinggi media thermal dan meminta uji pratinjau ulang pada printer pengguna.
