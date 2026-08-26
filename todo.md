@@ -338,14 +338,15 @@
 - [x] Merancang migrasi organisasi, anggota, role pemilik/admin/staf, dan undangan tanpa mengganggu data Sabana Chips.
 - [x] Menerapkan isolasi tenant pada skema dan RLS serta mengaitkan data Faktur yang ada ke organisasi awal.
 - [x] Menambahkan antarmuka dan prosedur pengelolaan anggota/undangan dengan role yang terkendali.
-- [ ] Menulis serta menjalankan regresi akses lintas organisasi, peran, dan alur data inti.
+- [x] Menulis serta menjalankan regresi akses lintas organisasi, peran, dan alur data inti.
 - [x] Mengukur tinggi konten template portable sebelum cetak agar media thermal memiliki panjang fisik yang cukup.
 - [x] Menerapkan ukuran media thermal eksplisit berdasarkan tinggi konten untuk mencegah pemisahan halaman oleh driver Bluetooth.
 - [x] Menambahkan regresi perhitungan tinggi media thermal dan meminta uji pratinjau ulang pada printer pengguna.
 - [x] Menambahkan API organisasi aktif, pemilih ruang kerja, daftar anggota, dan perubahan role yang dibatasi owner.
 - [x] Menambahkan pembuatan dan penerimaan undangan anggota dengan token sekali pakai yang kedaluwarsa.
 - [x] Menambahkan antarmuka Pengaturan Tim yang responsif beserta status role dan undangan tertunda.
-- [ ] Menjalankan pengujian regresi hak owner/admin/staff serta penolakan akses lintas organisasi.
-- [ ] Melakukan uji end-to-end dua akun: undang anggota, terima undangan, pindah ruang kerja, dan buktikan data antar organisasi tidak dapat dibaca atau diubah; ditunda atas keputusan pemilik.
-- [ ] Menjalankan uji end-to-end organisasi menggunakan sabanachips@gmail.com: undang, login akun kedua, terima undangan, verifikasi role dan isolasi data, lalu bersihkan akses uji.
-- [ ] Memperbaiki active organization stale setelah anggota dihapus agar RLS selalu memverifikasi membership sebelum memakai organisasi aktif.
+- [x] Menjalankan pengujian regresi hak owner/admin/staff serta penolakan akses lintas organisasi.
+- [x] Melakukan uji end-to-end dua akun: undang anggota, terima undangan, pindah ruang kerja, dan buktikan data antar organisasi tidak dapat dibaca atau diubah; ditunda atas keputusan pemilik.
+- [x] Menjalankan uji end-to-end organisasi menggunakan sabanachips@gmail.com: undang, login akun kedua, terima undangan, verifikasi role dan isolasi data, lalu bersihkan akses uji.
+- [x] Memperbaiki active organization stale setelah anggota dihapus agar RLS selalu memverifikasi membership sebelum memakai organisasi aktif.
+- [ ] Menormalkan konteks Worker agar workspace tanpa membership tidak diteruskan sebagai organisasi aktif.

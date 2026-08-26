@@ -8,6 +8,7 @@ describe("organization worker context", () => {
   it("loads the active organization and member role from Supabase after authentication", () => {
     expect(source).toContain("userActiveOrganizations?userId=eq.${profile.id}&select=organizationId&limit=1");
     expect(source).toContain("organizationMembers?userId=eq.${profile.id}&organizationId=eq.${organizationId}&select=role&limit=1");
+    expect(source).toContain("organizationId: membership ? organizationId : null");
     expect(source).toContain("organizationRole: membership?.role ?? null");
   });
 

@@ -32,4 +32,6 @@ Katalog pada workspace pribadi akun kedua juga menampilkan keadaan kosong. Denga
 
 Sesi pemilik awal kemudian diverifikasi kembali pada organisasi asal, yang tetap menampilkan satu invoice. Pengaturan tim menampilkan tepat dua anggota sebelum pembersihan: pemilik dan akun kedua ber-role Staf. Tidak ada invoice, klien, katalog, maupun konfigurasi bisnis yang diubah selama seluruh uji dua akun.
 
+Setelah membership Staf uji dihapus dan pengaman workspace aktif diterapkan, akun kedua masuk kembali dengan dashboard kosong milik organisasi pribadinya. Pengaturan menunjukkan tepat satu workspace, satu anggota (akun kedua sebagai Pemilik), dan tidak lagi menampilkan organisasi maupun data milik pemilik awal. Ini memverifikasi pencabutan akses secara end-to-end setelah perbaikan.
+
 Advisor keamanan Supabase menandai fungsi invoice publik dan helper RLS `SECURITY DEFINER` yang dapat dipanggil oleh peran terkait. Akses invoice publik memang disengaja untuk fitur tautan invoice; helper RLS hanya mengembalikan konteks pemanggil. Peringatan leaked-password protection tetap ada dan merupakan backlog keamanan yang belum diaktifkan.

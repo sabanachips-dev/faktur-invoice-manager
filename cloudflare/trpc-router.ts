@@ -30,7 +30,7 @@ async function getUser(request: Request, env: WorkerEnv): Promise<WorkerUser | n
   const membershipResponse = await fetch(`${env.SUPABASE_URL}/rest/v1/organizationMembers?userId=eq.${profile.id}&organizationId=eq.${organizationId}&select=role&limit=1`, { headers: baseHeaders });
   if (!membershipResponse.ok) return null;
   const [membership] = await membershipResponse.json<{ role: WorkerUser["organizationRole"] }[]>();
-  return { ...profile, organizationId, organizationRole: membership?.role ?? null };
+  return { ...profile, organizationId: membership ? organizationId : null, organizationRole: membership?.role ?? null };
 }
 
 const t = initTRPC.context<WorkerContext>().create({ transformer: superjson });
