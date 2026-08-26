@@ -349,4 +349,4 @@
 - [x] Melakukan uji end-to-end dua akun: undang anggota, terima undangan, pindah ruang kerja, dan buktikan data antar organisasi tidak dapat dibaca atau diubah; ditunda atas keputusan pemilik.
 - [x] Menjalankan uji end-to-end organisasi menggunakan sabanachips@gmail.com: undang, login akun kedua, terima undangan, verifikasi role dan isolasi data, lalu bersihkan akses uji.
 - [x] Memperbaiki active organization stale setelah anggota dihapus agar RLS selalu memverifikasi membership sebelum memakai organisasi aktif.
-- [ ] Menormalkan konteks Worker agar workspace tanpa membership tidak diteruskan sebagai organisasi aktif.
+- [x] Menormalkan konteks Worker agar workspace tanpa membership tidak diteruskan sebagai organisasi aktif.

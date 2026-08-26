@@ -34,4 +34,6 @@ Sesi pemilik awal kemudian diverifikasi kembali pada organisasi asal, yang tetap
 
 Setelah membership Staf uji dihapus dan pengaman workspace aktif diterapkan, akun kedua masuk kembali dengan dashboard kosong milik organisasi pribadinya. Pengaturan menunjukkan tepat satu workspace, satu anggota (akun kedua sebagai Pemilik), dan tidak lagi menampilkan organisasi maupun data milik pemilik awal. Ini memverifikasi pencabutan akses secara end-to-end setelah perbaikan.
 
+Pengaman tambahan pada konteks Cloudflare Worker kemudian dipublikasikan. Worker kini meneruskan `organizationId` hanya bila membership pada workspace tersebut benar-benar ditemukan. Pemeriksaan produksi pascarilis dengan akun kedua berhasil memuat Pengaturan workspace pribadinya, dengan satu workspace dan satu anggota saja. Regresi terakhir: 59 berkas uji / 129 tes lulus, pengecekan TypeScript lulus, dan build Cloudflare berhasil.
+
 Advisor keamanan Supabase menandai fungsi invoice publik dan helper RLS `SECURITY DEFINER` yang dapat dipanggil oleh peran terkait. Akses invoice publik memang disengaja untuk fitur tautan invoice; helper RLS hanya mengembalikan konteks pemanggil. Peringatan leaked-password protection tetap ada dan merupakan backlog keamanan yang belum diaktifkan.
