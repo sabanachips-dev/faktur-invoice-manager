@@ -4,7 +4,7 @@ import { workerRouter, type WorkerContext } from "../cloudflare/trpc-router";
 const context: WorkerContext = {
   env: { SUPABASE_URL: "https://example.supabase.co", SUPABASE_PUBLISHABLE_KEY: "publishable" },
   accessToken: "Bearer session-token",
-  user: { id: 7, authUserId: "auth-7", openId: "auth-7", name: "Pemilik", email: "pemilik@example.com", role: "user" },
+  user: { id: 7, authUserId: "auth-7", openId: "auth-7", name: "Pemilik", email: "pemilik@example.com", role: "user", organizationId: 11, organizationRole: "owner" },
 };
 
 function json(data: unknown) {
@@ -40,7 +40,7 @@ describe("Cloudflare invoice read router", () => {
     expect(next).toMatch(/^FAK-\d{4}-002$/);
   });
 
-  it("memperbarui status dan merekam aktivitas dengan userId pemilik", async () => {
+  it("memperbarui status dan merekam aktivitas dengan pemilik serta organisasi", async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce(json([{ id: 1, status: "paid" }]))
       .mockResolvedValueOnce(json([{ id: 11 }]));
@@ -50,6 +50,7 @@ describe("Cloudflare invoice read router", () => {
 
     expect(invoice).toMatchObject({ id: 1, status: "paid" });
     expect(fetchMock.mock.calls[1][1].body).toContain('"userId":7');
+    expect(fetchMock.mock.calls[1][1].body).toContain('"organizationId":11');
     expect(fetchMock.mock.calls[1][1].body).toContain('"action":"status_changed"');
   });
 });

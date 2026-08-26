@@ -4,7 +4,7 @@ import { workerRouter, type WorkerContext } from "../cloudflare/trpc-router";
 const context: WorkerContext = {
   env: { SUPABASE_URL: "https://example.supabase.co", SUPABASE_PUBLISHABLE_KEY: "publishable" },
   accessToken: "Bearer session-token",
-  user: { id: 7, authUserId: "auth-7", openId: "auth-7", name: "Pemilik", email: "pemilik@example.com", role: "user" },
+  user: { id: 7, authUserId: "auth-7", openId: "auth-7", name: "Pemilik", email: "pemilik@example.com", role: "user", organizationId: 11, organizationRole: "owner" },
 };
 
 function json(data: unknown, status = 200) {
@@ -14,7 +14,7 @@ function json(data: unknown, status = 200) {
 describe("Cloudflare core data router", () => {
   afterEach(() => vi.unstubAllGlobals());
 
-  it("membuat klien memakai bearer session dan userId pemilik", async () => {
+  it("membuat klien memakai bearer session, jejak pemilik, dan organisasi aktif", async () => {
     const fetchMock = vi.fn().mockResolvedValue(json([{ id: 31, name: "Toko A" }]));
     vi.stubGlobal("fetch", fetchMock);
 
@@ -23,7 +23,7 @@ describe("Cloudflare core data router", () => {
     expect(client).toMatchObject({ id: 31, name: "Toko A" });
     expect(fetchMock).toHaveBeenCalledWith(
       "https://example.supabase.co/rest/v1/clients",
-      expect.objectContaining({ method: "POST", body: expect.stringContaining('"userId":7') }),
+      expect.objectContaining({ method: "POST", body: expect.stringContaining('"organizationId":11') }),
     );
     const headers = new Headers(fetchMock.mock.calls[0][1].headers);
     expect(headers.get("authorization")).toBe("Bearer session-token");
@@ -40,6 +40,7 @@ describe("Cloudflare core data router", () => {
     expect(profile).toMatchObject({ id: 8, businessName: "Bisnis Anda" });
     expect(fetchMock).toHaveBeenCalledTimes(2);
     expect(fetchMock.mock.calls[1][1].body).toContain('"userId":7');
+    expect(fetchMock.mock.calls[1][1].body).toContain('"organizationId":11');
   });
 
   it("menolak procedure terlindungi bila sesi tidak tersedia", async () => {

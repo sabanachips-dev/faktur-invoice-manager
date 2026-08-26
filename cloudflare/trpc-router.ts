@@ -8,7 +8,7 @@ import { FULFILLMENT_STATUSES, getNextAvailableInvoiceNumber, INVOICE_STATUSES }
 import { parseInvoiceImportRows } from "../shared/invoiceImport";
 
 export type WorkerEnv = { SUPABASE_URL: string; SUPABASE_PUBLISHABLE_KEY: string; RESEND_API_KEY?: string; RESEND_FROM_EMAIL?: string; RAJAONGKIR_API_KEY?: string };
-export type WorkerUser = { id: number; authUserId: string; openId: string; name: string | null; email: string | null; role: "admin" | "user" };
+export type WorkerUser = { id: number; authUserId: string; openId: string; name: string | null; email: string | null; role: "admin" | "user"; organizationId: number | null; organizationRole: "owner" | "admin" | "staff" | null };
 export type WorkerContext = { user: WorkerUser | null; env: WorkerEnv; accessToken: string | null };
 
 async function getUser(request: Request, env: WorkerEnv): Promise<WorkerUser | null> {
@@ -20,8 +20,17 @@ async function getUser(request: Request, env: WorkerEnv): Promise<WorkerUser | n
   const authUser = await authResponse.json<{ id: string }>();
   const profileResponse = await fetch(`${env.SUPABASE_URL}/rest/v1/users?authUserId=eq.${encodeURIComponent(authUser.id)}&select=id,authUserId,openId,name,email,role&limit=1`, { headers: baseHeaders });
   if (!profileResponse.ok) return null;
-  const [profile] = await profileResponse.json<WorkerUser[]>();
-  return profile ?? null;
+  const [profile] = await profileResponse.json<Omit<WorkerUser, "organizationId" | "organizationRole">[]>();
+  if (!profile) return null;
+  const activeOrganizationResponse = await fetch(`${env.SUPABASE_URL}/rest/v1/userActiveOrganizations?userId=eq.${profile.id}&select=organizationId&limit=1`, { headers: baseHeaders });
+  if (!activeOrganizationResponse.ok) return null;
+  const [activeOrganization] = await activeOrganizationResponse.json<{ organizationId: number }[]>();
+  const organizationId = activeOrganization?.organizationId ?? null;
+  if (!organizationId) return { ...profile, organizationId: null, organizationRole: null };
+  const membershipResponse = await fetch(`${env.SUPABASE_URL}/rest/v1/organizationMembers?userId=eq.${profile.id}&organizationId=eq.${organizationId}&select=role&limit=1`, { headers: baseHeaders });
+  if (!membershipResponse.ok) return null;
+  const [membership] = await membershipResponse.json<{ role: WorkerUser["organizationRole"] }[]>();
+  return { ...profile, organizationId, organizationRole: membership?.role ?? null };
 }
 
 const t = initTRPC.context<WorkerContext>().create({ transformer: superjson });
@@ -106,14 +115,16 @@ function normalizeShippingLocationSearch(query: string) {
 }
 
 async function getBusinessProfile(ctx: WorkerContext) {
+  const organizationId = ctx.user?.organizationId;
+  if (!organizationId) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Organisasi aktif tidak ditemukan." });
   const rows = await supabaseRest<Record<string, unknown>[]>(ctx, queryPath("businessProfiles", {
-    select: "*", userId: `eq.${ctx.user!.id}`, limit: "1",
+    select: "*", organizationId: `eq.${organizationId}`, limit: "1",
   }));
   if (rows[0]) return rows[0];
   const created = await supabaseRest<Record<string, unknown>[]>(ctx, "businessProfiles", {
     method: "POST",
     headers: { Prefer: "return=representation" },
-    body: JSON.stringify({ userId: ctx.user!.id, businessName: "Bisnis Anda" }),
+    body: JSON.stringify({ userId: ctx.user!.id, organizationId, businessName: "Bisnis Anda" }),
   });
   return created[0] ?? null;
 }
@@ -202,7 +213,7 @@ function escapeHtml(value: string) {
 export const workerRouter = t.router({
   auth: t.router({
     me: t.procedure.query(({ ctx }) => ctx.user),
-    session: protectedProcedure.query(({ ctx }) => ({ id: ctx.user.id, email: ctx.user.email, name: ctx.user.name })),
+    session: protectedProcedure.query(({ ctx }) => ({ id: ctx.user.id, email: ctx.user.email, name: ctx.user.name, organizationId: ctx.user.organizationId, organizationRole: ctx.user.organizationRole })),
   }),
   dashboard: t.router({
     get: protectedProcedure.input(z.object({ period: z.enum(DASHBOARD_PERIODS).default("this_month") })).query(({ ctx, input }) => getDashboard(ctx, input.period)),
@@ -300,7 +311,7 @@ export const workerRouter = t.router({
         body: JSON.stringify({ status: input.status, paidAt: input.status === "paid" ? now : null, sentAt: input.status === "sent" ? now : null }),
       });
       if (!rows[0]) throw new TRPCError({ code: "NOT_FOUND", message: "Invoice tidak ditemukan." });
-      await postgrestInsert(ctx, "invoiceActivities", { userId: ctx.user.id, invoiceId: input.id, action: "status_changed", description: `Status invoice diubah menjadi ${input.status}.` });
+      await postgrestInsert(ctx, "invoiceActivities", { userId: ctx.user.id, organizationId: ctx.user.organizationId, invoiceId: input.id, action: "status_changed", description: `Status invoice diubah menjadi ${input.status}.` });
       return rows[0];
     }),
     updateFulfillment: protectedProcedure.input(z.object({ id: z.number().int().positive(), fulfillmentStatus: z.enum(FULFILLMENT_STATUSES), courierName: z.string().trim().max(100).optional().nullable(), trackingNumber: z.string().trim().max(120).optional().nullable() }).superRefine((value, context) => {
@@ -320,7 +331,7 @@ export const workerRouter = t.router({
       const response = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${ctx.env.RESEND_API_KEY}`, "content-type": "application/json" }, body: JSON.stringify({ from: ctx.env.RESEND_FROM_EMAIL, to: [email], subject, html: `<main style="font-family:Arial,sans-serif;color:#18233a;max-width:560px;margin:0 auto;padding:28px"><h1 style="font-size:24px">Invoice ${escapeHtml(String(invoice.invoiceNumber))}</h1><p>Halo ${escapeHtml(String(client.name))},</p><p>${escapeHtml(String(business.businessName))} telah mengirimkan invoice. <a href="${escapeHtml(publicLink)}">Lihat invoice</a></p></main>` }) });
       if (!response.ok) throw new TRPCError({ code: "BAD_REQUEST", message: "Email tidak dapat dikirim." });
       await workerRouter.createCaller(ctx).invoices.updateStatus({ id: input.id, status: "sent" });
-      await postgrestInsert(ctx, "invoiceActivities", { userId: ctx.user.id, invoiceId: input.id, action: "email_sent", description: "Invoice dikirim melalui email kepada klien." });
+      await postgrestInsert(ctx, "invoiceActivities", { userId: ctx.user.id, organizationId: ctx.user.organizationId, invoiceId: input.id, action: "email_sent", description: "Invoice dikirim melalui email kepada klien." });
       return { success: true } as const;
     }),
     remove: protectedProcedure.input(z.object({ id: z.number().int().positive() })).mutation(async ({ ctx, input }) => {
@@ -340,7 +351,7 @@ export const workerRouter = t.router({
     get: protectedProcedure.query(({ ctx }) => getBusinessProfile(ctx)),
     update: protectedProcedure.input(businessInput).mutation(async ({ ctx, input }) => {
       await getBusinessProfile(ctx);
-      const rows = await supabaseRest<Record<string, unknown>[]>(ctx, queryPath("businessProfiles", { userId: `eq.${ctx.user.id}` }), {
+      const rows = await supabaseRest<Record<string, unknown>[]>(ctx, queryPath("businessProfiles", { organizationId: `eq.${ctx.user.organizationId}` }), {
         method: "PATCH", headers: { Prefer: "return=representation" }, body: JSON.stringify({ ...input, email: input.email || null }),
       });
       return rows[0] ?? getBusinessProfile(ctx);
@@ -361,7 +372,7 @@ export const workerRouter = t.router({
       });
       if (!upload.ok) throw new TRPCError({ code: "BAD_REQUEST", message: "Logo bisnis tidak dapat diunggah." });
       const logoUrl = `${ctx.env.SUPABASE_URL}/storage/v1/object/public/business-logos/${objectPath}`;
-      const rows = await supabaseRest<Record<string, unknown>[]>(ctx, queryPath("businessProfiles", { userId: `eq.${ctx.user.id}` }), {
+      const rows = await supabaseRest<Record<string, unknown>[]>(ctx, queryPath("businessProfiles", { organizationId: `eq.${ctx.user.organizationId}` }), {
         method: "PATCH", headers: { Prefer: "return=representation" }, body: JSON.stringify({ logoUrl }),
       });
       return rows[0] ?? { logoUrl };
@@ -379,7 +390,7 @@ export const workerRouter = t.router({
       return clients[0] ? { ...clients[0], invoices: [] } : null;
     }),
     create: protectedProcedure.input(clientInput).mutation(async ({ ctx, input }) => {
-      const rows = await postgrestInsert(ctx, "clients", { ...input, email: input.email || null, userId: ctx.user.id });
+      const rows = await postgrestInsert(ctx, "clients", { ...input, email: input.email || null, userId: ctx.user.id, organizationId: ctx.user.organizationId });
       return rows[0] ?? null;
     }),
     update: protectedProcedure.input(z.object({ id: z.number().int().positive(), data: clientInput.partial() })).mutation(async ({ ctx, input }) => {
@@ -401,7 +412,7 @@ export const workerRouter = t.router({
       return supabaseRest<Record<string, unknown>[]>(ctx, queryPath("catalogItems", { select: "*", order: "createdAt.desc", name: term ? `ilike.*${term}*` : undefined }));
     }),
     create: protectedProcedure.input(catalogInput).mutation(async ({ ctx, input }) => {
-      const rows = await postgrestInsert(ctx, "catalogItems", { ...input, userId: ctx.user.id });
+      const rows = await postgrestInsert(ctx, "catalogItems", { ...input, userId: ctx.user.id, organizationId: ctx.user.organizationId });
       return rows[0]?.id ?? null;
     }),
     update: protectedProcedure.input(z.object({ id: z.number().int().positive(), data: catalogInput.partial() })).mutation(async ({ ctx, input }) => {

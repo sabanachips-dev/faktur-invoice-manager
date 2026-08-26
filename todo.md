@@ -334,6 +334,11 @@
 - [x] Menyusun roadmap bertahap dari operasi internal menuju SaaS publik dengan batas ruang lingkup yang jelas.
 - [x] Menetapkan kriteria go-live untuk keamanan, multi-tenant, operasi, dan komersialisasi SaaS.
 - [ ] Meminta pemilik memilih tahap implementasi SaaS pertama setelah roadmap disampaikan.
+- [x] Memetakan seluruh tabel, RPC, dan kebijakan RLS Faktur yang perlu diberi batas organisasi.
+- [x] Merancang migrasi organisasi, anggota, role pemilik/admin/staf, dan undangan tanpa mengganggu data Sabana Chips.
+- [ ] Menerapkan isolasi tenant pada skema dan RLS serta mengaitkan data Faktur yang ada ke organisasi awal.
+- [ ] Menambahkan antarmuka dan prosedur pengelolaan anggota/undangan dengan role yang terkendali.
+- [ ] Menulis serta menjalankan regresi akses lintas organisasi, peran, dan alur data inti.
 - [x] Mengukur tinggi konten template portable sebelum cetak agar media thermal memiliki panjang fisik yang cukup.
 - [x] Menerapkan ukuran media thermal eksplisit berdasarkan tinggi konten untuk mencegah pemisahan halaman oleh driver Bluetooth.
 - [x] Menambahkan regresi perhitungan tinggi media thermal dan meminta uji pratinjau ulang pada printer pengguna.
