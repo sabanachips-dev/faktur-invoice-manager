@@ -322,6 +322,15 @@
 - [x] Menambahkan pilihan template portable 58 mm dan 80 mm dengan lebar serta tata letak yang sesuai rol.
 - [x] Menambahkan regresi untuk aturan rol kontinu tanpa mengubah cetak A4 dan batch.
 - [ ] Meminta bukti pratinjau Bluetooth Printer untuk rol 58 mm atau 80 mm setelah perubahan diterbitkan.
+- [x] Memeriksa ketersediaan, metadata, checksum, dan tanda tangan artefak APK Faktur yang sudah dibangun.
+- [x] Menyiapkan salinan APK rilis yang aman untuk penyerahan langsung kepada pemilik.
+- [x] Menyerahkan panduan pemasangan APK termasuk izin instalasi sumber tidak dikenal dan batas uji perangkat fisik.
+- [ ] Meminta validasi pemasangan APK, layar penuh TWA, serta login Google dan magic link pada perangkat Android pengguna.
+- [ ] Menentukan apakah kebutuhan Android memadai dengan wrapper/PWA atau memerlukan aplikasi native khusus.
+- [ ] Menyusun ruang lingkup aplikasi native bila pengguna memilih pengalaman Android yang berbeda dari PWA.
+- [x] Menilai kesiapan Faktur untuk operasi internal berdasarkan bukti pengujian, keamanan, dan validasi perangkat yang tersedia.
+- [x] Menilai kesiapan arsitektur multi-tenant, pengelolaan pengguna, observabilitas, backup, dan penagihan untuk arah SaaS.
+- [x] Menyusun prioritas risiko yang perlu ditutup sebelum mengklaim aplikasi layak SaaS.
 - [x] Mengukur tinggi konten template portable sebelum cetak agar media thermal memiliki panjang fisik yang cukup.
 - [x] Menerapkan ukuran media thermal eksplisit berdasarkan tinggi konten untuk mencegah pemisahan halaman oleh driver Bluetooth.
 - [x] Menambahkan regresi perhitungan tinggi media thermal dan meminta uji pratinjau ulang pada printer pengguna.
